@@ -1,15 +1,7 @@
 import * as SQLite from 'expo-sqlite';
 import type { Migration } from '../types/tool';
 
-const DB_NAME = 'cbt-toolkit.db';
-
-export async function openDatabase(): Promise<SQLite.SQLiteDatabase> {
-  const db = await SQLite.openDatabaseAsync(DB_NAME);
-  await initCoreTables(db);
-  return db;
-}
-
-async function initCoreTables(db: SQLite.SQLiteDatabase): Promise<void> {
+export async function initCoreTables(db: SQLite.SQLiteDatabase): Promise<void> {
   await db.execAsync(`
     CREATE TABLE IF NOT EXISTS tool_entries (
       id TEXT PRIMARY KEY,
@@ -39,10 +31,7 @@ export async function runMigrations(
     );
     if (!existing) {
       await migration.up(db);
-      await db.runAsync(
-        'INSERT INTO migrations_log (id) VALUES (?)',
-        [migration.id]
-      );
+      await db.runAsync('INSERT INTO migrations_log (id) VALUES (?)', [migration.id]);
     }
   }
 }

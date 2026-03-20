@@ -1,15 +1,192 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useCallback } from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { router } from 'expo-router';
+import { useSQLiteContext } from 'expo-sqlite';
+import { format, parseISO } from 'date-fns';
+import { pl as dateFnsPl } from 'date-fns/locale';
+import { colors } from '../../../core/theme';
+import { useThoughtRecord } from '../hooks/useThoughtRecords';
+import * as repo from '../repository';
+import type { Emotion } from '../types';
 
-export function RecordDetailScreen(): React.JSX.Element {
+interface Props {
+  id: string;
+}
+
+export function RecordDetailScreen({ id }: Props): React.JSX.Element {
+  const db = useSQLiteContext();
+  const { record, loading } = useThoughtRecord(db, id);
+
+  const confirmDelete = useCallback(() => {
+    Alert.alert(
+      'Usuń wpis',
+      'Czy na pewno chcesz usunąć ten zapis? Tej operacji nie można cofnąć.',
+      [
+        { text: 'Anuluj', style: 'cancel' },
+        {
+          text: 'Usuń',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await repo.deleteRecord(db, id);
+              router.back();
+            } catch {
+              Alert.alert('Błąd', 'Nie udało się usunąć wpisu. Spróbuj ponownie.');
+            }
+          },
+        },
+      ]
+    );
+  }, [db, id]);
+
+  if (loading) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator color={colors.accent} />
+      </View>
+    );
+  }
+
+  if (!record) {
+    return (
+      <View style={styles.centered}>
+        <Text style={styles.errorText}>Nie znaleziono wpisu.</Text>
+      </View>
+    );
+  }
+
+  const formattedDate = record.situationDate
+    ? format(parseISO(record.situationDate), 'd MMMM yyyy', { locale: dateFnsPl })
+    : format(parseISO(record.createdAt), 'd MMMM yyyy · HH:mm', { locale: dateFnsPl });
+
+  const sections = [
+    { step: '01', title: 'Sytuacja', text: record.situation },
+    { step: '03', title: 'Myśli automatyczne', text: record.automaticThoughts },
+    { step: '04', title: 'Argumenty za', text: record.evidenceFor },
+    { step: '05', title: 'Argumenty przeciw', text: record.evidenceAgainst },
+    { step: '06', title: 'Myśl alternatywna', text: record.alternativeThought },
+    { step: '07', title: 'Podsumowanie', text: record.outcome ?? '' },
+  ];
+
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Szczegóły wpisu</Text>
+      <ScrollView contentContainerStyle={styles.scroll}>
+        <View style={styles.header}>
+          <Text style={styles.headerDate}>{formattedDate}</Text>
+          {record.isComplete ? (
+            <Text style={[styles.badge, styles.badgeComplete]}>Kompletny</Text>
+          ) : (
+            <Text style={[styles.badge, styles.badgeInProgress]}>W toku</Text>
+          )}
+        </View>
+
+        {/* Emotions (step 02) */}
+        <View style={styles.section}>
+          <Text style={styles.stepNum}>Krok 02</Text>
+          <Text style={styles.stepTitle}>Emocje</Text>
+          {record.emotions.length === 0 ? (
+            <Text style={styles.emptyField}>—</Text>
+          ) : (
+            record.emotions.map(em => (
+              <EmotionRow key={em.name} emotion={em} />
+            ))
+          )}
+        </View>
+        <View style={styles.divider} />
+
+        {/* Text sections */}
+        {sections.map((sec, i) => (
+          <React.Fragment key={sec.step}>
+            <View style={styles.section}>
+              <Text style={styles.stepNum}>Krok {sec.step}</Text>
+              <Text style={styles.stepTitle}>{sec.title}</Text>
+              <Text style={[styles.bodyText, !sec.text && styles.emptyField]}>
+                {sec.text || '—'}
+              </Text>
+            </View>
+            {i < sections.length - 1 && <View style={styles.divider} />}
+          </React.Fragment>
+        ))}
+
+        <TouchableOpacity style={styles.deleteBtn} onPress={confirmDelete}>
+          <Text style={styles.deleteBtnText}>Usuń wpis</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </View>
+  );
+}
+
+function EmotionRow({ emotion }: { emotion: Emotion }) {
+  const before = emotion.intensityBefore;
+  const after = emotion.intensityAfter;
+  return (
+    <View style={styles.emotionRow}>
+      <Text style={styles.emotionName}>{emotion.name}</Text>
+      <View style={styles.intensityBars}>
+        <IntensityBar label="przed" value={before} />
+        {after !== undefined && <IntensityBar label="po" value={after} accent />}
+      </View>
+    </View>
+  );
+}
+
+function IntensityBar({ label, value, accent }: { label: string; value: number; accent?: boolean }) {
+  return (
+    <View style={styles.ibarRow}>
+      <Text style={styles.ibarLabel}>{label}</Text>
+      <View style={styles.ibarTrack}>
+        <View
+          style={[
+            styles.ibarFill,
+            { width: `${value}%` as `${number}%`, backgroundColor: accent ? colors.accent : 'rgba(196,149,106,0.4)' },
+          ]}
+        />
+      </View>
+      <Text style={styles.ibarNum}>{value}%</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  text: { fontSize: 24, color: '#fff' },
+  container: { flex: 1, backgroundColor: colors.bg },
+  centered: { flex: 1, backgroundColor: colors.bg, alignItems: 'center', justifyContent: 'center' },
+  scroll: { padding: 20 },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
+  headerDate: { fontSize: 12, color: colors.textMuted, letterSpacing: 0.5 },
+  badge: { fontSize: 10, letterSpacing: 0.8, paddingHorizontal: 7, paddingVertical: 2, borderRadius: 4, overflow: 'hidden', textTransform: 'uppercase' },
+  badgeComplete: { backgroundColor: 'rgba(122,158,126,0.12)', color: colors.success },
+  badgeInProgress: { backgroundColor: 'rgba(184,151,74,0.1)', color: colors.inProgress },
+  section: { marginBottom: 20 },
+  stepNum: { fontSize: 10, color: colors.textDim, letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 3 },
+  stepTitle: { fontSize: 17, color: colors.accent, fontWeight: '500', marginBottom: 8 },
+  bodyText: { fontSize: 14, color: colors.text, lineHeight: 23 },
+  emptyField: { color: colors.textDim, fontStyle: 'italic' },
+  divider: { height: 1, backgroundColor: colors.border, marginBottom: 20 },
+  emotionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
+  emotionName: { fontSize: 14, color: colors.text },
+  intensityBars: { gap: 4 },
+  ibarRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  ibarLabel: { fontSize: 10, color: colors.textDim, width: 28, textAlign: 'right' },
+  ibarTrack: { width: 80, height: 3, backgroundColor: colors.border, borderRadius: 2, overflow: 'hidden' },
+  ibarFill: { height: '100%', borderRadius: 2 },
+  ibarNum: { fontSize: 11, color: colors.textMuted, width: 32 },
+  deleteBtn: {
+    marginTop: 32,
+    paddingVertical: 14,
+    borderRadius: 12,
+    backgroundColor: colors.dangerDim,
+    borderWidth: 1,
+    borderColor: 'rgba(196,96,90,0.22)',
+    alignItems: 'center',
+  },
+  deleteBtnText: { color: colors.danger, fontSize: 15 },
+  errorText: { fontSize: 15, color: colors.textMuted },
 });

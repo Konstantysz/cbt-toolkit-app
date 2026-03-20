@@ -24,3 +24,21 @@ export function useThoughtRecords(db: SQLite.SQLiteDatabase | null) {
 
   return { records, loading, refresh };
 }
+
+export function useThoughtRecord(
+  db: SQLite.SQLiteDatabase | null,
+  id: string
+) {
+  const [record, setRecord] = useState<ThoughtRecord | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!db) return;
+    setLoading(true);
+    repo.getRecordById(db, id)
+      .then(setRecord)
+      .finally(() => setLoading(false));
+  }, [db, id]);
+
+  return { record, loading };
+}

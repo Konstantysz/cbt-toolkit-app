@@ -1,4 +1,8 @@
 import React from 'react';
-import { RecordDetailScreen } from '../../../../tools/thought-record/screens/RecordDetailScreen';
+import { useLocalSearchParams } from 'expo-router';
+import { RecordDetailScreen } from '../../../tools/thought-record/screens/RecordDetailScreen';
 
-export default RecordDetailScreen;
+export default function DetailRoute() {
+  const { id } = useLocalSearchParams<{ id: string }>();
+  return <RecordDetailScreen id={id} />;
+}
