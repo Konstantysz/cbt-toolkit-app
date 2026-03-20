@@ -1,0 +1,1462 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CBT Toolkit — Phase 1 Mockup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Lora:ital,wght@0,400;0,500;1,400&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0C0B09;
+      --surface: #161510;
+      --surface-raised: #1E1C17;
+      --border: #2C2920;
+      --border-focus: #4A4438;
+      --accent: #C4956A;
+      --accent-dim: rgba(196, 149, 106, 0.13);
+      --accent-border: rgba(196, 149, 106, 0.25);
+      --text: #EDE5D8;
+      --text-muted: #8C8276;
+      --text-dim: #4A453E;
+      --danger: #C4605A;
+      --danger-dim: rgba(196, 96, 90, 0.12);
+      --success: #7A9E7E;
+      --in-progress: #B8974A;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body { height: 100%; }
+    body {
+      background: #060504;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: 'Lora', Georgia, serif;
+      gap: 28px;
+    }
+
+    /* ── SIDEBAR NAV ────────────────────────────── */
+    .mockup-sidebar {
+      width: 148px;
+      background: rgba(22,21,16,0.85);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 10px;
+      backdrop-filter: blur(12px);
+      align-self: center;
+      flex-shrink: 0;
+    }
+    .sidebar-title {
+      font-family: 'Courier Prime', monospace;
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      padding: 0 6px;
+      margin-bottom: 10px;
+    }
+    .sidebar-group { margin-bottom: 14px; }
+    .sidebar-group-label {
+      font-family: 'Courier Prime', monospace;
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      padding: 0 6px;
+      margin-bottom: 4px;
+      opacity: 0.6;
+    }
+    .sidebar-btn {
+      display: block;
+      width: 100%;
+      text-align: left;
+      font-family: 'Lora', serif;
+      font-size: 12px;
+      color: var(--text-muted);
+      padding: 6px 10px;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: all 0.14s;
+      background: none;
+      border: none;
+      margin-bottom: 1px;
+    }
+    .sidebar-btn:hover { background: var(--surface); color: var(--text); }
+    .sidebar-btn.active { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-border); }
+
+    /* ── PHONE FRAME ────────────────────────────── */
+    .phone {
+      width: 393px;
+      height: 852px;
+      background: var(--bg);
+      border-radius: 50px;
+      overflow: hidden;
+      position: relative;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.07),
+        0 0 0 8px #111,
+        0 0 0 9px rgba(255,255,255,0.05),
+        0 48px 96px rgba(0,0,0,0.85);
+      flex-shrink: 0;
+    }
+
+    /* ── STATUS BAR ─────────────────────────────── */
+    .status-bar {
+      height: 48px;
+      padding: 16px 32px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .status-time {
+      font-family: 'Courier Prime', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .status-icons {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+      color: var(--text);
+      font-size: 13px;
+    }
+
+    /* ── NAV HEADER ─────────────────────────────── */
+    .nav-header {
+      height: 52px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-back-btn {
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--accent);
+      font-size: 16px;
+      border-radius: 9px;
+      transition: background 0.14s;
+      flex-shrink: 0;
+    }
+    .nav-back-btn:hover { background: var(--accent-dim); }
+    .nav-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--text);
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .nav-action {
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 20px;
+      padding: 6px;
+      transition: color 0.14s;
+    }
+    .nav-action:hover { color: var(--danger); }
+
+    /* ── SCROLLABLE CONTENT ─────────────────────── */
+    .scroll-content {
+      overflow-y: auto;
+      scrollbar-width: none;
+      padding: 20px;
+    }
+    .scroll-content::-webkit-scrollbar { display: none; }
+
+    /* ── TAB BAR ────────────────────────────────── */
+    .tab-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 82px;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      display: flex;
+      padding-bottom: 20px;
+      padding-top: 4px;
+    }
+    .tab-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      cursor: pointer;
+      color: var(--text-dim);
+      transition: color 0.14s;
+    }
+    .tab-item.active { color: var(--accent); }
+    .tab-item:hover { color: var(--text-muted); }
+    .tab-icon { font-size: 19px; line-height: 1; }
+    .tab-label {
+      font-family: 'Courier Prime', monospace;
+      font-size: 9px;
+      letter-spacing: 0.1em;
+    }
+
+    /* ── SCREEN SYSTEM ──────────────────────────── */
+    .screen { display: none; flex-direction: column; height: 100%; }
+    .screen.active { display: flex; animation: fadeUp 0.22s ease-out; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* heights */
+    .content-with-tabs    { height: calc(852px - 48px - 52px - 82px); }
+    .content-no-tabs      { height: calc(852px - 48px - 52px); }
+    .content-home-tabs    { height: calc(852px - 48px - 82px); }
+
+    /* ── HOME SCREEN ────────────────────────────── */
+    .home-header {
+      padding: 24px 24px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+    .home-eyebrow {
+      font-family: 'Courier Prime', monospace;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .home-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 30px;
+      font-weight: 300;
+      color: var(--text);
+      line-height: 1.15;
+    }
+    .home-title em { font-style: italic; color: var(--accent); }
+    .section-label {
+      font-family: 'Courier Prime', monospace;
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .tool-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: all 0.18s;
+      position: relative;
+      overflow: hidden;
+    }
+    .tool-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 20%; right: 20%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .tool-card:hover { border-color: var(--border-focus); background: var(--surface-raised); }
+    .tool-card:hover::after { opacity: 0.5; }
+    .tool-card.disabled { opacity: 0.4; cursor: default; }
+    .tool-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+    .tool-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--text);
+    }
+    .tool-arrow { color: var(--accent); font-size: 18px; }
+    .tool-desc {
+      font-family: 'Lora', serif;
+      font-size: 12.5px;
+      color: var(--text-muted);
+      line-height: 1.65;
+      margin-bottom: 14px;
+    }
+    .tool-badge {
+      display: inline-block;
+      font-family: 'Courier Prime', monospace;
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      padding: 3px 8px;
+      border-radius: 5px;
+      text-transform: uppercase;
+      background: var(--accent-dim);
+      color: var(--accent);
+      border: 1px solid var(--accent-border);
+    }
+    .tool-badge.soon {
+      background: rgba(74,69,62,0.2);
+      color: var(--text-dim);
+      border-color: var(--border);
+    }
+
+    /* ── LIST SCREEN ────────────────────────────── */
+    .fab {
+      position: absolute;
+      bottom: 100px;
+      right: 20px;
+      width: 52px;
+      height: 52px;
+      background: var(--accent);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 6px 24px rgba(196,149,106,0.35);
+      transition: all 0.18s;
+      font-size: 24px;
+      color: #0C0B09;
+      font-weight: 700;
+      z-index: 5;
+      line-height: 1;
+    }
+    .fab:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(196,149,106,0.45); }
+    .record-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 15px 16px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.16s;
+    }
+    .record-card:hover { border-color: var(--border-focus); background: var(--surface-raised); }
+    .record-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .record-date {
+      font-family: 'Courier Prime', monospace;
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+    }
+    .badge-complete {
+      font-family: 'Courier Prime', monospace;
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: rgba(122,158,126,0.1);
+      color: var(--success);
+      border: 1px solid rgba(122,158,126,0.2);
+      text-transform: uppercase;
+    }
+    .badge-inprogress {
+      font-family: 'Courier Prime', monospace;
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: rgba(184,151,74,0.1);
+      color: var(--in-progress);
+      border: 1px solid rgba(184,151,74,0.2);
+      text-transform: uppercase;
+    }
+    .record-situation {
+      font-family: 'Lora', serif;
+      font-size: 13.5px;
+      color: var(--text);
+      line-height: 1.55;
+      margin-bottom: 10px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .record-emotions { display: flex; flex-wrap: wrap; gap: 5px; }
+    .emotion-tag {
+      font-family: 'Courier Prime', monospace;
+      font-size: 9px;
+      letter-spacing: 0.07em;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: var(--accent-dim);
+      color: var(--accent);
+      border: 1px solid var(--accent-border);
+    }
+    .emotion-tag.neutral {
+      background: rgba(74,69,62,0.2);
+      color: var(--text-dim);
+      border-color: var(--border);
+    }
+    .empty-state {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      text-align: center;
+      padding: 30px;
+      color: var(--text-dim);
+    }
+    .empty-icon { font-size: 38px; opacity: 0.15; }
+    .empty-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 17px;
+      font-weight: 300;
+      font-style: italic;
+      color: var(--text-dim);
+    }
+    .empty-sub {
+      font-family: 'Lora', serif;
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    /* ── NEW RECORD FLOW ────────────────────────── */
+    .step-progress {
+      display: flex;
+      gap: 5px;
+      padding: 12px 20px 14px;
+    }
+    .step-seg {
+      height: 3px;
+      border-radius: 2px;
+      flex: 1;
+      background: var(--border);
+      transition: background 0.35s;
+    }
+    .step-seg.done { background: rgba(196,149,106,0.35); }
+    .step-seg.current { background: var(--accent); }
+    .step-inner {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .step-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 4px 20px 16px;
+      scrollbar-width: none;
+    }
+    .step-scroll::-webkit-scrollbar { display: none; }
+    .step-prompt {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 15px;
+      font-weight: 300;
+      font-style: italic;
+      color: var(--text-muted);
+      line-height: 1.65;
+      margin-bottom: 18px;
+    }
+    .field-label {
+      font-family: 'Courier Prime', monospace;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .text-area {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      padding: 15px;
+      color: var(--text);
+      font-family: 'Lora', serif;
+      font-size: 14px;
+      line-height: 1.75;
+      resize: none;
+      min-height: 120px;
+      outline: none;
+      transition: border-color 0.18s;
+      display: block;
+    }
+    .text-area:focus { border-color: var(--accent); }
+    .text-area::placeholder { color: var(--text-dim); }
+    .date-row {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      margin-top: 16px;
+      transition: border-color 0.18s;
+    }
+    .date-row:hover { border-color: var(--border-focus); }
+    .date-row-label { font-family: 'Lora', serif; font-size: 13px; color: var(--text-muted); }
+    .date-row-val { font-family: 'Courier Prime', monospace; font-size: 13px; color: var(--accent); }
+
+    /* emotion picker */
+    .emotion-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+      margin-bottom: 6px;
+    }
+    .em-chip {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 9px 6px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.14s;
+      font-family: 'Lora', serif;
+      font-size: 11.5px;
+      color: var(--text-muted);
+      line-height: 1.25;
+      user-select: none;
+    }
+    .em-chip:hover { border-color: var(--border-focus); color: var(--text); }
+    .em-chip.selected {
+      background: var(--accent-dim);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .em-chip.negative.selected { border-color: #A87A6A; color: #C9906A; background: rgba(168,122,106,0.12); }
+    .em-chip.positive.selected { border-color: var(--accent); color: var(--accent); }
+    .emotions-notice {
+      font-family: 'Lora', serif;
+      font-size: 11px;
+      color: var(--danger);
+      font-style: italic;
+      margin-bottom: 14px;
+      display: none;
+    }
+    .emotions-notice.visible { display: block; }
+
+    /* intensity section */
+    .intensity-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      padding: 15px 16px;
+      margin-bottom: 8px;
+    }
+    .intensity-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .intensity-name {
+      font-family: 'Lora', serif;
+      font-size: 14px;
+      color: var(--text);
+    }
+    .intensity-val {
+      font-family: 'Courier Prime', monospace;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--accent);
+      min-width: 38px;
+      text-align: right;
+    }
+    .range-wrap {
+      position: relative;
+      height: 20px;
+      display: flex;
+      align-items: center;
+    }
+    .range-track {
+      position: absolute;
+      left: 0; right: 0;
+      height: 3px;
+      background: var(--border);
+      border-radius: 2px;
+    }
+    .range-fill {
+      position: absolute;
+      left: 0;
+      height: 3px;
+      background: var(--accent);
+      border-radius: 2px;
+      pointer-events: none;
+      transition: width 0.05s;
+    }
+    input[type=range] {
+      position: relative;
+      width: 100%;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 3px;
+      background: transparent;
+      outline: none;
+      cursor: pointer;
+      z-index: 1;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 2px 10px rgba(196,149,106,0.5);
+      cursor: pointer;
+      transition: transform 0.12s;
+    }
+    input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+    input[type=range]::-moz-range-thumb {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: none;
+      cursor: pointer;
+    }
+
+    /* step nav */
+    .step-nav {
+      padding: 12px 20px 20px;
+      display: flex;
+      gap: 10px;
+      flex-shrink: 0;
+      border-top: 1px solid var(--border);
+    }
+    .btn {
+      flex: 1;
+      padding: 14px;
+      border-radius: 13px;
+      border: none;
+      font-family: 'Lora', serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      letter-spacing: 0.01em;
+    }
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    .btn-ghost:hover { border-color: var(--border-focus); color: var(--text); }
+    .btn-primary {
+      background: var(--accent);
+      color: #0C0B09;
+    }
+    .btn-primary:hover { filter: brightness(1.08); transform: translateY(-1px); }
+    .btn-danger-outline {
+      background: var(--danger-dim);
+      border: 1px solid rgba(196,96,90,0.22);
+      color: var(--danger);
+    }
+
+    /* ── DETAIL SCREEN ──────────────────────────── */
+    .detail-section { margin-bottom: 22px; }
+    .detail-step-num {
+      font-family: 'Courier Prime', monospace;
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+    .detail-step-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 17px;
+      font-weight: 500;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .detail-text {
+      font-family: 'Lora', serif;
+      font-size: 13.5px;
+      color: var(--text);
+      line-height: 1.75;
+    }
+    .detail-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 0 0 22px;
+    }
+    .detail-emotion-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .detail-emotion-name { font-family: 'Lora', serif; font-size: 13px; color: var(--text); }
+    .intensity-bars { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+    .ibar-row { display: flex; align-items: center; gap: 6px; }
+    .ibar-label { font-family: 'Courier Prime', monospace; font-size: 9px; color: var(--text-dim); width: 26px; text-align: right; }
+    .ibar-track { width: 72px; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+    .ibar-fill { height: 100%; border-radius: 2px; }
+    .ibar-fill.before { background: rgba(196,149,106,0.5); }
+    .ibar-fill.after { background: var(--accent); }
+    .ibar-num { font-family: 'Courier Prime', monospace; font-size: 10px; color: var(--text-muted); width: 24px; text-align: left; }
+
+    /* ── DELETE MODAL ───────────────────────────── */
+    .modal-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      display: flex;
+      align-items: flex-end;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal-sheet {
+      background: var(--surface-raised);
+      border-radius: 22px 22px 0 0;
+      border-top: 1px solid var(--border);
+      padding: 26px 22px 44px;
+      width: 100%;
+      transform: translateY(20px);
+      transition: transform 0.22s;
+    }
+    .modal-overlay.open .modal-sheet { transform: translateY(0); }
+    .modal-handle {
+      width: 36px; height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      margin: 0 auto 20px;
+    }
+    .modal-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .modal-body {
+      font-family: 'Lora', serif;
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.65;
+      margin-bottom: 22px;
+    }
+    .modal-actions { display: flex; flex-direction: column; gap: 10px; }
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <nav class="mockup-sidebar">
+    <div class="sidebar-title">Mockup</div>
+    <div class="sidebar-group">
+      <div class="sidebar-group-label">Główne</div>
+      <button class="sidebar-btn active" onclick="goTo('home')">🏠 Strona główna</button>
+    </div>
+    <div class="sidebar-group">
+      <div class="sidebar-group-label">Zapis Myśli</div>
+      <button class="sidebar-btn" onclick="goTo('list-with-data')">📋 Lista (z wpisami)</button>
+      <button class="sidebar-btn" onclick="goTo('list-empty')">📋 Lista (pusta)</button>
+      <button class="sidebar-btn" onclick="goTo('step-1')">✏️ Krok 1 – Sytuacja</button>
+      <button class="sidebar-btn" onclick="goTo('step-2')">😟 Krok 2 – Emocje</button>
+      <button class="sidebar-btn" onclick="goTo('step-3')">💭 Krok 3 – Myśli</button>
+      <button class="sidebar-btn" onclick="goTo('step-4')">⚖️ Krok 4 – Arg. za</button>
+      <button class="sidebar-btn" onclick="goTo('step-5')">🔄 Krok 5 – Arg. przeciw</button>
+      <button class="sidebar-btn" onclick="goTo('step-6')">💡 Krok 6 – Alternatywa</button>
+      <button class="sidebar-btn" onclick="goTo('step-7')">✅ Krok 7 – Podsumowanie</button>
+      <button class="sidebar-btn" onclick="goTo('detail')">🔍 Szczegóły wpisu</button>
+    </div>
+  </nav>
+
+  <!-- PHONE -->
+  <div class="phone">
+
+    <!-- ══ SCREEN: HOME ══════════════════════════════ -->
+    <div class="screen active" id="screen-home">
+      <div class="status-bar">
+        <span class="status-time">09:41</span>
+        <span class="status-icons">▲▲▲ 🔋</span>
+      </div>
+      <div class="content-home-tabs scroll-content" style="padding-top:0;">
+        <div class="home-header">
+          <div class="home-eyebrow">Zestaw Narzędzi TPB</div>
+          <div class="home-title">Dzisiaj<br>jest <em>dobry dzień</em><br>na refleksję.</div>
+        </div>
+        <div style="padding:20px 20px 0;">
+          <div class="section-label" style="margin-bottom:14px;">Narzędzia</div>
+
+          <div class="tool-card" onclick="goTo('list-with-data')">
+            <div class="tool-card-top">
+              <div class="tool-name">Zapis Myśli</div>
+              <div class="tool-arrow">›</div>
+            </div>
+            <div class="tool-desc">Zapisuj i analizuj swoje myśli automatyczne w 7 prostych krokach.</div>
+            <span class="tool-badge">Dostępne</span>
+          </div>
+
+          <div class="tool-card disabled">
+            <div class="tool-card-top">
+              <div class="tool-name">Eksperyment behawioralny</div>
+              <div class="tool-arrow" style="opacity:0.3;">›</div>
+            </div>
+            <div class="tool-desc">Testuj swoje przekonania poprzez zaplanowane eksperymenty.</div>
+            <span class="tool-badge soon">Wkrótce</span>
+          </div>
+
+          <div class="tool-card disabled">
+            <div class="tool-card-top">
+              <div class="tool-name">Planowanie aktywności</div>
+              <div class="tool-arrow" style="opacity:0.3;">›</div>
+            </div>
+            <div class="tool-desc">Planuj aktywności zwiększające poczucie przyjemności i kompetencji.</div>
+            <span class="tool-badge soon">Wkrótce</span>
+          </div>
+        </div>
+      </div>
+      <div class="tab-bar">
+        <div class="tab-item active">
+          <div class="tab-icon">⊞</div>
+          <div class="tab-label">Narzędzia</div>
+        </div>
+        <div class="tab-item">
+          <div class="tab-icon">⚙</div>
+          <div class="tab-label">Ustawienia</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SCREEN: LIST WITH DATA ════════════════════ -->
+    <div class="screen" id="screen-list-with-data">
+      <div class="status-bar">
+        <span class="status-time">09:41</span>
+        <span class="status-icons">▲▲▲ 🔋</span>
+      </div>
+      <div class="nav-header">
+        <div class="nav-back-btn" onclick="goTo('home')">‹</div>
+        <div class="nav-title">Zapis Myśli</div>
+      </div>
+      <div class="content-with-tabs scroll-content">
+        <div class="section-label">Historia</div>
+
+        <div class="record-card" onclick="goTo('detail')">
+          <div class="record-card-top">
+            <div class="record-date">18 mar 2026 · 21:14</div>
+            <span class="badge-complete">Kompletny</span>
+          </div>
+          <div class="record-situation">Kłótnia z partnerem o drobne obowiązki domowe. Poczułem się niezrozumiany i odrzucony.</div>
+          <div class="record-emotions">
+            <span class="emotion-tag">Złość</span>
+            <span class="emotion-tag">Smutek</span>
+            <span class="emotion-tag">Bezradność</span>
+          </div>
+        </div>
+
+        <div class="record-card" onclick="goTo('detail')">
+          <div class="record-card-top">
+            <div class="record-date">15 mar 2026 · 14:32</div>
+            <span class="badge-complete">Kompletny</span>
+          </div>
+          <div class="record-situation">Spotkanie z szefem, gdzie poczułem, że moje pomysły są ignorowane.</div>
+          <div class="record-emotions">
+            <span class="emotion-tag">Lęk</span>
+            <span class="emotion-tag">Frustracja</span>
+            <span class="emotion-tag">Wstyd</span>
+          </div>
+        </div>
+
+        <div class="record-card" onclick="goTo('step-3')">
+          <div class="record-card-top">
+            <div class="record-date">20 mar 2026 · 09:38</div>
+            <span class="badge-inprogress">W toku</span>
+          </div>
+          <div class="record-situation">Rano przed wyjściem do pracy. Uczucie niepokoju bez wyraźnego powodu.</div>
+          <div class="record-emotions">
+            <span class="emotion-tag">Niepokój</span>
+            <span class="emotion-tag neutral">+2 kroki do końca</span>
+          </div>
+        </div>
+      </div>
+      <div class="fab" onclick="goTo('step-1')">+</div>
+      <div class="tab-bar">
+        <div class="tab-item active">
+          <div class="tab-icon">⊞</div>
+          <div class="tab-label">Narzędzia</div>
+        </div>
+        <div class="tab-item">
+          <div class="tab-icon">⚙</div>
+          <div class="tab-label">Ustawienia</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SCREEN: LIST EMPTY ═════════════════════════ -->
+    <div class="screen" id="screen-list-empty">
+      <div class="status-bar">
+        <span class="status-time">09:41</span>
+        <span class="status-icons">▲▲▲ 🔋</span>
+      </div>
+      <div class="nav-header">
+        <div class="nav-back-btn" onclick="goTo('home')">‹</div>
+        <div class="nav-title">Zapis Myśli</div>
+      </div>
+      <div class="content-with-tabs" style="display:flex;flex-direction:column;">
+        <div class="empty-state">
+          <div class="empty-icon">📓</div>
+          <div class="empty-text">Brak wpisów</div>
+          <div class="empty-sub">Dotknij + aby dodać pierwszy zapis myśli.</div>
+        </div>
+      </div>
+      <div class="fab" onclick="goTo('step-1')">+</div>
+      <div class="tab-bar">
+        <div class="tab-item active">
+          <div class="tab-icon">⊞</div>
+          <div class="tab-label">Narzędzia</div>
+        </div>
+        <div class="tab-item">
+          <div class="tab-icon">⚙</div>
+          <div class="tab-label">Ustawienia</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SCREEN: STEP 1 – SYTUACJA ════════════════ -->
+    <div class="screen" id="screen-step-1">
+      <div class="status-bar">
+        <span class="status-time">09:41</span>
+        <span class="status-icons">▲▲▲ 🔋</span>
+      </div>
+      <div class="nav-header">
+        <div class="nav-back-btn" onclick="goTo('list-with-data')">‹</div>
+        <div class="nav-title">Sytuacja</div>
+      </div>
+      <div class="step-progress" id="prog-1"></div>
+      <div class="step-inner">
+        <div class="step-scroll">
+          <p class="step-prompt">Co się wydarzyło? Opisz sytuację jak najdokładniej.</p>
+          <div class="field-label">Opis sytuacji</div>
+          <textarea class="text-area" placeholder="Np. Byłem na spotkaniu z szefem i...">Rano przed wyjściem do pracy poczułem nagły, silny niepokój. Serce zaczęło bić szybciej, trudno mi było się skupić. Nie wiedziałem, czego tak naprawdę się boję.</textarea>
+          <div class="date-row">
+            <div>
+              <div class="field-label" style="margin-bottom:2px;">Kiedy to się wydarzyło?</div>
+              <div class="date-row-val">20 marca 2026</div>
+            </div>
+            <span style="color:var(--accent);font-size:16px;">📅</span>
+          </div>
+        </div>
+        <div class="step-nav">
+          <button class="btn btn-ghost" onclick="goTo('list-with-data')">Anuluj</button>
+          <button class="btn btn-primary" onclick="goTo('step-2')">Dalej →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SCREEN: STEP 2 – EMOCJE ══════════════════ -->
+    <div class="screen" id="screen-step-2">
+      <div class="status-bar">
+        <span class="status-time">09:41</span>
+        <span class="status-icons">▲▲▲ 🔋</span>
+      </div>
+      <div class="nav-header">
+        <div class="nav-back-btn" onclick="goTo('step-1')">‹</div>
+        <div class="nav-title">Emocje</div>
+      </div>
+      <div class="step-progress" id="prog-2"></div>
+      <div class="step-inner">
+        <div class="step-scroll" id="step2-scroll">
+          <p class="step-prompt">Jakie emocje odczuwałeś/aś? Zaznacz i oceń intensywność każdej z nich.</p>
+          <p class="emotions-notice" id="emotions-notice">Wybierz co najmniej jedną emocję, aby kontynuować.</p>
+          <div class="emotion-grid" id="emotion-grid"></div>
+          <div id="intensity-blocks"></div>
+        </div>
+        <div class="step-nav">
+          <button class="btn btn-ghost" onclick="goTo('step-1')">← Wstecz</button>
+          <button class="btn btn-primary" onclick="tryNextFromStep2()">Dalej →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SCREEN: STEP 3 – MYŚLI AUTOMATYCZNE ══════ -->
+    <div class="screen" id="screen-step-3">
+      <div class="status-bar">
+        <span class="status-time">09:41</span>
+        <span class="status-icons">▲▲▲ 🔋</span>
+      </div>
+      <div class="nav-header">
+        <div class="nav-back-btn" onclick="goTo('step-2')">‹</div>
+        <div class="nav-title">Myśli automatyczne</div>
+      </div>
+      <div class="step-progress" id="prog-3"></div>
+      <div class="step-inner">
+        <div class="step-scroll">
+          <p class="step-prompt">Jakie myśli przyszły Ci do głowy w tej sytuacji?</p>
+          <div class="field-label">Myśli automatyczne</div>
+          <textarea class="text-area" style="min-height:160px;" placeholder="Np. Jestem do niczego. Na pewno coś pójdzie źle...">Zaraz coś złego się stanie. Na pewno sobie nie poradzę w pracy. Wszyscy to widzą, że jestem słaby. Nie powinienem być taki nerwowy, coś jest ze mną nie tak.</textarea>
+        </div>
+        <div class="step-nav">
+          <button class="btn btn-ghost" onclick="goTo('step-2')">← Wstecz</button>
+          <button class="btn btn-primary" onclick="goTo('step-4')">Dalej →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SCREEN: STEP 4 – ARGUMENTY ZA ════════════ -->
+    <div class="screen" id="screen-step-4">
+      <div class="status-bar">
+        <span class="status-time">09:41</span>
+        <span class="status-icons">▲▲▲ 🔋</span>
+      </div>
+      <div class="nav-header">
+        <div class="nav-back-btn" onclick="goTo('step-3')">‹</div>
+        <div class="nav-title">Argumenty za</div>
+      </div>
+      <div class="step-progress" id="prog-4"></div>
+      <div class="step-inner">
+        <div class="step-scroll">
+          <p class="step-prompt">Jakie fakty potwierdzają tę myśl? Zapisz tylko konkretne dowody.</p>
+          <div class="field-label">Dowody potwierdzające</div>
+          <textarea class="text-area" style="min-height:160px;" placeholder="Np. Ostatnio popełniłem błąd w raporcie...">Tydzień temu zapomniałem o ważnym spotkaniu. Czasem mam trudności z koncentracją rano.</textarea>
+        </div>
+        <div class="step-nav">
+          <button class="btn btn-ghost" onclick="goTo('step-3')">← Wstecz</button>
+          <button class="btn btn-primary" onclick="goTo('step-5')">Dalej →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SCREEN: STEP 5 – ARGUMENTY PRZECIW ═══════ -->
+    <div class="screen" id="screen-step-5">
+      <div class="status-bar">
+        <span class="status-time">09:41</span>
+        <span class="status-icons">▲▲▲ 🔋</span>
+      </div>
+      <div class="nav-header">
+        <div class="nav-back-btn" onclick="goTo('step-4')">‹</div>
+        <div class="nav-title">Argumenty przeciw</div>
+      </div>
+      <div class="step-progress" id="prog-5"></div>
+      <div class="step-inner">
+        <div class="step-scroll">
+          <p class="step-prompt">Co przeczy tej myśli? Jakie dowody pokazują, że może nie być prawdziwa?</p>
+          <div class="field-label">Dowody obalające</div>
+          <textarea class="text-area" style="min-height:160px;" placeholder="Np. W zeszłym miesiącu ukończyłem projekt na czas...">Przez ostatni rok nie miałem poważnych problemów w pracy. Szef kilka tygodni temu pochwalił mój projekt. Mam dobre relacje z kolegami. Nigdy wcześniej niepokój poranny nie oznaczał, że coś złego się wydarzy.</textarea>
+        </div>
+        <div class="step-nav">
+          <button class="btn btn-ghost" onclick="goTo('step-4')">← Wstecz</button>
+          <button class="btn btn-primary" onclick="goTo('step-6')">Dalej →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SCREEN: STEP 6 – MYŚL ALTERNATYWNA ═══════ -->
+    <div class="screen" id="screen-step-6">
+      <div class="status-bar">
+        <span class="status-time">09:41</span>
+        <span class="status-icons">▲▲▲ 🔋</span>
+      </div>
+      <div class="nav-header">
+        <div class="nav-back-btn" onclick="goTo('step-5')">‹</div>
+        <div class="nav-title">Myśl alternatywna</div>
+      </div>
+      <div class="step-progress" id="prog-6"></div>
+      <div class="step-inner">
+        <div class="step-scroll">
+          <p class="step-prompt">Biorąc pod uwagę wszystkie dowody, jak inaczej możesz spojrzeć na tę sytuację?</p>
+          <div class="field-label">Bardziej zrównoważona myśl</div>
+          <textarea class="text-area" style="min-height:160px;" placeholder="Np. Chociaż czuję niepokój, mam wiele dowodów na to, że...">Odczuwam poranny niepokój, co jest nieprzyjemne, ale nie oznacza, że coś złego się stanie. Mam dobre wyniki w pracy i radziłem sobie dobrze przez cały rok. Niepokój to uczucie, które przeminie.</textarea>
+        </div>
+        <div class="step-nav">
+          <button class="btn btn-ghost" onclick="goTo('step-5')">← Wstecz</button>
+          <button class="btn btn-primary" onclick="goTo('step-7')">Dalej →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SCREEN: STEP 7 – PODSUMOWANIE ════════════ -->
+    <div class="screen" id="screen-step-7">
+      <div class="status-bar">
+        <span class="status-time">09:41</span>
+        <span class="status-icons">▲▲▲ 🔋</span>
+      </div>
+      <div class="nav-header">
+        <div class="nav-back-btn" onclick="goTo('step-6')">‹</div>
+        <div class="nav-title">Podsumowanie</div>
+      </div>
+      <div class="step-progress" id="prog-7"></div>
+      <div class="step-inner">
+        <div class="step-scroll">
+          <p class="step-prompt">Jak się teraz czujesz? Oceń ponownie intensywność swoich emocji po ćwiczeniu.</p>
+          <div id="rerate-blocks"></div>
+          <div style="margin-top:16px;">
+            <div class="field-label">Notatki końcowe (opcjonalne)</div>
+            <textarea class="text-area" placeholder="Dodatkowe przemyślenia...">Po tym ćwiczeniu czuję się nieco spokojniej. Nadal jest trochę niepokoju, ale mam poczucie, że mam więcej kontroli nad swoimi myślami.</textarea>
+          </div>
+        </div>
+        <div class="step-nav">
+          <button class="btn btn-ghost" onclick="goTo('step-6')">← Wstecz</button>
+          <button class="btn btn-primary" onclick="goTo('detail')" style="background:#7A9E7E; color:#fff;">Zakończ ✓</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SCREEN: DETAIL ════════════════════════════ -->
+    <div class="screen" id="screen-detail">
+      <div class="status-bar">
+        <span class="status-time">09:41</span>
+        <span class="status-icons">▲▲▲ 🔋</span>
+      </div>
+      <div class="nav-header">
+        <div class="nav-back-btn" onclick="goTo('list-with-data')">‹</div>
+        <div class="nav-title">Szczegóły</div>
+        <div class="nav-action" onclick="openDeleteModal()" title="Usuń">🗑</div>
+      </div>
+      <div class="content-no-tabs scroll-content">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+          <div>
+            <div style="font-family:'Courier Prime',monospace;font-size:10px;color:var(--text-dim);letter-spacing:0.1em;margin-bottom:3px;">18 MARCA 2026 · 21:14</div>
+            <span class="badge-complete">Kompletny</span>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <div class="detail-step-num">Krok 01</div>
+          <div class="detail-step-title">Sytuacja</div>
+          <div class="detail-text">Kłótnia z partnerem o drobne obowiązki domowe. Byłem zmęczony po pracy i zapomniałem wyrzucić śmieci. Zrobiło się z tego dłuższa rozmowa, podczas której poczułem się niezrozumiany i odrzucony.</div>
+        </div>
+        <div class="detail-divider"></div>
+
+        <div class="detail-section">
+          <div class="detail-step-num">Krok 02</div>
+          <div class="detail-step-title">Emocje</div>
+          <div class="detail-emotions">
+            <div class="detail-emotion-row">
+              <div class="detail-emotion-name">Złość</div>
+              <div class="intensity-bars">
+                <div class="ibar-row">
+                  <div class="ibar-label">przed</div>
+                  <div class="ibar-track"><div class="ibar-fill before" style="width:75%;"></div></div>
+                  <div class="ibar-num">75%</div>
+                </div>
+                <div class="ibar-row">
+                  <div class="ibar-label">po</div>
+                  <div class="ibar-track"><div class="ibar-fill after" style="width:30%;"></div></div>
+                  <div class="ibar-num">30%</div>
+                </div>
+              </div>
+            </div>
+            <div class="detail-emotion-row">
+              <div class="detail-emotion-name">Smutek</div>
+              <div class="intensity-bars">
+                <div class="ibar-row">
+                  <div class="ibar-label">przed</div>
+                  <div class="ibar-track"><div class="ibar-fill before" style="width:60%;"></div></div>
+                  <div class="ibar-num">60%</div>
+                </div>
+                <div class="ibar-row">
+                  <div class="ibar-label">po</div>
+                  <div class="ibar-track"><div class="ibar-fill after" style="width:25%;"></div></div>
+                  <div class="ibar-num">25%</div>
+                </div>
+              </div>
+            </div>
+            <div class="detail-emotion-row">
+              <div class="detail-emotion-name">Bezradność</div>
+              <div class="intensity-bars">
+                <div class="ibar-row">
+                  <div class="ibar-label">przed</div>
+                  <div class="ibar-track"><div class="ibar-fill before" style="width:55%;"></div></div>
+                  <div class="ibar-num">55%</div>
+                </div>
+                <div class="ibar-row">
+                  <div class="ibar-label">po</div>
+                  <div class="ibar-track"><div class="ibar-fill after" style="width:20%;"></div></div>
+                  <div class="ibar-num">20%</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="detail-divider"></div>
+
+        <div class="detail-section">
+          <div class="detail-step-num">Krok 03</div>
+          <div class="detail-step-title">Myśli automatyczne</div>
+          <div class="detail-text">Ona mnie nie rozumie. Zawsze muszę robić wszystko sam. Nie zależy jej na mnie. Może ta relacja nie ma sensu.</div>
+        </div>
+        <div class="detail-divider"></div>
+
+        <div class="detail-section">
+          <div class="detail-step-num">Krok 04</div>
+          <div class="detail-step-title">Argumenty za</div>
+          <div class="detail-text">W tym tygodniu byłem zajęty i kilka rzeczy zaległości mi się nagromadziło. Faktycznie zapomniałem o śmieciach dwa razy w ostatnim miesiącu.</div>
+        </div>
+        <div class="detail-divider"></div>
+
+        <div class="detail-section">
+          <div class="detail-step-num">Krok 05</div>
+          <div class="detail-step-title">Argumenty przeciw</div>
+          <div class="detail-text">Partner zazwyczaj jest wspierający. Razem planujemy przyszłość. Zdarza nam się rozmawiać i zawsze znajdujemy rozwiązanie. Jedna kłótnia nie przekreśla całej relacji.</div>
+        </div>
+        <div class="detail-divider"></div>
+
+        <div class="detail-section">
+          <div class="detail-step-num">Krok 06</div>
+          <div class="detail-step-title">Myśl alternatywna</div>
+          <div class="detail-text">Kłótnia wynikła ze zmęczenia i nagromadzonego stresu. Jedna sprzeczka nie oznacza, że partner mnie nie rozumie ani że relacja nie ma sensu. Możemy spokojnie porozmawiać jutro.</div>
+        </div>
+        <div class="detail-divider"></div>
+
+        <div class="detail-section">
+          <div class="detail-step-num">Krok 07</div>
+          <div class="detail-step-title">Podsumowanie</div>
+          <div class="detail-text">Po ćwiczeniu poczułem się spokojniejszy. Zdałem sobie sprawę, że moje myśli były przesadzone. Emocje opadły znacząco.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ DELETE MODAL ══════════════════════════════ -->
+    <div class="modal-overlay" id="delete-modal" onclick="handleModalClick(event)">
+      <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div class="modal-title">Usuń wpis</div>
+        <div class="modal-body">
+          Czy na pewno chcesz usunąć ten zapis myśli? Tej operacji nie można cofnąć.
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-danger-outline" onclick="confirmDelete()">Usuń</button>
+          <button class="btn btn-ghost" onclick="closeDeleteModal()">Anuluj</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /phone -->
+
+  <script>
+    // ── NAVIGATION ──────────────────────────────────
+    let currentScreen = 'home';
+
+    function goTo(screenId) {
+      document.getElementById('screen-' + currentScreen)?.classList.remove('active');
+      const next = document.getElementById('screen-' + screenId);
+      if (!next) return;
+      next.classList.add('active');
+      currentScreen = screenId;
+      updateSidebar(screenId);
+      if (screenId.startsWith('step-')) renderProgress(parseInt(screenId.split('-')[1]));
+      if (screenId === 'step-2') renderEmotionPicker();
+      if (screenId === 'step-7') renderRerateBlocks();
+    }
+
+    function updateSidebar(screenId) {
+      document.querySelectorAll('.sidebar-btn').forEach(btn => {
+        const onclick = btn.getAttribute('onclick') || '';
+        btn.classList.toggle('active', onclick.includes("'" + screenId + "'"));
+      });
+    }
+
+    // ── STEP PROGRESS BARS ──────────────────────────
+    function renderProgress(step) {
+      for (let s = 1; s <= 7; s++) {
+        const el = document.getElementById('prog-' + s);
+        if (!el) continue;
+        el.innerHTML = '';
+        for (let i = 1; i <= 7; i++) {
+          const seg = document.createElement('div');
+          seg.className = 'step-seg';
+          if (i < s) seg.classList.add('done');
+          else if (i === s) seg.classList.add('current');
+          el.appendChild(seg);
+        }
+      }
+    }
+    // init all progress bars
+    for (let s = 1; s <= 7; s++) renderProgress(s);
+
+    // ── EMOTION PICKER ──────────────────────────────
+    const EMOTIONS = [
+      { key: 'anxiety',       label: 'Niepokój',         type: 'negative' },
+      { key: 'fear',          label: 'Lęk',              type: 'negative' },
+      { key: 'sadness',       label: 'Smutek',           type: 'negative' },
+      { key: 'anger',         label: 'Złość',            type: 'negative' },
+      { key: 'guilt',         label: 'Poczucie winy',    type: 'negative' },
+      { key: 'shame',         label: 'Wstyd',            type: 'negative' },
+      { key: 'frustration',   label: 'Frustracja',       type: 'negative' },
+      { key: 'helplessness',  label: 'Bezradność',       type: 'negative' },
+      { key: 'loneliness',    label: 'Samotność',        type: 'negative' },
+      { key: 'disappointment',label: 'Rozczarowanie',    type: 'negative' },
+      { key: 'jealousy',      label: 'Zazdrość',         type: 'negative' },
+      { key: 'disgust',       label: 'Obrzydzenie',      type: 'negative' },
+      { key: 'joy',           label: 'Radość',           type: 'positive' },
+      { key: 'relief',        label: 'Ulga',             type: 'positive' },
+      { key: 'pride',         label: 'Duma',             type: 'positive' },
+      { key: 'gratitude',     label: 'Wdzięczność',      type: 'positive' },
+      { key: 'hope',          label: 'Nadzieja',         type: 'positive' },
+      { key: 'excitement',    label: 'Ekscytacja',       type: 'positive' },
+      { key: 'calm',          label: 'Spokój',           type: 'positive' },
+      { key: 'satisfaction',  label: 'Satysfakcja',      type: 'positive' },
+    ];
+
+    let selectedEmotions = { anxiety: 65 }; // pre-selected for demo
+
+    function renderEmotionPicker() {
+      const grid = document.getElementById('emotion-grid');
+      const blocks = document.getElementById('intensity-blocks');
+      grid.innerHTML = '';
+
+      EMOTIONS.forEach(em => {
+        const chip = document.createElement('div');
+        chip.className = 'em-chip ' + em.type;
+        chip.textContent = em.label;
+        if (selectedEmotions[em.key] !== undefined) chip.classList.add('selected');
+        chip.onclick = () => toggleEmotion(em.key, em.label, chip);
+        grid.appendChild(chip);
+      });
+
+      renderIntensityBlocks();
+    }
+
+    function toggleEmotion(key, label, chip) {
+      if (selectedEmotions[key] !== undefined) {
+        delete selectedEmotions[key];
+        chip.classList.remove('selected');
+      } else {
+        selectedEmotions[key] = 50;
+        chip.classList.add('selected');
+      }
+      renderIntensityBlocks();
+    }
+
+    function renderIntensityBlocks() {
+      const blocks = document.getElementById('intensity-blocks');
+      const keys = Object.keys(selectedEmotions);
+      if (keys.length === 0) { blocks.innerHTML = ''; return; }
+
+      const label = document.createElement('div');
+      label.className = 'field-label';
+      label.style.marginTop = '16px';
+      label.style.marginBottom = '10px';
+      label.textContent = 'Intensywność (0–100%)';
+      blocks.innerHTML = '';
+      blocks.appendChild(label);
+
+      keys.forEach(key => {
+        const em = EMOTIONS.find(e => e.key === key);
+        if (!em) return;
+        const val = selectedEmotions[key];
+
+        const block = document.createElement('div');
+        block.className = 'intensity-block';
+        block.innerHTML = `
+          <div class="intensity-top">
+            <div class="intensity-name">${em.label}</div>
+            <div class="intensity-val" id="val-${key}">${val}%</div>
+          </div>
+          <div class="range-wrap">
+            <div class="range-track"></div>
+            <div class="range-fill" id="fill-${key}" style="width:${val}%"></div>
+            <input type="range" min="0" max="100" value="${val}"
+              oninput="updateSlider('${key}', this.value)">
+          </div>
+        `;
+        blocks.appendChild(block);
+      });
+    }
+
+    function updateSlider(key, value) {
+      selectedEmotions[key] = parseInt(value);
+      const valEl = document.getElementById('val-' + key);
+      const fillEl = document.getElementById('fill-' + key);
+      if (valEl) valEl.textContent = value + '%';
+      if (fillEl) fillEl.style.width = value + '%';
+    }
+
+    function tryNextFromStep2() {
+      if (Object.keys(selectedEmotions).length === 0) {
+        document.getElementById('emotions-notice').classList.add('visible');
+        document.getElementById('step2-scroll').scrollTop = 0;
+        return;
+      }
+      document.getElementById('emotions-notice').classList.remove('visible');
+      goTo('step-3');
+    }
+
+    // ── STEP 7 RE-RATE ──────────────────────────────
+    let rerateValues = {};
+
+    function renderRerateBlocks() {
+      const blocks = document.getElementById('rerate-blocks');
+      const keys = Object.keys(selectedEmotions);
+      blocks.innerHTML = '';
+
+      if (keys.length === 0) {
+        // demo fallback
+        Object.assign(selectedEmotions, { anxiety: 65 });
+      }
+
+      const intro = document.createElement('div');
+      intro.className = 'field-label';
+      intro.style.marginBottom = '10px';
+      intro.textContent = 'Intensywność po ćwiczeniu';
+      blocks.appendChild(intro);
+
+      Object.keys(selectedEmotions).forEach(key => {
+        const em = EMOTIONS.find(e => e.key === key);
+        if (!em) return;
+        const before = selectedEmotions[key];
+        if (rerateValues[key] === undefined) rerateValues[key] = Math.max(0, before - 20);
+
+        const block = document.createElement('div');
+        block.className = 'intensity-block';
+        block.innerHTML = `
+          <div class="intensity-top">
+            <div>
+              <div class="intensity-name">${em.label}</div>
+              <div style="font-family:'Courier Prime',monospace;font-size:10px;color:var(--text-dim);margin-top:2px;">przed: ${before}%</div>
+            </div>
+            <div class="intensity-val" id="rval-${key}">${rerateValues[key]}%</div>
+          </div>
+          <div class="range-wrap">
+            <div class="range-track"></div>
+            <div class="range-fill" id="rfill-${key}" style="width:${rerateValues[key]}%;background:var(--success)"></div>
+            <input type="range" min="0" max="100" value="${rerateValues[key]}"
+              style="accent-color:var(--success)"
+              oninput="updateRerate('${key}', this.value)">
+          </div>
+        `;
+        blocks.appendChild(block);
+      });
+    }
+
+    function updateRerate(key, value) {
+      rerateValues[key] = parseInt(value);
+      const valEl = document.getElementById('rval-' + key);
+      const fillEl = document.getElementById('rfill-' + key);
+      if (valEl) valEl.textContent = value + '%';
+      if (fillEl) fillEl.style.width = value + '%';
+    }
+
+    // ── DELETE MODAL ─────────────────────────────────
+    function openDeleteModal() {
+      document.getElementById('delete-modal').classList.add('open');
+    }
+    function closeDeleteModal() {
+      document.getElementById('delete-modal').classList.remove('open');
+    }
+    function handleModalClick(e) {
+      if (e.target === document.getElementById('delete-modal')) closeDeleteModal();
+    }
+    function confirmDelete() {
+      closeDeleteModal();
+      goTo('list-with-data');
+    }
+
+    // ── INIT ─────────────────────────────────────────
+    renderEmotionPicker();
+  </script>
+</body>
+</html>
