@@ -1,0 +1,25 @@
+export const colors = {
+  bg: '#0C0B09',
+  surface: '#161510',
+  surfaceRaised: '#1E1C17',
+  border: '#2C2920',
+  borderFocus: '#4A4438',
+  accent: '#C4956A',
+  accentDim: 'rgba(196,149,106,0.13)',
+  accentBorder: 'rgba(196,149,106,0.25)',
+  text: '#EDE5D8',
+  textMuted: '#8C8276',
+  textDim: '#4A453E',
+  danger: '#C4605A',
+  dangerDim: 'rgba(196,96,90,0.12)',
+  success: '#7A9E7E',
+  inProgress: '#B8974A',
+} as const;
+
+export const spacing = {
+  xs: 4, sm: 8, md: 16, lg: 24, xl: 32,
+} as const;
+
+export const radius = {
+  sm: 8, md: 12, lg: 16, xl: 20,
+} as const;
