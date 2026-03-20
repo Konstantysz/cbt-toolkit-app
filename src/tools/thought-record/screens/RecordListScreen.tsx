@@ -1,5 +1,5 @@
 // src/tools/thought-record/screens/RecordListScreen.tsx
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
   FlatList,
   StyleSheet,
@@ -19,11 +19,11 @@ export function RecordListScreen(): React.JSX.Element {
   const db = useSQLiteContext();
   const { records, loading } = useThoughtRecords(db);
 
-  function formatDate(iso: string) {
+  const formatDate = useCallback((iso: string) => {
     return format(parseISO(iso), 'd MMM yyyy · HH:mm', { locale: dateFnsPl });
-  }
+  }, []);
 
-  function renderItem({ item }: { item: ThoughtRecord }) {
+  const renderItem = useCallback(({ item }: { item: ThoughtRecord }) => {
     const emotionNames = item.emotions.map(e => e.name);
     return (
       <TouchableOpacity
@@ -42,7 +42,7 @@ export function RecordListScreen(): React.JSX.Element {
         {item.situation ? (
           <Text style={styles.situation} numberOfLines={2}>{item.situation}</Text>
         ) : (
-          <Text style={[styles.situation, { color: colors.textDim, fontStyle: 'italic' }]}>
+          <Text style={[styles.situation, styles.situationEmpty]}>
             Brak opisu sytuacji
           </Text>
         )}
@@ -52,13 +52,13 @@ export function RecordListScreen(): React.JSX.Element {
               <Text key={name} style={styles.tag}>{name}</Text>
             ))}
             {emotionNames.length > 3 && (
-              <Text style={[styles.tag, { color: colors.textDim }]}>+{emotionNames.length - 3}</Text>
+              <Text style={[styles.tag, styles.tagOverflow]}>+{emotionNames.length - 3}</Text>
             )}
           </View>
         )}
       </TouchableOpacity>
     );
-  }
+  }, [formatDate]);
 
   if (loading) {
     return <View style={styles.container} />;
@@ -108,8 +108,10 @@ const styles = StyleSheet.create({
   badgeComplete: { backgroundColor: 'rgba(122,158,126,0.12)', color: colors.success },
   badgeInProgress: { backgroundColor: 'rgba(184,151,74,0.1)', color: colors.inProgress },
   situation: { fontSize: 14, color: colors.text, lineHeight: 21, marginBottom: 10 },
+  situationEmpty: { color: colors.textDim, fontStyle: 'italic' },
   tags: { flexDirection: 'row', flexWrap: 'wrap', gap: 5 },
   tag: { fontSize: 10, color: colors.accent, backgroundColor: colors.accentDim, borderRadius: 4, paddingHorizontal: 8, paddingVertical: 2, overflow: 'hidden' },
+  tagOverflow: { color: colors.textDim },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 8, padding: 32 },
   emptyIcon: { fontSize: 40, opacity: 0.2 },
   emptyText: { fontSize: 18, color: colors.textMuted, fontStyle: 'italic' },
