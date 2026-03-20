@@ -35,8 +35,12 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
           text: 'Usuń',
           style: 'destructive',
           onPress: async () => {
-            await repo.deleteRecord(db, id);
-            router.back();
+            try {
+              await repo.deleteRecord(db, id);
+              router.back();
+            } catch {
+              Alert.alert('Błąd', 'Nie udało się usunąć wpisu. Spróbuj ponownie.');
+            }
           },
         },
       ]
@@ -142,7 +146,7 @@ function IntensityBar({ label, value, accent }: { label: string; value: number; 
         <View
           style={[
             styles.ibarFill,
-            { width: `${value}%` as any, backgroundColor: accent ? colors.accent : 'rgba(196,149,106,0.4)' },
+            { width: `${value}%` as `${number}%`, backgroundColor: accent ? colors.accent : 'rgba(196,149,106,0.4)' },
           ]}
         />
       </View>
