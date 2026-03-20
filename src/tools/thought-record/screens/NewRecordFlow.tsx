@@ -7,13 +7,21 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
 import { router } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { format, parseISO } from 'date-fns';
+import { pl as dateFnsPl } from 'date-fns/locale';
 import { colors } from '../../../core/theme';
 import { StepProgress } from '../components/StepProgress';
+import { TextStep } from '../components/TextStep';
+import { EmotionPicker } from '../../../core/components/EmotionPicker';
+import { IntensitySlider } from '../../../core/components/IntensitySlider';
+import { pl } from '../i18n/pl';
 import * as repo from '../repository';
 import type { Emotion } from '../types';
 
@@ -33,6 +41,207 @@ interface FlowState {
 
 function todayIso() {
   return new Date().toISOString().split('T')[0];
+}
+
+const stepStyles = StyleSheet.create({
+  prompt: { fontSize: 15, color: colors.textMuted, lineHeight: 22, marginBottom: 12, fontStyle: 'italic' },
+  fieldLabel: { fontSize: 11, color: colors.textMuted, letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 8 },
+  errorText: { fontSize: 13, color: colors.danger, fontStyle: 'italic', marginBottom: 12 },
+  dateRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 12,
+    padding: 14,
+    marginTop: 14,
+  },
+  dateLabel: { fontSize: 13, color: colors.textMuted },
+  dateValue: { fontSize: 14, color: colors.accent, fontWeight: '600' },
+  input: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 12,
+    padding: 15,
+    fontSize: 15,
+    color: colors.text,
+    lineHeight: 24,
+  },
+});
+
+function Step1Situation({
+  state,
+  update,
+}: {
+  state: FlowState;
+  update: <K extends keyof FlowState>(key: K, value: FlowState[K]) => void;
+}) {
+  const [showPicker, setShowPicker] = useState(false);
+  const date = parseISO(state.situationDate);
+  const dateLabel = format(date, 'd MMMM yyyy', { locale: dateFnsPl });
+
+  return (
+    <View>
+      <TextStep
+        prompt={pl.step1.prompt}
+        value={state.situation}
+        onChange={v => update('situation', v)}
+        placeholder="Np. Kłótnia z partnerem o obowiązki domowe..."
+        minHeight={150}
+      />
+      <TouchableOpacity
+        style={stepStyles.dateRow}
+        onPress={() => setShowPicker(true)}
+      >
+        <Text style={stepStyles.dateLabel}>{pl.step1.dateLabel}</Text>
+        <Text style={stepStyles.dateValue}>{dateLabel}</Text>
+      </TouchableOpacity>
+      {showPicker && (
+        <DateTimePicker
+          value={date}
+          mode="date"
+          maximumDate={new Date()}
+          onChange={(_, selected) => {
+            setShowPicker(false);
+            if (selected) update('situationDate', selected.toISOString().split('T')[0]);
+          }}
+        />
+      )}
+    </View>
+  );
+}
+
+function Step2Emotions({
+  state,
+  update,
+  error,
+}: {
+  state: FlowState;
+  update: <K extends keyof FlowState>(key: K, value: FlowState[K]) => void;
+  error: boolean;
+}) {
+  return (
+    <View>
+      <Text style={stepStyles.prompt}>{pl.step2.prompt}</Text>
+      {error && (
+        <Text style={stepStyles.errorText}>Wybierz co najmniej jedną emocję, aby kontynuować.</Text>
+      )}
+      <EmotionPicker
+        selected={state.emotions}
+        onChange={emotions => update('emotions', emotions)}
+      />
+      {state.emotions.length > 0 && (
+        <View style={{ marginTop: 16 }}>
+          <Text style={stepStyles.fieldLabel}>{pl.step2.intensityLabel}</Text>
+          {state.emotions.map(em => (
+            <IntensitySlider
+              key={em.name}
+              label={em.name}
+              value={em.intensityBefore}
+              onChange={v =>
+                update(
+                  'emotions',
+                  state.emotions.map(e =>
+                    e.name === em.name ? { ...e, intensityBefore: v } : e
+                  )
+                )
+              }
+            />
+          ))}
+        </View>
+      )}
+    </View>
+  );
+}
+
+function Step7Outcome({
+  state,
+  update,
+}: {
+  state: FlowState;
+  update: <K extends keyof FlowState>(key: K, value: FlowState[K]) => void;
+}) {
+  return (
+    <View>
+      <Text style={stepStyles.prompt}>{pl.step7.prompt}</Text>
+      {state.emotions.map(em => (
+        <IntensitySlider
+          key={em.name}
+          label={em.name}
+          value={em.intensityAfter ?? em.intensityBefore}
+          onChange={v =>
+            update(
+              'emotions',
+              state.emotions.map(e =>
+                e.name === em.name ? { ...e, intensityAfter: v } : e
+              )
+            )
+          }
+        />
+      ))}
+      <View style={{ marginTop: 16 }}>
+        <Text style={stepStyles.fieldLabel}>Notatki końcowe (opcjonalne)</Text>
+        <TextInput
+          style={[stepStyles.input, { minHeight: 90 }]}
+          value={state.outcome}
+          onChangeText={v => update('outcome', v)}
+          placeholder="Dodatkowe przemyślenia..."
+          placeholderTextColor={colors.textDim}
+          multiline
+          textAlignVertical="top"
+        />
+      </View>
+    </View>
+  );
+}
+
+function renderStep(
+  step: number,
+  state: FlowState,
+  update: <K extends keyof FlowState>(key: K, value: FlowState[K]) => void,
+  emotionsError: boolean,
+): React.ReactNode {
+  switch (step) {
+    case 1: return <Step1Situation state={state} update={update} />;
+    case 2: return <Step2Emotions state={state} update={update} error={emotionsError} />;
+    case 3: return (
+      <TextStep
+        prompt={pl.step3.prompt}
+        value={state.automaticThoughts}
+        onChange={v => update('automaticThoughts', v)}
+        placeholder="Np. Zaraz coś złego się stanie..."
+      />
+    );
+    case 4: return (
+      <TextStep
+        prompt={pl.step4.prompt}
+        value={state.evidenceFor}
+        onChange={v => update('evidenceFor', v)}
+        placeholder="Np. Ostatnio popełniłem błąd..."
+      />
+    );
+    case 5: return (
+      <TextStep
+        prompt={pl.step5.prompt}
+        value={state.evidenceAgainst}
+        onChange={v => update('evidenceAgainst', v)}
+        placeholder="Np. Przez ostatni rok radziłem sobie dobrze..."
+      />
+    );
+    case 6: return (
+      <TextStep
+        prompt={pl.step6.prompt}
+        value={state.alternativeThought}
+        onChange={v => update('alternativeThought', v)}
+        placeholder="Np. Chociaż czuję niepokój, mam wiele dowodów..."
+      />
+    );
+    case 7: return <Step7Outcome state={state} update={update} />;
+    default: return null;
+  }
 }
 
 export function NewRecordFlow(): React.JSX.Element {
@@ -154,16 +363,6 @@ export function NewRecordFlow(): React.JSX.Element {
       </View>
     </KeyboardAvoidingView>
   );
-}
-
-// Placeholder — replaced in Task 7
-function renderStep(
-  step: number,
-  state: FlowState,
-  update: <K extends keyof FlowState>(key: K, value: FlowState[K]) => void,
-  emotionsError: boolean,
-): React.ReactNode {
-  return <View />;
 }
 
 const styles = StyleSheet.create({

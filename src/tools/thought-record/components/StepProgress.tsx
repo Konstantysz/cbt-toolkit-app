@@ -13,7 +13,7 @@ export function StepProgress({ totalSteps, currentStep }: Props) {
     <View style={styles.row}>
       {Array.from({ length: totalSteps }, (_, i) => {
         const stepNum = i + 1;
-        let bg = colors.border;
+        let bg: string = colors.border;
         if (stepNum < currentStep) bg = 'rgba(196,149,106,0.35)';
         if (stepNum === currentStep) bg = colors.accent;
         return <View key={i} style={[styles.seg, { backgroundColor: bg }]} />;
