@@ -1,34 +1,41 @@
-import React, { useEffect, useState } from 'react';
+import React, { Suspense } from 'react';
+import { ActivityIndicator, View } from 'react-native';
 import { Tabs } from 'expo-router';
-import { SQLiteDatabase } from 'expo-sqlite';
-import { openDatabase, runMigrations } from '../core/db/database';
+import { SQLiteProvider } from 'expo-sqlite';
+import { initCoreTables, runMigrations } from '../core/db/database';
 import { getAllMigrations } from '../tools/registry';
 import { pl } from '../core/i18n/pl';
+import { colors } from '../core/theme';
 
-export default function RootLayout(): React.JSX.Element | null {
-  const [db, setDb] = useState<SQLiteDatabase | null>(null);
+async function onInit(db: import('expo-sqlite').SQLiteDatabase) {
+  await initCoreTables(db);
+  await runMigrations(db, getAllMigrations());
+}
 
-  useEffect(() => {
-    async function init() {
-      const database = await openDatabase();
-      await runMigrations(database, getAllMigrations());
-      setDb(database);
-    }
-    init().catch(console.error);
-  }, []);
-
-  if (!db) return null;
-
+function DbLoading() {
   return (
-    <Tabs>
-      <Tabs.Screen
-        name="index"
-        options={{ title: pl.nav.home, tabBarIcon: () => null }}
-      />
-      <Tabs.Screen
-        name="settings"
-        options={{ title: pl.nav.settings, tabBarIcon: () => null }}
-      />
-    </Tabs>
+    <View style={{ flex: 1, backgroundColor: colors.bg, alignItems: 'center', justifyContent: 'center' }}>
+      <ActivityIndicator color={colors.accent} />
+    </View>
+  );
+}
+
+export default function RootLayout(): React.JSX.Element {
+  return (
+    <Suspense fallback={<DbLoading />}>
+      <SQLiteProvider databaseName="cbt-toolkit.db" onInit={onInit}>
+        <Tabs
+          screenOptions={{
+            headerShown: false,
+            tabBarStyle: { backgroundColor: colors.surface, borderTopColor: colors.border },
+            tabBarActiveTintColor: colors.accent,
+            tabBarInactiveTintColor: colors.textDim,
+          }}
+        >
+          <Tabs.Screen name="index" options={{ title: pl.nav.home }} />
+          <Tabs.Screen name="settings" options={{ title: pl.nav.settings }} />
+        </Tabs>
+      </SQLiteProvider>
+    </Suspense>
   );
 }
