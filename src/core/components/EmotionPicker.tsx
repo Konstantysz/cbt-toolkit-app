@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { colors } from '../theme';
-import type { Emotion } from '../../tools/thought-record/types';
+import type { Emotion } from '../types';
 
 export const PREDEFINED_EMOTIONS = [
   { key: 'anxiety',        label: 'Niepokój',       negative: true },

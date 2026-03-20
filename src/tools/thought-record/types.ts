@@ -1,3 +1,6 @@
+import type { Emotion } from '../../core/types';
+export type { Emotion };
+
 export interface ThoughtRecord {
   id: string;
   situation: string;
@@ -12,10 +15,4 @@ export interface ThoughtRecord {
   currentStep: number;
   createdAt: string;
   updatedAt: string;
-}
-
-export interface Emotion {
-  name: string;
-  intensityBefore: number;  // 0-100
-  intensityAfter?: number;  // 0-100
 }
