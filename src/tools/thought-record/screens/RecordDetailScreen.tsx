@@ -16,6 +16,7 @@ import { colors } from '../../../core/theme';
 import { useThoughtRecord } from '../hooks/useThoughtRecords';
 import * as repo from '../repository';
 import type { Emotion } from '../types';
+import { pl } from '../i18n/pl';
 
 interface Props {
   id: string;
@@ -79,13 +80,28 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scroll}>
-        <View style={styles.header}>
-          <Text style={styles.headerDate}>{formattedDate}</Text>
-          {record.isComplete ? (
-            <Text style={[styles.badge, styles.badgeComplete]}>Kompletny</Text>
-          ) : (
-            <Text style={[styles.badge, styles.badgeInProgress]}>W toku</Text>
-          )}
+        <View style={styles.metaRow}>
+          <View style={styles.metaLeft}>
+            <Text style={styles.headerDate}>{formattedDate}</Text>
+            {record.isComplete
+              ? <Text style={[styles.badge, styles.badgeComplete]}>Kompletny</Text>
+              : <Text style={[styles.badge, styles.badgeInProgress]}>W toku</Text>
+            }
+          </View>
+          <View style={styles.actionBtns}>
+            <TouchableOpacity
+              style={styles.actionBtn}
+              onPress={() => router.push(`/(tools)/thought-record/${id}/compare`)}
+            >
+              <Text style={styles.actionBtnText}>⊞ {pl.compare.btnLabel}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.actionBtn}
+              onPress={() => router.push(`/(tools)/thought-record/${id}/edit`)}
+            >
+              <Text style={styles.actionBtnText}>✏ {pl.edit.title}</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Emotions (step 02) */}
@@ -164,7 +180,14 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.bg },
   centered: { flex: 1, backgroundColor: colors.bg, alignItems: 'center', justifyContent: 'center' },
   scroll: { padding: 20 },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
+  metaRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20, gap: 12 },
+  metaLeft: { flexDirection: 'column', gap: 5 },
+  actionBtns: { flexDirection: 'row', gap: 8, flexShrink: 0 },
+  actionBtn: {
+    borderWidth: 1, borderColor: colors.border, borderRadius: 9,
+    paddingVertical: 6, paddingHorizontal: 10,
+  },
+  actionBtnText: { fontSize: 10, color: colors.textMuted, letterSpacing: 0.06 },
   headerDate: { fontSize: 12, color: colors.textMuted, letterSpacing: 0.5 },
   badge: { fontSize: 10, letterSpacing: 0.8, paddingHorizontal: 7, paddingVertical: 2, borderRadius: 4, overflow: 'hidden', textTransform: 'uppercase' },
   badgeComplete: { backgroundColor: 'rgba(122,158,126,0.12)', color: colors.success },
