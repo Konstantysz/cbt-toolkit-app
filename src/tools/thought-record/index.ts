@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../../core/types/tool';
 import { migration001 } from './migrations/001-create-thought-records';
+import { migration002 } from './migrations/002-add-is-example-flag';
 
 export const thoughtRecordTool: ToolDefinition = {
   id: 'thought-record',
@@ -7,7 +8,7 @@ export const thoughtRecordTool: ToolDefinition = {
   description: 'Zapisuj i analizuj swoje myśli automatyczne',
   icon: 'brain',
   routePrefix: '/thought-record',
-  migrations: [migration001],
+  migrations: [migration001, migration002],
   enabled: true,
   version: '0.1.0',
 };
