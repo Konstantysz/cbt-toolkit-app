@@ -9,18 +9,14 @@ export function useBehavioralExperiments(db: SQLite.SQLiteDatabase | null) {
 
   const refresh = useCallback(async () => {
     if (!db) return;
-    setLoading(true);
+    if (experiments.length === 0) setLoading(true);
     try {
       const data = await repo.getExperiments(db);
       setExperiments(data);
     } finally {
       setLoading(false);
     }
-  }, [db]);
-
-  useEffect(() => {
-    refresh();
-  }, [refresh]);
+  }, [db, experiments.length]);
 
   return { experiments, loading, refresh };
 }

@@ -9,18 +9,14 @@ export function useThoughtRecords(db: SQLite.SQLiteDatabase | null) {
 
   const refresh = useCallback(async () => {
     if (!db) return;
-    setLoading(true);
+    if (records.length === 0) setLoading(true);
     try {
       const data = await repo.getRecords(db);
       setRecords(data);
     } finally {
       setLoading(false);
     }
-  }, [db]);
-
-  useEffect(() => {
-    refresh();
-  }, [refresh]);
+  }, [db, records.length]);
 
   return { records, loading, refresh };
 }

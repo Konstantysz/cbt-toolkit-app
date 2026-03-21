@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from 'react';
 import {
   FlatList, StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { format, parseISO } from 'date-fns';
 import { pl as dateFnsPl } from 'date-fns/locale';
@@ -15,6 +15,8 @@ import type { BehavioralExperiment } from '../types';
 export function ExperimentListScreen(): React.JSX.Element {
   const db = useSQLiteContext();
   const { experiments, loading, refresh } = useBehavioralExperiments(db);
+
+  useFocusEffect(useCallback(() => { refresh(); }, [refresh]));
 
   // Onboarding seed — insert when list is empty on first load
   useEffect(() => {

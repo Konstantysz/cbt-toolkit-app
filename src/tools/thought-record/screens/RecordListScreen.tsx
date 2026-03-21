@@ -3,7 +3,7 @@ import {
   FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { format, parseISO } from 'date-fns';
 import { pl as dateFnsPl } from 'date-fns/locale';
@@ -19,6 +19,8 @@ export function RecordListScreen(): React.JSX.Element {
   const db = useSQLiteContext();
   const { records, loading, refresh } = useThoughtRecords(db);
   const [query, setQuery] = useState('');
+
+  useFocusEffect(useCallback(() => { refresh(); }, [refresh]));
 
   // Onboarding seed
   useEffect(() => {

@@ -12,11 +12,30 @@ jest.mock('../hooks/useBehavioralExperiments');
 import * as hooks from '../hooks/useBehavioralExperiments';
 
 // Mock expo-router
-jest.mock('expo-router', () => ({ router: { push: jest.fn(), replace: jest.fn() } }));
+jest.mock('expo-router', () => ({
+  router: { push: jest.fn(), replace: jest.fn() },
+  useFocusEffect: jest.fn((cb: () => void) => cb()),
+}));
+import { useFocusEffect } from 'expo-router';
 
 const mockRefresh = jest.fn();
 
+beforeEach(() => jest.clearAllMocks());
+
 describe('ExperimentListScreen', () => {
+  it('calls refresh via useFocusEffect when screen gains focus', () => {
+    (hooks.useBehavioralExperiments as jest.Mock).mockReturnValue({
+      experiments: [],
+      loading: false,
+      refresh: mockRefresh,
+    });
+
+    render(<ExperimentListScreen />);
+
+    expect(useFocusEffect).toHaveBeenCalled();
+    expect(mockRefresh).toHaveBeenCalled();
+  });
+
   it('shows empty state when no experiments', () => {
     (hooks.useBehavioralExperiments as jest.Mock).mockReturnValue({
       experiments: [],

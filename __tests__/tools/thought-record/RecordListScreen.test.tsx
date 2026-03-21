@@ -3,7 +3,10 @@ import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { RecordListScreen } from '../../../src/tools/thought-record/screens/RecordListScreen';
 
 jest.mock('expo-sqlite', () => ({ useSQLiteContext: jest.fn(() => ({})) }));
-jest.mock('expo-router', () => ({ router: { push: jest.fn() } }));
+jest.mock('expo-router', () => ({
+  router: { push: jest.fn() },
+  useFocusEffect: jest.fn((cb: () => void) => cb()),
+}));
 jest.mock('../../../src/tools/thought-record/hooks/useThoughtRecords', () => ({
   useThoughtRecords: jest.fn(),
 }));
