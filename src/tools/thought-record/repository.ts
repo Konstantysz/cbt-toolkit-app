@@ -1,5 +1,5 @@
 import * as SQLite from 'expo-sqlite';
-import { v4 as uuidv4 } from 'uuid';
+import * as Crypto from 'expo-crypto';
 import type { ThoughtRecord, Emotion } from './types';
 
 type DbRow = {
@@ -39,7 +39,7 @@ function rowToRecord(row: DbRow): ThoughtRecord {
 }
 
 export async function createRecord(db: SQLite.SQLiteDatabase): Promise<ThoughtRecord> {
-  const id = uuidv4();
+  const id = Crypto.randomUUID();
   const now = new Date().toISOString();
   await db.runAsync(
     `INSERT INTO tool_entries (id, tool_id, created_at, updated_at) VALUES (?, 'thought-record', ?, ?)`,
@@ -133,7 +133,7 @@ export async function deleteRecord(db: SQLite.SQLiteDatabase, id: string): Promi
 }
 
 export async function insertSeedRecord(db: SQLite.SQLiteDatabase): Promise<void> {
-  const id = uuidv4();
+  const id = Crypto.randomUUID();
   const now = new Date().toISOString();
 
   await db.runAsync(
