@@ -227,7 +227,6 @@ function renderPlanStep(
         placeholderTextColor={colors.textDim}
         multiline
         textAlignVertical="top"
-        minHeight={100}
       />
       <IntensitySlider
         label={pl.step1.sliderLabel}
@@ -248,7 +247,6 @@ function renderPlanStep(
         placeholderTextColor={colors.textDim}
         multiline
         textAlignVertical="top"
-        minHeight={100}
       />
     </View>
   );
@@ -264,7 +262,6 @@ function renderPlanStep(
         placeholderTextColor={colors.textDim}
         multiline
         textAlignVertical="top"
-        minHeight={100}
       />
     </View>
   );
@@ -280,7 +277,6 @@ function renderPlanStep(
         placeholderTextColor={colors.textDim}
         multiline
         textAlignVertical="top"
-        minHeight={100}
       />
     </View>
   );
@@ -323,8 +319,7 @@ function renderResultStep(
           placeholderTextColor={colors.textDim}
           multiline
           textAlignVertical="top"
-          minHeight={100}
-        />
+          />
       </View>
     );
   }
@@ -340,7 +335,6 @@ function renderResultStep(
         placeholderTextColor={colors.textDim}
         multiline
         textAlignVertical="top"
-        minHeight={100}
       />
     </View>
   );
@@ -356,7 +350,6 @@ function renderResultStep(
         placeholderTextColor={colors.textDim}
         multiline
         textAlignVertical="top"
-        minHeight={100}
       />
       <IntensitySlider
         label={pl.step7.sliderLabel}
@@ -376,6 +369,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderWidth: 1, borderColor: colors.border, borderRadius: 12,
     padding: 15, fontSize: 15, color: colors.text, lineHeight: 24,
+    minHeight: 100,
   },
   navRow: {
     flexDirection: 'row', gap: 10,
