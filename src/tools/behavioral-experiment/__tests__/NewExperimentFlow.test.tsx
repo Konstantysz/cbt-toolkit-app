@@ -93,22 +93,29 @@ describe('NewExperimentFlow phase=result', () => {
 
     render(<NewExperimentFlow phase="result" experimentId="exp-1" />);
 
+    // Step 5 (local step 1): executionDate is auto-filled → Dalej is enabled
     await waitFor(() => screen.getByText('Kiedy i co zrobiłeś?'));
+    fireEvent.press(screen.getByText('Dalej'));
 
-    // Trigger step 7 save directly (simulating the save contract):
-    await repo.updateExperiment({} as never, 'exp-1', {
-      conclusion: 'Learned something',
-      beliefStrengthAfter: 20,
-      status: 'completed',
-      isComplete: true,
-      currentStep: 7,
-    });
+    // Step 6 (local step 2): no required field → Dalej is enabled
+    await waitFor(() => screen.getByText('Co się wydarzyło?'));
+    fireEvent.press(screen.getByText('Dalej'));
 
-    expect(repo.updateExperiment).toHaveBeenCalledWith(
-      expect.anything(),
-      'exp-1',
-      expect.objectContaining({ status: 'completed', isComplete: true })
+    // Step 7 (local step 3): conclusion is required → type to enable Zakończ
+    await waitFor(() => screen.getByText('Czego się nauczyłeś?'));
+    fireEvent.changeText(
+      screen.getByPlaceholderText(/Moje przekonanie było błędne/),
+      'Nauczyłem się czegoś nowego'
     );
+    fireEvent.press(screen.getByText('Zakończ'));
+
+    await waitFor(() => {
+      expect(repo.updateExperiment).toHaveBeenCalledWith(
+        expect.anything(),
+        'exp-1',
+        expect.objectContaining({ status: 'completed', isComplete: true })
+      );
+    });
   });
 
   it('initialises beliefStrengthAfter slider to beliefStrengthBefore when null', async () => {
