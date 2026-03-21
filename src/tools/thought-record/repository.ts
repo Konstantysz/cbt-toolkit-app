@@ -131,3 +131,37 @@ export async function updateRecord(
 export async function deleteRecord(db: SQLite.SQLiteDatabase, id: string): Promise<void> {
   await db.runAsync('DELETE FROM tool_entries WHERE id = ?', [id]);
 }
+
+export async function insertSeedRecord(db: SQLite.SQLiteDatabase): Promise<void> {
+  const id = uuidv4();
+  const now = new Date().toISOString();
+
+  await db.runAsync(
+    `INSERT INTO tool_entries (id, tool_id, created_at, updated_at, is_complete, current_step)
+     VALUES (?, 'thought-record', ?, ?, 1, 7)`,
+    [id, now, now]
+  );
+
+  const emotions = JSON.stringify([
+    { name: 'Lęk', intensityBefore: 80, intensityAfter: 45 },
+    { name: 'Niepokój', intensityBefore: 75, intensityAfter: 40 },
+    { name: 'Wstyd', intensityBefore: 60, intensityAfter: 30 },
+  ]);
+
+  await db.runAsync(
+    `INSERT INTO thought_records
+       (id, situation, emotions, automatic_thoughts, evidence_for, evidence_against,
+        alternative_thought, outcome, is_example)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)`,
+    [
+      id,
+      'Spotkanie z przełożonym, na którym bałem się oceny mojej pracy. Serce biło szybciej, trudno mi było myśleć jasno.',
+      emotions,
+      'Na pewno coś powiem nie tak. Szef zobaczy, że jestem niekompetentny. Moje pomysły są do niczego.',
+      'Raz popełniłem błąd w raporcie miesiąc temu. Zdarza mi się jąkać przy prezentacjach.',
+      'Szef kilka tygodni temu pochwalił mój poprzedni projekt. Mam dobre wyniki od roku. Współpracownicy proszą mnie o pomoc.',
+      'Mogę się denerwować i to normalne. Mam konkretne dowody na to, że jestem kompetentny. Jedna rozmowa nie definiuje mnie jako pracownika.',
+      'Po ćwiczeniu poczułem się spokojniejszy. Lęk zmniejszył się niemal o połowę.',
+    ]
+  );
+}
