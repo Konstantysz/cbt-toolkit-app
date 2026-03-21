@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Behavioral Experiment — Mockup</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0a0a0a;
+    color: #e8e8e8;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    padding: 24px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+    align-items: flex-start;
+  }
+
+  h1 {
+    width: 100%;
+    font-size: 18px;
+    color: #aaa;
+    margin-bottom: 8px;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .section-label {
+    width: 100%;
+    font-size: 13px;
+    color: #555;
+    margin-top: 8px;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* Phone frame */
+  .phone {
+    width: 360px;
+    background: #111;
+    border-radius: 40px;
+    border: 2px solid #2a2a2a;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.6);
+    flex-shrink: 0;
+  }
+
+  .phone-label {
+    text-align: center;
+    font-size: 11px;
+    color: #444;
+    padding: 8px 0 0;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* Status bar */
+  .status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px 8px;
+    font-size: 12px;
+    color: #666;
+  }
+
+  /* Header */
+  .header {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px 12px;
+    gap: 8px;
+    border-bottom: 1px solid #1e1e1e;
+  }
+  .header-back {
+    color: #6c8eef;
+    font-size: 14px;
+    padding: 4px;
+  }
+  .header-title {
+    font-size: 17px;
+    font-weight: 600;
+    color: #e8e8e8;
+    flex: 1;
+  }
+  .header-action {
+    color: #6c8eef;
+    font-size: 14px;
+  }
+
+  /* Screen body */
+  .screen-body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 580px;
+  }
+
+  /* List item */
+  .list-item {
+    background: #1a1a1a;
+    border-radius: 12px;
+    padding: 14px 16px;
+    border: 1px solid #2a2a2a;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .list-item-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .list-item-belief {
+    font-size: 14px;
+    color: #e8e8e8;
+    line-height: 1.4;
+    flex: 1;
+  }
+  .badge {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .badge-planned {
+    background: #2a3a5c;
+    color: #6c8eef;
+  }
+  .badge-completed {
+    background: #1a3a2a;
+    color: #4caf82;
+  }
+  .list-item-meta {
+    font-size: 12px;
+    color: #555;
+  }
+  .belief-change {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+  }
+  .belief-before { color: #e05252; }
+  .belief-after { color: #4caf82; }
+  .belief-arrow { color: #444; }
+
+  /* FAB */
+  .fab {
+    position: relative;
+    align-self: center;
+    background: #6c8eef;
+    color: #fff;
+    border-radius: 28px;
+    padding: 14px 28px;
+    font-size: 15px;
+    font-weight: 600;
+    margin-top: auto;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Step indicator */
+  .step-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 0 4px;
+  }
+  .step-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #2a2a2a;
+  }
+  .step-dot.active {
+    background: #6c8eef;
+    width: 20px;
+    border-radius: 4px;
+  }
+  .step-dot.done {
+    background: #3a4a6a;
+  }
+
+  .step-counter {
+    font-size: 12px;
+    color: #555;
+    text-align: center;
+    margin-bottom: 4px;
+  }
+
+  /* Form elements */
+  .step-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #e8e8e8;
+    line-height: 1.3;
+  }
+  .step-subtitle {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.5;
+  }
+  .hint-bar {
+    background: #1a1a1a;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 12px;
+    color: #888;
+    border-left: 3px solid #2a3a5c;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .hint-icon { color: #6c8eef; font-size: 14px; }
+
+  .text-input {
+    background: #1a1a1a;
+    border-radius: 10px;
+    border: 1px solid #2a2a2a;
+    padding: 12px 14px;
+    font-size: 14px;
+    color: #e8e8e8;
+    min-height: 80px;
+    line-height: 1.5;
+  }
+  .text-input.single { min-height: 48px; }
+  .text-input.placeholder { color: #444; }
+
+  /* Belief slider */
+  .slider-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .slider-label-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #555;
+  }
+  .slider-value {
+    font-size: 28px;
+    font-weight: 700;
+    text-align: center;
+    color: #e05252;
+  }
+  .slider-value.low { color: #4caf82; }
+  .slider-track {
+    height: 6px;
+    background: #2a2a2a;
+    border-radius: 3px;
+    position: relative;
+  }
+  .slider-fill-high {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 75%;
+    background: linear-gradient(to right, #4caf82, #e05252);
+    border-radius: 3px;
+  }
+  .slider-fill-low {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 25%;
+    background: linear-gradient(to right, #4caf82, #4caf82);
+    border-radius: 3px;
+  }
+  .slider-thumb {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    background: #e8e8e8;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  }
+  .slider-thumb-high { left: calc(75% - 10px); }
+  .slider-thumb-low { left: calc(25% - 10px); }
+
+  /* Navigation buttons */
+  .nav-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: auto;
+    padding-top: 8px;
+  }
+  .btn-back {
+    flex: 1;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    padding: 14px;
+    font-size: 15px;
+    color: #aaa;
+    text-align: center;
+    font-weight: 500;
+  }
+  .btn-next {
+    flex: 2;
+    background: #6c8eef;
+    border-radius: 12px;
+    padding: 14px;
+    font-size: 15px;
+    color: #fff;
+    text-align: center;
+    font-weight: 600;
+  }
+  .btn-finish {
+    flex: 2;
+    background: #4caf82;
+    border-radius: 12px;
+    padding: 14px;
+    font-size: 15px;
+    color: #fff;
+    text-align: center;
+    font-weight: 600;
+  }
+
+  /* Detail screen */
+  .detail-belief-card {
+    background: #1a1a1a;
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid #2a2a2a;
+  }
+  .detail-belief-text {
+    font-size: 14px;
+    color: #e8e8e8;
+    line-height: 1.5;
+    margin-bottom: 12px;
+    font-style: italic;
+  }
+  .belief-comparison {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .belief-stat {
+    flex: 1;
+    text-align: center;
+  }
+  .belief-stat-value {
+    font-size: 32px;
+    font-weight: 700;
+  }
+  .belief-stat-value.before { color: #e05252; }
+  .belief-stat-value.after { color: #4caf82; }
+  .belief-stat-label {
+    font-size: 11px;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 2px;
+  }
+  .belief-arrow-big {
+    font-size: 24px;
+    color: #333;
+  }
+
+  .detail-section {
+    background: #1a1a1a;
+    border-radius: 12px;
+    padding: 14px;
+    border: 1px solid #2a2a2a;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .detail-section-label {
+    font-size: 11px;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .detail-section-value {
+    font-size: 14px;
+    color: #ccc;
+    line-height: 1.5;
+  }
+
+  .btn-add-result {
+    background: #4caf82;
+    border-radius: 12px;
+    padding: 14px;
+    font-size: 15px;
+    color: #fff;
+    text-align: center;
+    font-weight: 600;
+    margin-top: auto;
+    margin-bottom: 8px;
+  }
+
+  .divider {
+    height: 1px;
+    background: #1e1e1e;
+    margin: 4px 0;
+  }
+  .section-header {
+    font-size: 11px;
+    color: #444;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 4px 0;
+  }
+
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    gap: 10px;
+    padding: 40px 0;
+  }
+  .empty-icon { font-size: 48px; opacity: 0.3; }
+  .empty-text { font-size: 14px; color: #444; text-align: center; }
+</style>
+</head>
+<body>
+
+<h1>Behavioral Experiment — Mockup</h1>
+
+<!-- SCREEN 1: List -->
+<div>
+  <div class="phone-label">1. Lista eksperymentów</div>
+  <div class="phone">
+    <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+    <div class="header">
+      <div class="header-title">Eksperymenty</div>
+    </div>
+    <div class="screen-body">
+
+      <!-- Example: planned -->
+      <div class="list-item">
+        <div class="list-item-top">
+          <div class="list-item-belief">"Jeśli odmówię szefowi, zwolni mnie."</div>
+          <div class="badge badge-planned">Zaplanowany</div>
+        </div>
+        <div class="list-item-meta">Zaplanowany · 21 mar 2026</div>
+        <div class="belief-change">
+          <span class="belief-before">75%</span>
+          <span class="belief-arrow">→</span>
+          <span style="color:#444">—</span>
+        </div>
+      </div>
+
+      <!-- Example: completed -->
+      <div class="list-item">
+        <div class="list-item-top">
+          <div class="list-item-belief">"Jeśli powiem 'nie', wszyscy się na mnie obrażą."</div>
+          <div class="badge badge-completed">Ukończony</div>
+        </div>
+        <div class="list-item-meta">Ukończony · 15 mar 2026</div>
+        <div class="belief-change">
+          <span class="belief-before">85%</span>
+          <span class="belief-arrow">→</span>
+          <span class="belief-after">30%</span>
+        </div>
+      </div>
+
+      <!-- Example: completed -->
+      <div class="list-item">
+        <div class="list-item-top">
+          <div class="list-item-belief">"Nikt nie chce spędzać ze mną czasu."</div>
+          <div class="badge badge-completed">Ukończony</div>
+        </div>
+        <div class="list-item-meta">Ukończony · 8 mar 2026</div>
+        <div class="belief-change">
+          <span class="belief-before">70%</span>
+          <span class="belief-arrow">→</span>
+          <span class="belief-after">20%</span>
+        </div>
+      </div>
+
+      <div class="fab">+ Nowy eksperyment</div>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 2: Step 1 — belief + slider -->
+<div>
+  <div class="phone-label">2. Krok 1 — Przekonanie</div>
+  <div class="phone">
+    <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+    <div class="header">
+      <div class="header-back">‹</div>
+      <div class="header-title">Nowy eksperyment</div>
+    </div>
+    <div class="screen-body">
+      <div class="step-indicator">
+        <div class="step-dot active"></div>
+        <div class="step-dot"></div>
+        <div class="step-dot"></div>
+        <div class="step-dot"></div>
+      </div>
+      <div class="step-counter">Krok 1 z 4 — Faza planowania</div>
+
+      <div class="step-title">Jakie przekonanie chcesz sprawdzić?</div>
+      <div class="step-subtitle">Opisz myśl, którą chcesz przetestować. Zazwyczaj zaczyna się od "Jeśli..., to..."</div>
+
+      <div class="hint-bar">
+        <span class="hint-icon">💡</span>
+        Przykład: "Jeśli poproszę o pomoc, pomyślą, że jestem słaby."
+      </div>
+
+      <div class="text-input">Jeśli odmówię szefowi, zwolni mnie.</div>
+
+      <div class="slider-section">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div style="font-size:13px; color:#888">Jak bardzo w to wierzysz?</div>
+          <div class="slider-value">75%</div>
+        </div>
+        <div class="slider-track">
+          <div class="slider-fill-high"></div>
+          <div class="slider-thumb slider-thumb-high"></div>
+        </div>
+        <div class="slider-label-row">
+          <span>Wcale</span>
+          <span>Całkowicie</span>
+        </div>
+      </div>
+
+      <div class="nav-buttons">
+        <div class="btn-next">Dalej</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 3: Step 3 — Plan -->
+<div>
+  <div class="phone-label">3. Krok 3 — Plan działania</div>
+  <div class="phone">
+    <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+    <div class="header">
+      <div class="header-back">‹</div>
+      <div class="header-title">Nowy eksperyment</div>
+    </div>
+    <div class="screen-body">
+      <div class="step-indicator">
+        <div class="step-dot done"></div>
+        <div class="step-dot done"></div>
+        <div class="step-dot active"></div>
+        <div class="step-dot"></div>
+      </div>
+      <div class="step-counter">Krok 3 z 4 — Faza planowania</div>
+
+      <div class="step-title">Co konkretnie zrobisz?</div>
+      <div class="step-subtitle">Opisz eksperyment — co dokładnie zrobisz, kiedy i gdzie. Im konkretniej, tym lepiej.</div>
+
+      <div class="hint-bar">
+        <span class="hint-icon">💡</span>
+        Bądź precyzyjny: "W piątek rano powiem szefowi, że nie mogę zostać po godzinach."
+      </div>
+
+      <div class="text-input">W piątek na spotkaniu 1:1 powiem szefowi, że nie mogę wziąć dodatkowego projektu w tym tygodniu.</div>
+
+      <div class="nav-buttons">
+        <div class="btn-back">Wstecz</div>
+        <div class="btn-next">Dalej</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 4: Detail (planned) -->
+<div>
+  <div class="phone-label">4. Szczegóły — status: zaplanowany</div>
+  <div class="phone">
+    <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+    <div class="header">
+      <div class="header-back">‹</div>
+      <div class="header-title">Eksperyment</div>
+    </div>
+    <div class="screen-body">
+      <!-- Belief card — planned, no after yet -->
+      <div class="detail-belief-card">
+        <div class="detail-belief-text">"Jeśli odmówię szefowi, zwolni mnie."</div>
+        <div class="belief-comparison">
+          <div class="belief-stat">
+            <div class="belief-stat-value before">75%</div>
+            <div class="belief-stat-label">Przed</div>
+          </div>
+          <div class="belief-arrow-big">→</div>
+          <div class="belief-stat">
+            <div class="belief-stat-value" style="color:#333">—</div>
+            <div class="belief-stat-label">Po</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-header">Plan</div>
+
+      <div class="detail-section">
+        <div class="detail-section-label">Alternatywna hipoteza</div>
+        <div class="detail-section-value">Może szef to przyjmie spokojnie i będzie mnie bardziej szanował za szczerość.</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-section-label">Co zrobię</div>
+        <div class="detail-section-value">W piątek na 1:1 powiem, że nie mogę wziąć dodatkowego projektu.</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-section-label">Przewidywany wynik</div>
+        <div class="detail-section-value">Szef się zdenerwuje i zacznie mnie traktować gorzej.</div>
+      </div>
+
+      <div class="btn-add-result">+ Dodaj wynik</div>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 5: Step 7 — Conclusion + slider after -->
+<div>
+  <div class="phone-label">5. Krok 7 — Wnioski</div>
+  <div class="phone">
+    <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+    <div class="header">
+      <div class="header-back">‹</div>
+      <div class="header-title">Dodaj wynik</div>
+    </div>
+    <div class="screen-body">
+      <div class="step-indicator">
+        <div class="step-dot done"></div>
+        <div class="step-dot done"></div>
+        <div class="step-dot active"></div>
+      </div>
+      <div class="step-counter">Krok 3 z 3 — Faza wyniku</div>
+
+      <div class="step-title">Czego się nauczyłeś?</div>
+      <div class="step-subtitle">Opisz wnioski. Co to mówi o Twoim pierwotnym przekonaniu?</div>
+
+      <div class="text-input">Szef przyjął to spokojnie i nawet powiedział, że docenia, że jestem szczery co do swojego obciążenia. Moje przekonanie było błędne.</div>
+
+      <div class="slider-section">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div style="font-size:13px; color:#888">Jak mocno teraz wierzysz w to przekonanie?</div>
+          <div class="slider-value low">25%</div>
+        </div>
+        <div class="slider-track">
+          <div class="slider-fill-low"></div>
+          <div class="slider-thumb slider-thumb-low"></div>
+        </div>
+        <div class="slider-label-row">
+          <span>Wcale</span>
+          <span>Całkowicie</span>
+        </div>
+      </div>
+
+      <div class="nav-buttons">
+        <div class="btn-back">Wstecz</div>
+        <div class="btn-finish">Zakończ</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 6: Detail (completed) -->
+<div>
+  <div class="phone-label">6. Szczegóły — status: ukończony</div>
+  <div class="phone">
+    <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+    <div class="header">
+      <div class="header-back">‹</div>
+      <div class="header-title">Eksperyment</div>
+    </div>
+    <div class="screen-body">
+      <!-- Belief card — completed -->
+      <div class="detail-belief-card">
+        <div class="detail-belief-text">"Jeśli odmówię szefowi, zwolni mnie."</div>
+        <div class="belief-comparison">
+          <div class="belief-stat">
+            <div class="belief-stat-value before">75%</div>
+            <div class="belief-stat-label">Przed</div>
+          </div>
+          <div class="belief-arrow-big">→</div>
+          <div class="belief-stat">
+            <div class="belief-stat-value after">25%</div>
+            <div class="belief-stat-label">Po</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-header">Plan</div>
+      <div class="detail-section">
+        <div class="detail-section-label">Co zrobiłem</div>
+        <div class="detail-section-value">W piątek na 1:1 powiedziałem, że nie mogę wziąć dodatkowego projektu.</div>
+      </div>
+
+      <div class="section-header">Wynik</div>
+      <div class="detail-section">
+        <div class="detail-section-label">Co się wydarzyło</div>
+        <div class="detail-section-value">Szef przyjął to spokojnie, powiedział że docenia szczerość.</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-section-label">Wnioski</div>
+        <div class="detail-section-value">Moje przekonanie było błędne. Odmowa nie skończyła się zwolnieniem ani nawet niezadowoleniem.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
