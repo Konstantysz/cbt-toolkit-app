@@ -2,9 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
 ---
 
-## [v0.2.0] — Usability
+## [Unreleased]
+
+## [v0.2.0]
 
 ### Added
 - **Emotion comparison** — side-by-side before/after view across 4 pages (RecordDetailScreen → Compare)
@@ -30,14 +35,14 @@ All notable changes to this project will be documented in this file.
 
 ---
 
-## [v0.1.1] — Internal
+## [v0.1.1]
 
 ### Changed
 - Moved `Emotion` type from `tools/thought-record/types` to `core/types` — shared infrastructure cleanup
 
 ---
 
-## [v0.1.0] — MVP: Thought Record
+## [v0.1.0]
 
 ### Added
 - **Thought Record tool** — first CBT module, fully self-contained
@@ -59,3 +64,8 @@ All notable changes to this project will be documented in this file.
 - **Tool registry** — modular plugin architecture (ToolDefinition interface)
 - **Dark theme** — warm dark palette with amber accent
 - **Jest test infrastructure** — jest-expo + @testing-library/react-native
+
+[Unreleased]: https://github.com/Konstantysz/cbt-toolkit-app/compare/v0.2.0...HEAD
+[v0.2.0]: https://github.com/Konstantysz/cbt-toolkit-app/compare/v0.1.1...v0.2.0
+[v0.1.1]: https://github.com/Konstantysz/cbt-toolkit-app/compare/v0.1.0...v0.1.1
+[v0.1.0]: https://github.com/Konstantysz/cbt-toolkit-app/releases/tag/v0.1.0
