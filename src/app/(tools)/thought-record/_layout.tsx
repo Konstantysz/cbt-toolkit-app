@@ -36,6 +36,8 @@ export default function ThoughtRecordLayout(): React.JSX.Element {
       />
       <Stack.Screen name="new" options={{ title: 'Nowy wpis' }} />
       <Stack.Screen name="[id]/index" options={{ title: 'Szczegóły' }} />
+      <Stack.Screen name="[id]/compare" options={{ title: 'Porównanie' }} />
+      <Stack.Screen name="[id]/edit" options={{ title: 'Edytuj wpis' }} />
     </Stack>
   );
 }
