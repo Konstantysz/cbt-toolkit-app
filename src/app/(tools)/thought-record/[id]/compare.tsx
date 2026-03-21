@@ -1,6 +1,8 @@
 import React from 'react';
-import { View } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+import { CompareScreen } from '../../../../tools/thought-record/screens/CompareScreen';
 
 export default function CompareRoute() {
-  return <View />;
+  const { id } = useLocalSearchParams<{ id: string }>();
+  return <CompareScreen id={id} />;
 }
