@@ -54,4 +54,12 @@ export const pl = {
       step6: '„np. Odczuwam niepokój, ale to uczucie przeminie. Mam dowody na to, że sobie radzę."',
     },
   },
-} as const;
+  search: {
+    placeholder: 'Szukaj wpisów...',
+    noResults: (q: string) => `Brak wyników dla „${q}"`,
+  },
+  onboarding: {
+    badge: 'Przykład',
+    deleteNote: 'To jest przykładowy wpis. Możesz go usunąć, gdy nie jest już potrzebny.',
+  },
+};
