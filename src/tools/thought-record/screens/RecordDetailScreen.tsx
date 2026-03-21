@@ -127,9 +127,14 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
 function EmotionRow({ emotion }: { emotion: Emotion }) {
   const before = emotion.intensityBefore;
   const after = emotion.intensityAfter;
+  const improved = after !== undefined && after < before;
+
   return (
     <View style={styles.emotionRow}>
-      <Text style={styles.emotionName}>{emotion.name}</Text>
+      <View style={styles.emotionNameRow}>
+        <Text style={styles.emotionName}>{emotion.name}</Text>
+        {improved && <Text style={styles.emotionDrop}>↓</Text>}
+      </View>
       <View style={styles.intensityBars}>
         <IntensityBar label="przed" value={before} />
         {after !== undefined && <IntensityBar label="po" value={after} accent />}
@@ -146,7 +151,7 @@ function IntensityBar({ label, value, accent }: { label: string; value: number; 
         <View
           style={[
             styles.ibarFill,
-            { width: `${value}%` as `${number}%`, backgroundColor: accent ? colors.accent : 'rgba(196,149,106,0.4)' },
+            { width: `${value}%` as `${number}%`, backgroundColor: accent ? colors.accent : 'rgba(196,149,106,0.35)' },
           ]}
         />
       </View>
@@ -170,14 +175,16 @@ const styles = StyleSheet.create({
   bodyText: { fontSize: 14, color: colors.text, lineHeight: 23 },
   emptyField: { color: colors.textDim, fontStyle: 'italic' },
   divider: { height: 1, backgroundColor: colors.border, marginBottom: 20 },
-  emotionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
-  emotionName: { fontSize: 14, color: colors.text },
-  intensityBars: { gap: 4 },
-  ibarRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  emotionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 },
+  emotionNameRow: { flexDirection: 'row', alignItems: 'center', gap: 6, minWidth: 90 },
+  emotionName: { fontSize: 13, color: colors.text },
+  emotionDrop: { fontSize: 12, color: colors.success, fontWeight: '700' },
+  intensityBars: { flex: 1 },
+  ibarRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 },
   ibarLabel: { fontSize: 10, color: colors.textDim, width: 28, textAlign: 'right' },
-  ibarTrack: { width: 80, height: 3, backgroundColor: colors.border, borderRadius: 2, overflow: 'hidden' },
-  ibarFill: { height: '100%', borderRadius: 2 },
-  ibarNum: { fontSize: 11, color: colors.textMuted, width: 32 },
+  ibarTrack: { width: 120, height: 6, backgroundColor: colors.border, borderRadius: 3, overflow: 'hidden' },
+  ibarFill: { height: '100%', borderRadius: 3 },
+  ibarNum: { fontSize: 10, color: colors.textMuted },
   deleteBtn: {
     marginTop: 32,
     paddingVertical: 14,

@@ -13,6 +13,7 @@ type DbRow = {
   alternative_thought: string;
   outcome: string | null;
   is_complete: number;
+  is_example: number;
   current_step: number;
   created_at: string;
   updated_at: string;
@@ -30,6 +31,7 @@ function rowToRecord(row: DbRow): ThoughtRecord {
     alternativeThought: row.alternative_thought,
     outcome: row.outcome,
     isComplete: row.is_complete === 1,
+    isExample: row.is_example === 1,
     currentStep: row.current_step,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
