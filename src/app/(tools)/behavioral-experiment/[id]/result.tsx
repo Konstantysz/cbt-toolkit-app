@@ -1,5 +1,7 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+import { NewExperimentFlow } from '../../../../tools/behavioral-experiment/screens/NewExperimentFlow';
 export default function ExperimentResultRoute() {
-  return <View><Text>Wynik — TODO</Text></View>;
+  const { id } = useLocalSearchParams<{ id: string }>();
+  return <NewExperimentFlow phase="result" experimentId={id} />;
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { NewExperimentFlow } from '../../../tools/behavioral-experiment/screens/NewExperimentFlow';
 export default function NewExperimentRoute() {
-  return <View><Text>Nowy — TODO</Text></View>;
+  return <NewExperimentFlow phase="plan" />;
 }
