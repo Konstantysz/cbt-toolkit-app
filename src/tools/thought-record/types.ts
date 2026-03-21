@@ -12,6 +12,7 @@ export interface ThoughtRecord {
   alternativeThought: string;
   outcome: string | null;
   isComplete: boolean;
+  isExample: boolean;
   currentStep: number;
   createdAt: string;
   updatedAt: string;

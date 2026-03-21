@@ -16,6 +16,7 @@ import { colors } from '../../../core/theme';
 import { useThoughtRecord } from '../hooks/useThoughtRecords';
 import * as repo from '../repository';
 import type { Emotion } from '../types';
+import { pl } from '../i18n/pl';
 
 interface Props {
   id: string;
@@ -79,13 +80,28 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scroll}>
-        <View style={styles.header}>
-          <Text style={styles.headerDate}>{formattedDate}</Text>
-          {record.isComplete ? (
-            <Text style={[styles.badge, styles.badgeComplete]}>Kompletny</Text>
-          ) : (
-            <Text style={[styles.badge, styles.badgeInProgress]}>W toku</Text>
-          )}
+        <View style={styles.metaRow}>
+          <View style={styles.metaLeft}>
+            <Text style={styles.headerDate}>{formattedDate}</Text>
+            {record.isComplete
+              ? <Text style={[styles.badge, styles.badgeComplete]}>Kompletny</Text>
+              : <Text style={[styles.badge, styles.badgeInProgress]}>W toku</Text>
+            }
+          </View>
+          <View style={styles.actionBtns}>
+            <TouchableOpacity
+              style={styles.actionBtn}
+              onPress={() => router.push(`/(tools)/thought-record/${id}/compare`)}
+            >
+              <Text style={styles.actionBtnText}>⊞ {pl.compare.btnLabel}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.actionBtn}
+              onPress={() => router.push(`/(tools)/thought-record/${id}/edit`)}
+            >
+              <Text style={styles.actionBtnText}>✏ {pl.edit.title}</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Emotions (step 02) */}
@@ -127,9 +143,14 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
 function EmotionRow({ emotion }: { emotion: Emotion }) {
   const before = emotion.intensityBefore;
   const after = emotion.intensityAfter;
+  const improved = after !== undefined && after < before;
+
   return (
     <View style={styles.emotionRow}>
-      <Text style={styles.emotionName}>{emotion.name}</Text>
+      <View style={styles.emotionNameRow}>
+        <Text style={styles.emotionName}>{emotion.name}</Text>
+        {improved && <Text style={styles.emotionDrop}>↓</Text>}
+      </View>
       <View style={styles.intensityBars}>
         <IntensityBar label="przed" value={before} />
         {after !== undefined && <IntensityBar label="po" value={after} accent />}
@@ -146,7 +167,7 @@ function IntensityBar({ label, value, accent }: { label: string; value: number; 
         <View
           style={[
             styles.ibarFill,
-            { width: `${value}%` as `${number}%`, backgroundColor: accent ? colors.accent : 'rgba(196,149,106,0.4)' },
+            { width: `${value}%` as `${number}%`, backgroundColor: accent ? colors.accent : 'rgba(196,149,106,0.35)' },
           ]}
         />
       </View>
@@ -159,7 +180,14 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.bg },
   centered: { flex: 1, backgroundColor: colors.bg, alignItems: 'center', justifyContent: 'center' },
   scroll: { padding: 20 },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
+  metaRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20, gap: 12 },
+  metaLeft: { flexDirection: 'column', gap: 5 },
+  actionBtns: { flexDirection: 'row', gap: 8, flexShrink: 0 },
+  actionBtn: {
+    borderWidth: 1, borderColor: colors.border, borderRadius: 9,
+    paddingVertical: 6, paddingHorizontal: 10,
+  },
+  actionBtnText: { fontSize: 10, color: colors.textMuted, letterSpacing: 0.06 },
   headerDate: { fontSize: 12, color: colors.textMuted, letterSpacing: 0.5 },
   badge: { fontSize: 10, letterSpacing: 0.8, paddingHorizontal: 7, paddingVertical: 2, borderRadius: 4, overflow: 'hidden', textTransform: 'uppercase' },
   badgeComplete: { backgroundColor: 'rgba(122,158,126,0.12)', color: colors.success },
@@ -170,14 +198,16 @@ const styles = StyleSheet.create({
   bodyText: { fontSize: 14, color: colors.text, lineHeight: 23 },
   emptyField: { color: colors.textDim, fontStyle: 'italic' },
   divider: { height: 1, backgroundColor: colors.border, marginBottom: 20 },
-  emotionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
-  emotionName: { fontSize: 14, color: colors.text },
-  intensityBars: { gap: 4 },
-  ibarRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  emotionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 },
+  emotionNameRow: { flexDirection: 'row', alignItems: 'center', gap: 6, minWidth: 90 },
+  emotionName: { fontSize: 13, color: colors.text },
+  emotionDrop: { fontSize: 12, color: colors.success, fontWeight: '700' },
+  intensityBars: { flex: 1 },
+  ibarRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 },
   ibarLabel: { fontSize: 10, color: colors.textDim, width: 28, textAlign: 'right' },
-  ibarTrack: { width: 80, height: 3, backgroundColor: colors.border, borderRadius: 2, overflow: 'hidden' },
-  ibarFill: { height: '100%', borderRadius: 2 },
-  ibarNum: { fontSize: 11, color: colors.textMuted, width: 32 },
+  ibarTrack: { width: 120, height: 6, backgroundColor: colors.border, borderRadius: 3, overflow: 'hidden' },
+  ibarFill: { height: '100%', borderRadius: 3 },
+  ibarNum: { fontSize: 10, color: colors.textMuted },
   deleteBtn: {
     marginTop: 32,
     paddingVertical: 14,

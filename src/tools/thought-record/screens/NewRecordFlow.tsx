@@ -244,11 +244,16 @@ function renderStep(
   }
 }
 
-export function NewRecordFlow(): React.JSX.Element {
+interface NewRecordFlowProps {
+  existingId?: string;
+}
+
+export function NewRecordFlow({ existingId }: NewRecordFlowProps): React.JSX.Element {
   const db = useSQLiteContext();
   const [currentStep, setCurrentStep] = useState(1);
+  const [editLoading, setEditLoading] = useState(existingId !== undefined);
   const [state, setState] = useState<FlowState>({
-    recordId: null,
+    recordId: existingId ?? null,
     situation: '',
     situationDate: todayIso(),
     emotions: [],
@@ -262,12 +267,33 @@ export function NewRecordFlow(): React.JSX.Element {
   const [saving, setSaving] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
 
-  // Create the DB record on mount
+  // Create the DB record on mount (new record only)
   useEffect(() => {
+    if (existingId) return;
     repo.createRecord(db).then(record => {
       setState(s => ({ ...s, recordId: record.id }));
     });
-  }, [db]);
+  }, [db, existingId]);
+
+  // Load existing record when editing
+  useEffect(() => {
+    if (!existingId) return;
+    repo.getRecordById(db, existingId).then(record => {
+      if (!record) return;
+      setState(prev => ({
+        ...prev,
+        recordId: existingId,
+        situation: record.situation,
+        situationDate: record.situationDate ?? todayIso(),
+        emotions: record.emotions,
+        automaticThoughts: record.automaticThoughts,
+        evidenceFor: record.evidenceFor,
+        evidenceAgainst: record.evidenceAgainst,
+        alternativeThought: record.alternativeThought,
+        outcome: record.outcome ?? '',
+      }));
+    }).finally(() => setEditLoading(false));
+  }, [existingId, db]);
 
   const update = useCallback(<K extends keyof FlowState>(key: K, value: FlowState[K]) => {
     setState(s => ({ ...s, [key]: value }));
@@ -304,7 +330,11 @@ export function NewRecordFlow(): React.JSX.Element {
     if (currentStep === TOTAL_STEPS) {
       await persistCurrentStep(TOTAL_STEPS);
       await repo.updateRecord(db, state.recordId!, { isComplete: true });
-      router.replace(`/(tools)/thought-record/${state.recordId}`);
+      if (existingId) {
+        router.replace(`/(tools)/thought-record/${existingId}`);
+      } else {
+        router.replace(`/(tools)/thought-record/${state.recordId}`);
+      }
       return;
     }
 
@@ -321,6 +351,14 @@ export function NewRecordFlow(): React.JSX.Element {
     await persistCurrentStep(currentStep - 1);
     setCurrentStep(s => s - 1);
     scrollRef.current?.scrollTo({ y: 0, animated: false });
+  }
+
+  if (editLoading) {
+    return (
+      <View testID="loading-indicator" style={styles.centered}>
+        <ActivityIndicator color={colors.accent} />
+      </View>
+    );
   }
 
   if (!state.recordId) {
