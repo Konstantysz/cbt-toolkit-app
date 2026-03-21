@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CBT Toolkit — Phase 2 Mockup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Lora:ital,wght@0,400;0,500;1,400&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0C0B09; --surface: #161510; --surface-raised: #1E1C17;
+      --border: #2C2920; --border-focus: #4A4438;
+      --accent: #C4956A; --accent-dim: rgba(196,149,106,0.13); --accent-border: rgba(196,149,106,0.25);
+      --text: #EDE5D8; --text-muted: #8C8276; --text-dim: #4A453E;
+      --danger: #C4605A; --danger-dim: rgba(196,96,90,0.12);
+      --success: #7A9E7E; --in-progress: #B8974A;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      background: #060504;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: 'Lora', Georgia, serif;
+      gap: 28px;
+    }
+
+    /* ── SIDEBAR ─────────────────────────────────── */
+    .mockup-sidebar {
+      width: 160px;
+      background: rgba(22,21,16,0.85);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 10px;
+      backdrop-filter: blur(12px);
+      align-self: flex-start;
+      position: sticky;
+      top: 24px;
+      flex-shrink: 0;
+      max-height: calc(100vh - 48px);
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+    .mockup-sidebar::-webkit-scrollbar { display: none; }
+    .sidebar-title {
+      font-family: 'Courier Prime', monospace;
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      padding: 0 6px;
+      margin-bottom: 10px;
+    }
+    .sidebar-group { margin-bottom: 14px; }
+    .sidebar-group-label {
+      font-family: 'Courier Prime', monospace;
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      padding: 0 6px;
+      margin-bottom: 4px;
+      opacity: 0.6;
+    }
+    .sidebar-group-label.new { color: var(--accent); opacity: 1; }
+    .sidebar-btn {
+      display: block; width: 100%; text-align: left;
+      font-family: 'Lora', serif; font-size: 11.5px;
+      color: var(--text-muted); padding: 6px 10px;
+      border-radius: 7px; cursor: pointer;
+      transition: all 0.14s; background: none; border: none;
+      margin-bottom: 1px;
+    }
+    .sidebar-btn:hover { background: var(--surface); color: var(--text); }
+    .sidebar-btn.active { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-border); }
+    .sidebar-btn.new-feat { color: var(--accent); opacity: 0.8; }
+    .sidebar-btn.new-feat:hover { opacity: 1; }
+    .sidebar-btn.new-feat.active { opacity: 1; }
+
+    /* ── PHONE FRAME ─────────────────────────────── */
+    .phone {
+      width: 393px; height: 852px;
+      background: var(--bg);
+      border-radius: 50px; overflow: hidden; position: relative;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.07),
+        0 0 0 8px #111,
+        0 0 0 9px rgba(255,255,255,0.05),
+        0 48px 96px rgba(0,0,0,0.85);
+      flex-shrink: 0;
+    }
+
+    /* ── STATUS BAR ──────────────────────────────── */
+    .status-bar {
+      height: 48px; padding: 16px 32px 0;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .status-time { font-family: 'Courier Prime', monospace; font-size: 13px; font-weight: 700; color: var(--text); }
+    .status-icons { display: flex; gap: 5px; align-items: center; color: var(--text); font-size: 13px; }
+
+    /* ── NAV HEADER ──────────────────────────────── */
+    .nav-header {
+      height: 52px; padding: 0 20px;
+      display: flex; align-items: center; gap: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-back-btn {
+      width: 34px; height: 34px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--accent); font-size: 18px;
+      border-radius: 9px; transition: background 0.14s; flex-shrink: 0;
+    }
+    .nav-back-btn:hover { background: var(--accent-dim); }
+    .nav-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px; font-weight: 500; color: var(--text);
+      flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    /* ── SCROLLABLE CONTENT ──────────────────────── */
+    .scroll-content { overflow-y: auto; scrollbar-width: none; padding: 20px; }
+    .scroll-content::-webkit-scrollbar { display: none; }
+    .content-no-tabs { height: calc(852px - 48px - 52px); }
+    .content-with-tabs { height: calc(852px - 48px - 52px - 82px); }
+
+    /* ── TAB BAR ─────────────────────────────────── */
+    .tab-bar {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 82px; background: var(--surface);
+      border-top: 1px solid var(--border);
+      display: flex; padding-bottom: 20px; padding-top: 4px;
+    }
+    .tab-item {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 3px;
+      cursor: pointer; color: var(--text-dim); transition: color 0.14s;
+    }
+    .tab-item.active { color: var(--accent); }
+    .tab-icon { font-size: 19px; line-height: 1; }
+    .tab-label { font-family: 'Courier Prime', monospace; font-size: 9px; letter-spacing: 0.1em; }
+
+    /* ── SCREEN SYSTEM ───────────────────────────── */
+    .screen { display: none; flex-direction: column; height: 100%; }
+    .screen.active { display: flex; animation: fadeUp 0.22s ease-out; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── BUTTONS ─────────────────────────────────── */
+    .btn {
+      flex: 1; padding: 14px; border-radius: 13px; border: none;
+      font-family: 'Lora', serif; font-size: 14px; font-weight: 500;
+      cursor: pointer; transition: all 0.15s; letter-spacing: 0.01em;
+    }
+    .btn-ghost {
+      background: transparent; border: 1px solid var(--border); color: var(--text-muted);
+    }
+    .btn-ghost:hover { border-color: var(--border-focus); color: var(--text); }
+    .btn-primary { background: var(--accent); color: #0C0B09; }
+    .btn-primary:hover { filter: brightness(1.08); transform: translateY(-1px); }
+    .btn-danger-outline {
+      background: var(--danger-dim);
+      border: 1px solid rgba(196,96,90,0.22);
+      color: var(--danger);
+    }
+
+    /* ── BADGES ──────────────────────────────────── */
+    .badge {
+      font-family: 'Courier Prime', monospace; font-size: 9px;
+      letter-spacing: 0.1em; padding: 2px 7px; border-radius: 4px;
+      text-transform: uppercase; display: inline-block;
+    }
+    .badge-complete { background: rgba(122,158,126,0.1); color: var(--success); border: 1px solid rgba(122,158,126,0.2); }
+    .badge-inprogress { background: rgba(184,151,74,0.1); color: var(--in-progress); border: 1px solid rgba(184,151,74,0.2); }
+    .badge-example { background: rgba(184,151,74,0.12); color: var(--in-progress); border: 1px solid rgba(184,151,74,0.25); }
+
+    /* ── RECORD LIST ─────────────────────────────── */
+    .section-label {
+      font-family: 'Courier Prime', monospace; font-size: 9px;
+      letter-spacing: 0.2em; color: var(--text-dim); text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .record-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 15px 16px; margin-bottom: 10px;
+      cursor: pointer; transition: all 0.16s;
+    }
+    .record-card:hover { border-color: var(--border-focus); background: var(--surface-raised); }
+    .record-card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .record-date { font-family: 'Courier Prime', monospace; font-size: 10px; color: var(--text-muted); letter-spacing: 0.08em; }
+    .record-situation {
+      font-family: 'Lora', serif; font-size: 13.5px; color: var(--text);
+      line-height: 1.55; margin-bottom: 10px;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .record-emotions { display: flex; flex-wrap: wrap; gap: 5px; }
+    .emotion-tag {
+      font-family: 'Courier Prime', monospace; font-size: 9px; letter-spacing: 0.07em;
+      padding: 2px 8px; border-radius: 4px;
+      background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-border);
+    }
+    .emotion-tag.neutral { background: rgba(74,69,62,0.2); color: var(--text-dim); border-color: var(--border); }
+    .fab {
+      position: absolute; bottom: 100px; right: 20px;
+      width: 52px; height: 52px; background: var(--accent);
+      border-radius: 16px; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; box-shadow: 0 6px 24px rgba(196,149,106,0.35);
+      transition: all 0.18s; font-size: 24px; color: #0C0B09;
+      font-weight: 700; z-index: 5; line-height: 1;
+    }
+    .fab:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(196,149,106,0.45); }
+
+    /* ── SEARCH BAR (Phase 2) ────────────────────── */
+    .search-wrap {
+      position: relative; margin-bottom: 16px;
+    }
+    .search-icon {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      font-size: 14px; color: var(--text-dim); pointer-events: none;
+    }
+    .search-input {
+      width: 100%; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 12px;
+      padding: 11px 14px 11px 36px;
+      font-family: 'Lora', serif; font-size: 13px; color: var(--text);
+      outline: none; transition: border-color 0.18s;
+    }
+    .search-input::placeholder { color: var(--text-dim); }
+    .search-input:focus { border-color: var(--border-focus); }
+
+    /* ── DETAIL SCREEN ───────────────────────────── */
+    .detail-meta {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      margin-bottom: 20px; gap: 12px;
+    }
+    .detail-meta-left { display: flex; flex-direction: column; gap: 5px; }
+    .detail-date {
+      font-family: 'Courier Prime', monospace; font-size: 10px;
+      color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase;
+    }
+    .detail-action-btns { display: flex; gap: 8px; flex-shrink: 0; }
+    .detail-action-btn {
+      display: flex; align-items: center; gap: 5px;
+      background: transparent; border: 1px solid var(--border);
+      border-radius: 9px; padding: 6px 10px;
+      font-family: 'Courier Prime', monospace; font-size: 10px;
+      letter-spacing: 0.06em; color: var(--text-muted);
+      cursor: pointer; transition: all 0.14s; white-space: nowrap;
+    }
+    .detail-action-btn:hover { border-color: var(--border-focus); color: var(--text); }
+    .detail-action-btn.compare:hover { border-color: var(--accent-border); color: var(--accent); }
+    .detail-action-btn.edit:hover { border-color: var(--accent-border); color: var(--accent); }
+    .detail-section { margin-bottom: 22px; }
+    .detail-step-num {
+      font-family: 'Courier Prime', monospace; font-size: 9px;
+      letter-spacing: 0.2em; color: var(--text-dim); text-transform: uppercase; margin-bottom: 3px;
+    }
+    .detail-step-title {
+      font-family: 'Cormorant Garamond', serif; font-size: 17px;
+      font-weight: 500; color: var(--accent); margin-bottom: 8px;
+    }
+    .detail-text { font-family: 'Lora', serif; font-size: 13.5px; color: var(--text); line-height: 1.75; }
+    .detail-divider { height: 1px; background: var(--border); margin: 0 0 22px; }
+
+    /* ── EMOTION BARS — ENHANCED (Phase 2) ──────── */
+    .emotion-row-p2 {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 14px; gap: 8px;
+    }
+    .emotion-name-p2 {
+      font-family: 'Lora', serif; font-size: 13px; color: var(--text);
+      display: flex; align-items: center; gap: 5px; flex-shrink: 0;
+      min-width: 90px;
+    }
+    .emotion-drop { color: var(--success); font-size: 12px; font-weight: 700; }
+    .ibar-group { display: flex; flex-direction: column; gap: 5px; }
+    .ibar-row-p2 { display: flex; align-items: center; gap: 7px; }
+    .ibar-label-p2 {
+      font-family: 'Courier Prime', monospace; font-size: 9px;
+      color: var(--text-dim); width: 28px; text-align: right; flex-shrink: 0;
+    }
+    .ibar-track-p2 {
+      width: 120px; height: 6px;
+      background: var(--border); border-radius: 3px; overflow: hidden; flex-shrink: 0;
+    }
+    .ibar-fill-p2 { height: 100%; border-radius: 3px; }
+    .ibar-fill-p2.before { background: rgba(196,149,106,0.35); }
+    .ibar-fill-p2.after { background: var(--accent); }
+    .ibar-num-p2 {
+      font-family: 'Courier Prime', monospace; font-size: 11px;
+      color: var(--text-muted); min-width: 30px;
+    }
+
+    /* ── STEP FLOW ───────────────────────────────── */
+    .step-progress { display: flex; gap: 5px; padding: 12px 20px 14px; }
+    .step-seg { height: 3px; border-radius: 2px; flex: 1; background: var(--border); transition: background 0.35s; }
+    .step-seg.done { background: rgba(196,149,106,0.35); }
+    .step-seg.current { background: var(--accent); }
+    .step-inner { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .step-scroll { flex: 1; overflow-y: auto; padding: 4px 20px 16px; scrollbar-width: none; }
+    .step-scroll::-webkit-scrollbar { display: none; }
+    .step-prompt {
+      font-family: 'Cormorant Garamond', serif; font-size: 15px;
+      font-weight: 300; font-style: italic; color: var(--text-muted);
+      line-height: 1.65; margin-bottom: 18px;
+    }
+    .field-label {
+      font-family: 'Courier Prime', monospace; font-size: 10px;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--text-muted); margin-bottom: 8px;
+    }
+    .text-area {
+      width: 100%; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 13px;
+      padding: 15px; color: var(--text);
+      font-family: 'Lora', serif; font-size: 14px; line-height: 1.75;
+      resize: none; min-height: 120px; outline: none;
+      transition: border-color 0.18s; display: block;
+    }
+    .text-area:focus { border-color: var(--accent); }
+    .text-area::placeholder { color: var(--text-dim); }
+    .date-row {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 13px; padding: 14px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+      cursor: pointer; margin-top: 16px; transition: border-color 0.18s;
+    }
+    .date-row:hover { border-color: var(--border-focus); }
+    .date-row-label { font-family: 'Lora', serif; font-size: 13px; color: var(--text-muted); }
+    .date-row-val { font-family: 'Courier Prime', monospace; font-size: 13px; color: var(--accent); }
+    .step-nav {
+      padding: 12px 20px 20px; display: flex; gap: 10px;
+      flex-shrink: 0; border-top: 1px solid var(--border);
+    }
+
+    /* ── HELPER (Phase 2) ────────────────────────── */
+    .helper-toggle {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: none; border: none; cursor: pointer;
+      font-family: 'Courier Prime', monospace; font-size: 10px;
+      letter-spacing: 0.08em; color: var(--text-dim);
+      padding: 6px 0; margin-top: 10px;
+      transition: color 0.14s;
+    }
+    .helper-toggle:hover { color: var(--text-muted); }
+    .helper-toggle.open { color: var(--accent); }
+    .helper-panel {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 14px; margin-top: 8px;
+      display: none;
+    }
+    .helper-panel.open { display: block; animation: fadeUp 0.18s ease-out; }
+    .helper-label {
+      font-family: 'Courier Prime', monospace; font-size: 9px;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--text-dim); margin-bottom: 8px;
+    }
+    .helper-text {
+      font-family: 'Cormorant Garamond', serif; font-size: 15px;
+      font-weight: 300; font-style: italic; color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    /* ── COMPARE VIEW (Phase 2) ──────────────────── */
+    .compare-body {
+      flex: 1; display: flex; flex-direction: column;
+      overflow: hidden; padding: 0 16px 12px;
+    }
+    .compare-top {
+      display: flex; flex-direction: column; align-items: center;
+      padding: 14px 0 10px; gap: 6px; flex-shrink: 0;
+    }
+    .compare-dots { display: flex; gap: 7px; align-items: center; }
+    .compare-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--border); transition: all 0.2s;
+    }
+    .compare-dot.active { background: var(--accent); width: 18px; border-radius: 3px; }
+    .compare-page-label {
+      font-family: 'Courier Prime', monospace; font-size: 10px;
+      letter-spacing: 0.12em; color: var(--text-muted); text-transform: uppercase;
+    }
+    .compare-cols {
+      flex: 1; display: flex; gap: 10px; overflow: hidden; min-height: 0;
+    }
+    .compare-col {
+      flex: 1; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 13px; padding: 13px; overflow-y: auto;
+      scrollbar-width: none; display: flex; flex-direction: column; gap: 10px;
+    }
+    .compare-col::-webkit-scrollbar { display: none; }
+    .compare-col-title {
+      font-family: 'Cormorant Garamond', serif; font-size: 15px;
+      font-weight: 500; color: var(--accent); margin-bottom: 6px; flex-shrink: 0;
+    }
+    .compare-col-title.success { color: var(--success); }
+    .compare-col-title.danger { color: var(--danger); }
+    .compare-col-text {
+      font-family: 'Lora', serif; font-size: 12px;
+      color: var(--text); line-height: 1.65;
+    }
+    .compare-col-subsection { margin-top: 10px; }
+    .compare-col-divider { height: 1px; background: var(--border); margin: 10px 0; }
+
+    /* compact ibar for compare */
+    .ibar-row-sm { display: flex; align-items: center; gap: 5px; margin-bottom: 4px; }
+    .ibar-label-sm {
+      font-family: 'Courier Prime', monospace; font-size: 8px;
+      color: var(--text-dim); width: 24px; text-align: right; flex-shrink: 0;
+    }
+    .ibar-track-sm { width: 72px; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; flex-shrink: 0; }
+    .ibar-fill-sm { height: 100%; border-radius: 3px; }
+    .ibar-fill-sm.before { background: rgba(196,149,106,0.35); }
+    .ibar-fill-sm.after { background: var(--accent); }
+    .ibar-num-sm { font-family: 'Courier Prime', monospace; font-size: 9px; color: var(--text-muted); }
+
+    .compare-emotion-row { margin-bottom: 10px; }
+    .compare-emotion-name {
+      font-family: 'Lora', serif; font-size: 11px; color: var(--text);
+      margin-bottom: 4px; display: flex; align-items: center; gap: 4px;
+    }
+    .compare-emotion-name .drop { font-size: 10px; color: var(--success); }
+
+    .compare-nav-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 0 0; flex-shrink: 0;
+    }
+    .compare-arrow-btn {
+      width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
+      background: transparent; border: 1px solid var(--border);
+      border-radius: 10px; cursor: pointer;
+      font-family: 'Lora', serif; font-size: 18px; color: var(--text-muted);
+      transition: all 0.14s;
+    }
+    .compare-arrow-btn:hover { border-color: var(--border-focus); color: var(--accent); }
+    .compare-arrow-btn:disabled { opacity: 0.25; cursor: default; }
+    .compare-arrow-btn:disabled:hover { border-color: var(--border); color: var(--text-muted); }
+    .compare-page-num {
+      font-family: 'Courier Prime', monospace; font-size: 11px;
+      color: var(--text-dim); letter-spacing: 0.1em;
+    }
+
+    /* ── DELETE BTN ──────────────────────────────── */
+    .delete-btn {
+      margin-top: 28px; padding: 14px 0; border-radius: 13px;
+      background: var(--danger-dim);
+      border: 1px solid rgba(196,96,90,0.22);
+      width: 100%; text-align: center; cursor: pointer;
+      font-family: 'Lora', serif; font-size: 15px; color: var(--danger);
+      transition: all 0.15s;
+    }
+    .delete-btn:hover { background: rgba(196,96,90,0.18); }
+  </style>
+</head>
+<body>
+
+<!-- ══ SIDEBAR ══════════════════════════════════════ -->
+<nav class="mockup-sidebar">
+  <div class="sidebar-title">Phase 2</div>
+
+  <div class="sidebar-group">
+    <div class="sidebar-group-label new">✦ Nowe</div>
+    <button class="sidebar-btn new-feat active" onclick="goTo('detail-enhanced')">🔍 Detail ulepszone</button>
+    <button class="sidebar-btn new-feat" onclick="goTo('compare-1')">⊞ Porównanie str. 1</button>
+    <button class="sidebar-btn new-feat" onclick="goTo('compare-3')">⊞ Porównanie str. 3</button>
+    <button class="sidebar-btn new-feat" onclick="goTo('step-helper')">💡 Krok 1 + wskazówka</button>
+    <button class="sidebar-btn new-feat" onclick="goTo('list-search')">🔎 Lista + wyszukiwanie</button>
+  </div>
+
+  <div class="sidebar-group">
+    <div class="sidebar-group-label">Phase 1 (ref.)</div>
+    <button class="sidebar-btn" onclick="goTo('list-ref')">📋 Lista</button>
+    <button class="sidebar-btn" onclick="goTo('step-ref')">✏️ Krok 1</button>
+  </div>
+</nav>
+
+<!-- ══ PHONE ════════════════════════════════════════ -->
+<div class="phone">
+
+  <!-- ══ 1. DETAIL ENHANCED ══════════════════════════ -->
+  <div class="screen active" id="screen-detail-enhanced">
+    <div class="status-bar">
+      <span class="status-time">09:41</span>
+      <span class="status-icons">▲▲▲ 🔋</span>
+    </div>
+    <div class="nav-header">
+      <div class="nav-back-btn" onclick="goTo('list-ref')">‹</div>
+      <div class="nav-title">Szczegóły</div>
+    </div>
+    <div class="content-no-tabs scroll-content">
+
+      <!-- Meta row: date + badge + action buttons -->
+      <div class="detail-meta">
+        <div class="detail-meta-left">
+          <div class="detail-date">18 marca 2026 · 21:14</div>
+          <span class="badge badge-complete">Kompletny</span>
+        </div>
+        <div class="detail-action-btns">
+          <button class="detail-action-btn compare" onclick="goTo('compare-1')">⊞ Porównaj</button>
+          <button class="detail-action-btn edit">✏ Edytuj</button>
+        </div>
+      </div>
+
+      <!-- Krok 01 -->
+      <div class="detail-section">
+        <div class="detail-step-num">Krok 01</div>
+        <div class="detail-step-title">Sytuacja</div>
+        <div class="detail-text">Kłótnia z partnerem o drobne obowiązki domowe. Byłem zmęczony po pracy i zapomniałem wyrzucić śmieci.</div>
+      </div>
+      <div class="detail-divider"></div>
+
+      <!-- Krok 02 — ULEPSZONE EMOCJE -->
+      <div class="detail-section">
+        <div class="detail-step-num">Krok 02</div>
+        <div class="detail-step-title">Emocje</div>
+
+        <!-- Złość: 75 → 40 -->
+        <div class="emotion-row-p2">
+          <div class="emotion-name-p2">
+            Złość <span class="emotion-drop">↓</span>
+          </div>
+          <div class="ibar-group">
+            <div class="ibar-row-p2">
+              <div class="ibar-label-p2">przed</div>
+              <div class="ibar-track-p2"><div class="ibar-fill-p2 before" style="width:75%"></div></div>
+              <div class="ibar-num-p2">75%</div>
+            </div>
+            <div class="ibar-row-p2">
+              <div class="ibar-label-p2">po</div>
+              <div class="ibar-track-p2"><div class="ibar-fill-p2 after" style="width:40%"></div></div>
+              <div class="ibar-num-p2">40%</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Smutek: 60 → 35 -->
+        <div class="emotion-row-p2">
+          <div class="emotion-name-p2">
+            Smutek <span class="emotion-drop">↓</span>
+          </div>
+          <div class="ibar-group">
+            <div class="ibar-row-p2">
+              <div class="ibar-label-p2">przed</div>
+              <div class="ibar-track-p2"><div class="ibar-fill-p2 before" style="width:60%"></div></div>
+              <div class="ibar-num-p2">60%</div>
+            </div>
+            <div class="ibar-row-p2">
+              <div class="ibar-label-p2">po</div>
+              <div class="ibar-track-p2"><div class="ibar-fill-p2 after" style="width:35%"></div></div>
+              <div class="ibar-num-p2">35%</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bezradność: 55 → 30 -->
+        <div class="emotion-row-p2">
+          <div class="emotion-name-p2">
+            Bezradność <span class="emotion-drop">↓</span>
+          </div>
+          <div class="ibar-group">
+            <div class="ibar-row-p2">
+              <div class="ibar-label-p2">przed</div>
+              <div class="ibar-track-p2"><div class="ibar-fill-p2 before" style="width:55%"></div></div>
+              <div class="ibar-num-p2">55%</div>
+            </div>
+            <div class="ibar-row-p2">
+              <div class="ibar-label-p2">po</div>
+              <div class="ibar-track-p2"><div class="ibar-fill-p2 after" style="width:30%"></div></div>
+              <div class="ibar-num-p2">30%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="detail-divider"></div>
+
+      <!-- Krok 03 -->
+      <div class="detail-section">
+        <div class="detail-step-num">Krok 03</div>
+        <div class="detail-step-title">Myśli automatyczne</div>
+        <div class="detail-text">Ona mnie nie rozumie. Zawsze muszę robić wszystko sam. Może ta relacja nie ma sensu.</div>
+      </div>
+      <div class="detail-divider"></div>
+
+      <!-- Krok 04 -->
+      <div class="detail-section">
+        <div class="detail-step-num">Krok 04</div>
+        <div class="detail-step-title">Argumenty za</div>
+        <div class="detail-text">Faktycznie zapomniałem o śmieciach dwa razy w ostatnim miesiącu. Byłem mocno zajęty.</div>
+      </div>
+      <div class="detail-divider"></div>
+
+      <!-- Krok 05 -->
+      <div class="detail-section">
+        <div class="detail-step-num">Krok 05</div>
+        <div class="detail-step-title">Argumenty przeciw</div>
+        <div class="detail-text">Partner zazwyczaj jest wspierający. Razem planujemy przyszłość. Jedna kłótnia nie przekreśla całej relacji.</div>
+      </div>
+      <div class="detail-divider"></div>
+
+      <!-- Krok 06 -->
+      <div class="detail-section">
+        <div class="detail-step-num">Krok 06</div>
+        <div class="detail-step-title">Myśl alternatywna</div>
+        <div class="detail-text">Kłótnia wynikła ze zmęczenia. Jedna sprzeczka nie oznacza, że relacja nie ma sensu.</div>
+      </div>
+      <div class="detail-divider"></div>
+
+      <!-- Krok 07 -->
+      <div class="detail-section">
+        <div class="detail-step-num">Krok 07</div>
+        <div class="detail-step-title">Podsumowanie</div>
+        <div class="detail-text">Po ćwiczeniu poczułem się spokojniejszy. Zdałem sobie sprawę, że moje myśli były przesadzone.</div>
+      </div>
+
+      <button class="delete-btn">Usuń wpis</button>
+    </div>
+  </div>
+
+  <!-- ══ 2. COMPARE — STRONA 1 ═══════════════════════ -->
+  <div class="screen" id="screen-compare-1">
+    <div class="status-bar">
+      <span class="status-time">09:41</span>
+      <span class="status-icons">▲▲▲ 🔋</span>
+    </div>
+    <div class="nav-header">
+      <div class="nav-back-btn" onclick="goTo('detail-enhanced')">‹</div>
+      <div class="nav-title">Widok porównawczy</div>
+    </div>
+
+    <div class="compare-body">
+      <div class="compare-top">
+        <div class="compare-dots">
+          <div class="compare-dot active"></div>
+          <div class="compare-dot"></div>
+          <div class="compare-dot"></div>
+          <div class="compare-dot"></div>
+        </div>
+        <div class="compare-page-label">Sytuacja + Emocje</div>
+      </div>
+
+      <div class="compare-cols">
+        <!-- Lewa: Sytuacja -->
+        <div class="compare-col">
+          <div class="compare-col-title">Sytuacja</div>
+          <div class="compare-col-text">
+            Kłótnia z partnerem o drobne obowiązki domowe. Byłem zmęczony po pracy i zapomniałem wyrzucić śmieci. Zrobiło się z tego dłuższa rozmowa, podczas której poczułem się niezrozumiany i odrzucony.
+          </div>
+          <div style="margin-top:10px;">
+            <div style="font-family:'Courier Prime',monospace;font-size:8px;letter-spacing:0.12em;color:var(--text-dim);text-transform:uppercase;margin-bottom:4px;">Kiedy</div>
+            <div style="font-family:'Courier Prime',monospace;font-size:11px;color:var(--accent);">18 marca 2026</div>
+          </div>
+        </div>
+
+        <!-- Prawa: Emocje (kompaktowe) -->
+        <div class="compare-col">
+          <div class="compare-col-title">Emocje</div>
+
+          <div class="compare-emotion-row">
+            <div class="compare-emotion-name">Złość <span class="drop">↓</span></div>
+            <div class="ibar-row-sm">
+              <div class="ibar-label-sm">przed</div>
+              <div class="ibar-track-sm"><div class="ibar-fill-sm before" style="width:75%"></div></div>
+              <div class="ibar-num-sm">75%</div>
+            </div>
+            <div class="ibar-row-sm">
+              <div class="ibar-label-sm">po</div>
+              <div class="ibar-track-sm"><div class="ibar-fill-sm after" style="width:40%"></div></div>
+              <div class="ibar-num-sm">40%</div>
+            </div>
+          </div>
+
+          <div class="compare-emotion-row">
+            <div class="compare-emotion-name">Smutek <span class="drop">↓</span></div>
+            <div class="ibar-row-sm">
+              <div class="ibar-label-sm">przed</div>
+              <div class="ibar-track-sm"><div class="ibar-fill-sm before" style="width:60%"></div></div>
+              <div class="ibar-num-sm">60%</div>
+            </div>
+            <div class="ibar-row-sm">
+              <div class="ibar-label-sm">po</div>
+              <div class="ibar-track-sm"><div class="ibar-fill-sm after" style="width:35%"></div></div>
+              <div class="ibar-num-sm">35%</div>
+            </div>
+          </div>
+
+          <div class="compare-emotion-row">
+            <div class="compare-emotion-name">Bezradność <span class="drop">↓</span></div>
+            <div class="ibar-row-sm">
+              <div class="ibar-label-sm">przed</div>
+              <div class="ibar-track-sm"><div class="ibar-fill-sm before" style="width:55%"></div></div>
+              <div class="ibar-num-sm">55%</div>
+            </div>
+            <div class="ibar-row-sm">
+              <div class="ibar-label-sm">po</div>
+              <div class="ibar-track-sm"><div class="ibar-fill-sm after" style="width:30%"></div></div>
+              <div class="ibar-num-sm">30%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="compare-nav-row">
+        <button class="compare-arrow-btn" disabled>‹</button>
+        <div class="compare-page-num">1 / 4</div>
+        <button class="compare-arrow-btn" onclick="goTo('compare-2')">›</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 2b. COMPARE — STRONA 2 (dla nawigacji) ══════ -->
+  <div class="screen" id="screen-compare-2">
+    <div class="status-bar">
+      <span class="status-time">09:41</span>
+      <span class="status-icons">▲▲▲ 🔋</span>
+    </div>
+    <div class="nav-header">
+      <div class="nav-back-btn" onclick="goTo('detail-enhanced')">‹</div>
+      <div class="nav-title">Widok porównawczy</div>
+    </div>
+    <div class="compare-body">
+      <div class="compare-top">
+        <div class="compare-dots">
+          <div class="compare-dot"></div>
+          <div class="compare-dot active"></div>
+          <div class="compare-dot"></div>
+          <div class="compare-dot"></div>
+        </div>
+        <div class="compare-page-label">Emocje + Myśli automatyczne</div>
+      </div>
+      <div class="compare-cols">
+        <div class="compare-col">
+          <div class="compare-col-title">Emocje</div>
+          <div class="compare-emotion-row">
+            <div class="compare-emotion-name">Złość <span class="drop">↓</span></div>
+            <div class="ibar-row-sm"><div class="ibar-label-sm">przed</div><div class="ibar-track-sm"><div class="ibar-fill-sm before" style="width:75%"></div></div><div class="ibar-num-sm">75%</div></div>
+            <div class="ibar-row-sm"><div class="ibar-label-sm">po</div><div class="ibar-track-sm"><div class="ibar-fill-sm after" style="width:40%"></div></div><div class="ibar-num-sm">40%</div></div>
+          </div>
+          <div class="compare-emotion-row">
+            <div class="compare-emotion-name">Smutek <span class="drop">↓</span></div>
+            <div class="ibar-row-sm"><div class="ibar-label-sm">przed</div><div class="ibar-track-sm"><div class="ibar-fill-sm before" style="width:60%"></div></div><div class="ibar-num-sm">60%</div></div>
+            <div class="ibar-row-sm"><div class="ibar-label-sm">po</div><div class="ibar-track-sm"><div class="ibar-fill-sm after" style="width:35%"></div></div><div class="ibar-num-sm">35%</div></div>
+          </div>
+        </div>
+        <div class="compare-col">
+          <div class="compare-col-title">Myśli automatyczne</div>
+          <div class="compare-col-text">Ona mnie nie rozumie. Zawsze muszę robić wszystko sam. Nie zależy jej na mnie. Może ta relacja nie ma sensu.</div>
+        </div>
+      </div>
+      <div class="compare-nav-row">
+        <button class="compare-arrow-btn" onclick="goTo('compare-1')">‹</button>
+        <div class="compare-page-num">2 / 4</div>
+        <button class="compare-arrow-btn" onclick="goTo('compare-3')">›</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 3. COMPARE — STRONA 3 ═══════════════════════ -->
+  <div class="screen" id="screen-compare-3">
+    <div class="status-bar">
+      <span class="status-time">09:41</span>
+      <span class="status-icons">▲▲▲ 🔋</span>
+    </div>
+    <div class="nav-header">
+      <div class="nav-back-btn" onclick="goTo('detail-enhanced')">‹</div>
+      <div class="nav-title">Widok porównawczy</div>
+    </div>
+
+    <div class="compare-body">
+      <div class="compare-top">
+        <div class="compare-dots">
+          <div class="compare-dot"></div>
+          <div class="compare-dot"></div>
+          <div class="compare-dot active"></div>
+          <div class="compare-dot"></div>
+        </div>
+        <div class="compare-page-label">Myśli + Argumenty za i przeciw</div>
+      </div>
+
+      <div class="compare-cols">
+        <!-- Lewa: Myśli automatyczne -->
+        <div class="compare-col">
+          <div class="compare-col-title">Myśli automatyczne</div>
+          <div class="compare-col-text">
+            Ona mnie nie rozumie. Zawsze muszę robić wszystko sam. Nie zależy jej na mnie. Może ta relacja nie ma sensu.
+          </div>
+        </div>
+
+        <!-- Prawa: Argumenty za + przeciw -->
+        <div class="compare-col">
+          <div class="compare-col-title success">Argumenty za</div>
+          <div class="compare-col-text">
+            Zapomniałem o śmieciach dwa razy w tym miesiącu. Byłem zmęczony i mało uważny.
+          </div>
+          <div class="compare-col-divider"></div>
+          <div class="compare-col-title danger">Argumenty przeciw</div>
+          <div class="compare-col-text">
+            Partner jest zazwyczaj wspierający. Razem planujemy przyszłość. Jedna kłótnia nie przekreśla relacji. Szef pochwalił mój projekt.
+          </div>
+        </div>
+      </div>
+
+      <div class="compare-nav-row">
+        <button class="compare-arrow-btn" onclick="goTo('compare-2')">‹</button>
+        <div class="compare-page-num">3 / 4</div>
+        <button class="compare-arrow-btn" onclick="goTo('compare-4')">›</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 3b. COMPARE — STRONA 4 (dla nawigacji) ══════ -->
+  <div class="screen" id="screen-compare-4">
+    <div class="status-bar">
+      <span class="status-time">09:41</span>
+      <span class="status-icons">▲▲▲ 🔋</span>
+    </div>
+    <div class="nav-header">
+      <div class="nav-back-btn" onclick="goTo('detail-enhanced')">‹</div>
+      <div class="nav-title">Widok porównawczy</div>
+    </div>
+    <div class="compare-body">
+      <div class="compare-top">
+        <div class="compare-dots">
+          <div class="compare-dot"></div>
+          <div class="compare-dot"></div>
+          <div class="compare-dot"></div>
+          <div class="compare-dot active"></div>
+        </div>
+        <div class="compare-page-label">Za + Przeciw + Alternatywa</div>
+      </div>
+      <div class="compare-cols">
+        <div class="compare-col">
+          <div class="compare-col-title success" style="font-size:13px;">Argumenty za</div>
+          <div class="compare-col-text" style="font-size:11px;">Zapomniałem o śmieciach. Byłem zmęczony.</div>
+          <div class="compare-col-divider"></div>
+          <div class="compare-col-title danger" style="font-size:13px;">Argumenty przeciw</div>
+          <div class="compare-col-text" style="font-size:11px;">Partner wspierający. Razem planujemy przyszłość.</div>
+        </div>
+        <div class="compare-col">
+          <div class="compare-col-title">Myśl alternatywna</div>
+          <div class="compare-col-text">Kłótnia wynikła ze zmęczenia i stresu. Jedna sprzeczka nie oznacza, że partner mnie nie rozumie ani że relacja nie ma sensu. Możemy spokojnie porozmawiać jutro.</div>
+        </div>
+      </div>
+      <div class="compare-nav-row">
+        <button class="compare-arrow-btn" onclick="goTo('compare-3')">‹</button>
+        <div class="compare-page-num">4 / 4</div>
+        <button class="compare-arrow-btn" disabled>›</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 4. KROK 1 + WSKAZÓWKA ══════════════════════ -->
+  <div class="screen" id="screen-step-helper">
+    <div class="status-bar">
+      <span class="status-time">09:41</span>
+      <span class="status-icons">▲▲▲ 🔋</span>
+    </div>
+    <div class="nav-header">
+      <div class="nav-back-btn" onclick="goTo('list-ref')">‹</div>
+      <div class="nav-title">Sytuacja</div>
+    </div>
+    <div class="step-progress" id="prog-helper"></div>
+    <div class="step-inner">
+      <div class="step-scroll">
+        <p class="step-prompt">Co się wydarzyło? Opisz sytuację jak najdokładniej.</p>
+        <div class="field-label">Opis sytuacji</div>
+        <textarea class="text-area" placeholder="Np. Byłem na spotkaniu z szefem i..."></textarea>
+
+        <!-- WSKAZÓWKA (Phase 2) -->
+        <button class="helper-toggle" id="helper-btn-1" onclick="toggleHelper('1')">
+          💡 Wskazówka — jak opisać sytuację?
+        </button>
+        <div class="helper-panel" id="helper-panel-1">
+          <div class="helper-label">Przykład</div>
+          <div class="helper-text">
+            „np. Rano przed wyjściem do pracy poczułem nagły niepokój. Byłem sam w domu, była godzina 8:15. Nie wiedziałem, skąd ten lęk."
+          </div>
+        </div>
+
+        <div class="date-row">
+          <div>
+            <div class="field-label" style="margin-bottom:2px;">Kiedy to się wydarzyło?</div>
+            <div class="date-row-val">21 marca 2026</div>
+          </div>
+          <span style="color:var(--accent);font-size:16px;">📅</span>
+        </div>
+      </div>
+      <div class="step-nav">
+        <button class="btn btn-ghost" onclick="goTo('list-ref')">Anuluj</button>
+        <button class="btn btn-primary">Dalej →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 5. LISTA + WYSZUKIWANIE ════════════════════ -->
+  <div class="screen" id="screen-list-search">
+    <div class="status-bar">
+      <span class="status-time">09:41</span>
+      <span class="status-icons">▲▲▲ 🔋</span>
+    </div>
+    <div class="nav-header">
+      <div class="nav-back-btn">‹</div>
+      <div class="nav-title">Zapis Myśli</div>
+    </div>
+    <div class="content-with-tabs scroll-content">
+
+      <!-- Wyszukiwarka (Phase 2) -->
+      <div class="search-wrap">
+        <div class="search-icon">⌕</div>
+        <input class="search-input" type="text" placeholder="Szukaj wpisów...">
+      </div>
+
+      <div class="section-label" style="margin-bottom:10px;">Historia</div>
+
+      <!-- PRZYKŁADOWY WPIS — onboarding seed -->
+      <div class="record-card" onclick="goTo('detail-enhanced')">
+        <div class="record-card-top">
+          <div class="record-date">— przykład —</div>
+          <span class="badge badge-example">Przykład</span>
+        </div>
+        <div class="record-situation">Spotkanie z przełożonym, na którym bałem się oceny mojej pracy. Serce biło szybciej, trudno mi było myśleć jasno.</div>
+        <div class="record-emotions">
+          <span class="emotion-tag">Lęk</span>
+          <span class="emotion-tag">Niepokój</span>
+          <span class="emotion-tag">Wstyd</span>
+          <span class="emotion-tag neutral">Przykładowy wpis</span>
+        </div>
+      </div>
+
+      <!-- Zwykłe wpisy -->
+      <div class="record-card" onclick="goTo('detail-enhanced')">
+        <div class="record-card-top">
+          <div class="record-date">18 mar 2026 · 21:14</div>
+          <span class="badge badge-complete">Kompletny</span>
+        </div>
+        <div class="record-situation">Kłótnia z partnerem o drobne obowiązki domowe. Poczułem się niezrozumiany i odrzucony.</div>
+        <div class="record-emotions">
+          <span class="emotion-tag">Złość</span>
+          <span class="emotion-tag">Smutek</span>
+          <span class="emotion-tag">Bezradność</span>
+        </div>
+      </div>
+
+      <div class="record-card">
+        <div class="record-card-top">
+          <div class="record-date">20 mar 2026 · 09:38</div>
+          <span class="badge badge-inprogress">W toku</span>
+        </div>
+        <div class="record-situation">Rano przed wyjściem do pracy. Uczucie niepokoju bez wyraźnego powodu.</div>
+        <div class="record-emotions">
+          <span class="emotion-tag">Niepokój</span>
+          <span class="emotion-tag neutral">+4 kroki do końca</span>
+        </div>
+      </div>
+
+    </div>
+    <div class="fab" onclick="goTo('step-helper')">+</div>
+    <div class="tab-bar">
+      <div class="tab-item active">
+        <div class="tab-icon">⊞</div>
+        <div class="tab-label">Narzędzia</div>
+      </div>
+      <div class="tab-item">
+        <div class="tab-icon">⚙</div>
+        <div class="tab-label">Ustawienia</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ REF: LISTA (Phase 1) ════════════════════════ -->
+  <div class="screen" id="screen-list-ref">
+    <div class="status-bar">
+      <span class="status-time">09:41</span>
+      <span class="status-icons">▲▲▲ 🔋</span>
+    </div>
+    <div class="nav-header">
+      <div class="nav-back-btn">‹</div>
+      <div class="nav-title">Zapis Myśli</div>
+    </div>
+    <div class="content-with-tabs scroll-content">
+      <div class="section-label">Historia</div>
+      <div class="record-card" onclick="goTo('detail-enhanced')">
+        <div class="record-card-top">
+          <div class="record-date">18 mar 2026 · 21:14</div>
+          <span class="badge badge-complete">Kompletny</span>
+        </div>
+        <div class="record-situation">Kłótnia z partnerem o drobne obowiązki domowe. Poczułem się niezrozumiany i odrzucony.</div>
+        <div class="record-emotions">
+          <span class="emotion-tag">Złość</span>
+          <span class="emotion-tag">Smutek</span>
+          <span class="emotion-tag">Bezradność</span>
+        </div>
+      </div>
+      <div class="record-card">
+        <div class="record-card-top">
+          <div class="record-date">20 mar 2026 · 09:38</div>
+          <span class="badge badge-inprogress">W toku</span>
+        </div>
+        <div class="record-situation">Rano przed wyjściem do pracy. Uczucie niepokoju bez wyraźnego powodu.</div>
+        <div class="record-emotions">
+          <span class="emotion-tag">Niepokój</span>
+          <span class="emotion-tag neutral">+4 kroki do końca</span>
+        </div>
+      </div>
+    </div>
+    <div class="fab" onclick="goTo('step-helper')">+</div>
+    <div class="tab-bar">
+      <div class="tab-item active"><div class="tab-icon">⊞</div><div class="tab-label">Narzędzia</div></div>
+      <div class="tab-item"><div class="tab-icon">⚙</div><div class="tab-label">Ustawienia</div></div>
+    </div>
+  </div>
+
+  <!-- ══ REF: KROK 1 (Phase 1, bez wskazówki) ════════ -->
+  <div class="screen" id="screen-step-ref">
+    <div class="status-bar">
+      <span class="status-time">09:41</span>
+      <span class="status-icons">▲▲▲ 🔋</span>
+    </div>
+    <div class="nav-header">
+      <div class="nav-back-btn" onclick="goTo('list-ref')">‹</div>
+      <div class="nav-title">Sytuacja</div>
+    </div>
+    <div class="step-progress" id="prog-ref"></div>
+    <div class="step-inner">
+      <div class="step-scroll">
+        <p class="step-prompt">Co się wydarzyło? Opisz sytuację jak najdokładniej.</p>
+        <div class="field-label">Opis sytuacji</div>
+        <textarea class="text-area" placeholder="Np. Byłem na spotkaniu z szefem i..."></textarea>
+        <div class="date-row">
+          <div>
+            <div class="field-label" style="margin-bottom:2px;">Kiedy to się wydarzyło?</div>
+            <div class="date-row-val">21 marca 2026</div>
+          </div>
+          <span style="color:var(--accent);font-size:16px;">📅</span>
+        </div>
+      </div>
+      <div class="step-nav">
+        <button class="btn btn-ghost" onclick="goTo('list-ref')">Anuluj</button>
+        <button class="btn btn-primary">Dalej →</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /phone -->
+
+<script>
+  let currentScreen = 'detail-enhanced';
+
+  function goTo(id) {
+    document.getElementById('screen-' + currentScreen)?.classList.remove('active');
+    const next = document.getElementById('screen-' + id);
+    if (!next) return;
+    next.classList.add('active');
+    currentScreen = id;
+    updateSidebar(id);
+  }
+
+  function updateSidebar(id) {
+    document.querySelectorAll('.sidebar-btn').forEach(btn => {
+      const oc = btn.getAttribute('onclick') || '';
+      btn.classList.toggle('active', oc.includes("'" + id + "'"));
+    });
+  }
+
+  // Step progress bars
+  function renderProgress(elId, step) {
+    const el = document.getElementById(elId);
+    if (!el) return;
+    el.innerHTML = '';
+    for (let i = 1; i <= 7; i++) {
+      const seg = document.createElement('div');
+      seg.className = 'step-seg';
+      if (i < step) seg.classList.add('done');
+      else if (i === step) seg.classList.add('current');
+      el.appendChild(seg);
+    }
+  }
+  renderProgress('prog-helper', 1);
+  renderProgress('prog-ref', 1);
+
+  // Helper toggle
+  function toggleHelper(id) {
+    const btn = document.getElementById('helper-btn-' + id);
+    const panel = document.getElementById('helper-panel-' + id);
+    const open = panel.classList.toggle('open');
+    btn.classList.toggle('open', open);
+  }
+</script>
+</body>
+</html>
