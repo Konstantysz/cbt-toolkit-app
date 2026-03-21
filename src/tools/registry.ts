@@ -1,7 +1,8 @@
 import type { ToolDefinition, Migration } from '../core/types/tool';
 import { thoughtRecordTool } from './thought-record';
+import { behavioralExperimentTool } from './behavioral-experiment';
 
-const ALL_TOOLS: ToolDefinition[] = [thoughtRecordTool];
+const ALL_TOOLS: ToolDefinition[] = [thoughtRecordTool, behavioralExperimentTool];
 
 export function getEnabledTools(): ToolDefinition[] {
   return ALL_TOOLS.filter(tool => tool.enabled);
