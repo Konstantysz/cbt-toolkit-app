@@ -23,14 +23,18 @@ export function RecordListScreen(): React.JSX.Element {
   // Onboarding seed
   useEffect(() => {
     if (records.length > 0) return;
-    AsyncStorage.getItem(ONBOARDING_KEY).then(val => {
-      if (val !== null) return;
-      insertSeedRecord(db).then(() => {
-        AsyncStorage.setItem(ONBOARDING_KEY, '1');
+    (async () => {
+      try {
+        const val = await AsyncStorage.getItem(ONBOARDING_KEY);
+        if (val !== null) return;
+        await insertSeedRecord(db);
+        await AsyncStorage.setItem(ONBOARDING_KEY, '1');
         refresh();
-      });
-    });
-  }, [records, db, refresh]);
+      } catch {
+        // seed failure is non-critical — user can still add records manually
+      }
+    })();
+  }, [records.length, db, refresh]);
 
   // Search filter — OR logic, case-insensitive
   const filtered = useMemo(() => {
