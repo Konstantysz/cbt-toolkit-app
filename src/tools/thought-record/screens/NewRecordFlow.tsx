@@ -21,6 +21,7 @@ import { StepProgress } from '../components/StepProgress';
 import { TextStep } from '../components/TextStep';
 import { EmotionPicker } from '../../../core/components/EmotionPicker';
 import { IntensitySlider } from '../../../core/components/IntensitySlider';
+import { StepHelper } from '../components/StepHelper';
 import { pl } from '../i18n/pl';
 import * as repo from '../repository';
 import type { Emotion } from '../types';
@@ -92,6 +93,7 @@ function Step1Situation({
         placeholder="Np. Kłótnia z partnerem o obowiązki domowe..."
         minHeight={150}
       />
+      <StepHelper hint={pl.helper.hints.step1} />
       <TouchableOpacity
         style={stepStyles.dateRow}
         onPress={() => setShowPicker(true)}
@@ -208,36 +210,48 @@ function renderStep(
     case 1: return <Step1Situation state={state} update={update} />;
     case 2: return <Step2Emotions state={state} update={update} error={emotionsError} />;
     case 3: return (
-      <TextStep
-        prompt={pl.step3.prompt}
-        value={state.automaticThoughts}
-        onChange={v => update('automaticThoughts', v)}
-        placeholder="Np. Zaraz coś złego się stanie..."
-      />
+      <View>
+        <TextStep
+          prompt={pl.step3.prompt}
+          value={state.automaticThoughts}
+          onChange={v => update('automaticThoughts', v)}
+          placeholder="Np. Zaraz coś złego się stanie..."
+        />
+        <StepHelper hint={pl.helper.hints.step3} />
+      </View>
     );
     case 4: return (
-      <TextStep
-        prompt={pl.step4.prompt}
-        value={state.evidenceFor}
-        onChange={v => update('evidenceFor', v)}
-        placeholder="Np. Ostatnio popełniłem błąd..."
-      />
+      <View>
+        <TextStep
+          prompt={pl.step4.prompt}
+          value={state.evidenceFor}
+          onChange={v => update('evidenceFor', v)}
+          placeholder="Np. Ostatnio popełniłem błąd..."
+        />
+        <StepHelper hint={pl.helper.hints.step4} />
+      </View>
     );
     case 5: return (
-      <TextStep
-        prompt={pl.step5.prompt}
-        value={state.evidenceAgainst}
-        onChange={v => update('evidenceAgainst', v)}
-        placeholder="Np. Przez ostatni rok radziłem sobie dobrze..."
-      />
+      <View>
+        <TextStep
+          prompt={pl.step5.prompt}
+          value={state.evidenceAgainst}
+          onChange={v => update('evidenceAgainst', v)}
+          placeholder="Np. Przez ostatni rok radziłem sobie dobrze..."
+        />
+        <StepHelper hint={pl.helper.hints.step5} />
+      </View>
     );
     case 6: return (
-      <TextStep
-        prompt={pl.step6.prompt}
-        value={state.alternativeThought}
-        onChange={v => update('alternativeThought', v)}
-        placeholder="Np. Chociaż czuję niepokój, mam wiele dowodów..."
-      />
+      <View>
+        <TextStep
+          prompt={pl.step6.prompt}
+          value={state.alternativeThought}
+          onChange={v => update('alternativeThought', v)}
+          placeholder="Np. Chociaż czuję niepokój, mam wiele dowodów..."
+        />
+        <StepHelper hint={pl.helper.hints.step6} />
+      </View>
     );
     case 7: return <Step7Outcome state={state} update={update} />;
     default: return null;
