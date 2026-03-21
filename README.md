@@ -128,4 +128,4 @@ src/
 
 ## License
 
-[CC BY-NC 4.0](LICENSE) — free to use and adapt for non-commercial purposes.
+[CC BY-NC 4.0](LICENCE.md) — free to use and adapt for non-commercial purposes.
