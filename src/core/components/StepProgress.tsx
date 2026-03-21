@@ -1,7 +1,6 @@
-// src/tools/thought-record/components/StepProgress.tsx
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { colors } from '../../../core/theme';
+import { colors } from '../theme';
 
 interface Props {
   totalSteps: number;

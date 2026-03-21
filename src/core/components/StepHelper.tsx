@@ -1,25 +1,30 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { colors } from '../../../core/theme';
-import { pl } from '../i18n/pl';
+import { colors } from '../theme';
 
 interface StepHelperProps {
   hint: string;
+  toggleLabel?: string;
+  exampleLabel?: string;
 }
 
-export function StepHelper({ hint }: StepHelperProps): React.JSX.Element {
+export function StepHelper({
+  hint,
+  toggleLabel = 'Wskazówka',
+  exampleLabel = 'Przykład',
+}: StepHelperProps): React.JSX.Element {
   const [open, setOpen] = useState(false);
 
   return (
     <View>
       <TouchableOpacity style={styles.toggle} onPress={() => setOpen(o => !o)}>
         <Text style={[styles.toggleText, open && styles.toggleOpen]}>
-          {pl.helper.toggle}
+          {toggleLabel}
         </Text>
       </TouchableOpacity>
       {open && (
         <View style={styles.panel}>
-          <Text style={styles.label}>{pl.helper.exampleLabel}</Text>
+          <Text style={styles.label}>{exampleLabel}</Text>
           <Text style={styles.hint}>{hint}</Text>
         </View>
       )}
@@ -39,12 +44,6 @@ const styles = StyleSheet.create({
     padding: 12,
     marginTop: 8,
   },
-  label: {
-    fontSize: 9,
-    color: colors.textDim,
-    letterSpacing: 0.14,
-    textTransform: 'uppercase',
-    marginBottom: 6,
-  },
+  label: { fontSize: 9, color: colors.textDim, letterSpacing: 0.14, textTransform: 'uppercase', marginBottom: 6 },
   hint: { fontSize: 15, color: colors.textMuted, lineHeight: 22, fontStyle: 'italic' },
 });
