@@ -43,4 +43,15 @@ export const pl = {
   edit: {
     title: 'Edytuj zapis',
   },
+  helper: {
+    toggle: 'Wskazówka',
+    exampleLabel: 'Przykład',
+    hints: {
+      step1: '„np. Rano przed wyjściem do pracy poczułem nagły niepokój. Byłem sam w domu, była godzina 8:15."',
+      step3: '„np. Nie dam rady. Wszyscy widzą, że jestem słaby. Coś jest ze mną nie tak."',
+      step4: '„np. Tydzień temu zapomniałem o ważnym spotkaniu. Zdarza mi się mylić daty."',
+      step5: '„np. Przez ostatni rok nie miałem poważnych problemów w pracy. Szef niedawno mnie pochwalił."',
+      step6: '„np. Odczuwam niepokój, ale to uczucie przeminie. Mam dowody na to, że sobie radzę."',
+    },
+  },
 } as const;
