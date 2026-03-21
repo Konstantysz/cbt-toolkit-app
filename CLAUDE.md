@@ -22,6 +22,10 @@ Modular plugin system — see vault's 02_Engineering/ARCHITECTURE.md
 - `src/app/(tools)/<tool-id>/` — Expo Router routes per tool
 - Adding a new tool must NOT require changes to existing tools
 
+## Git conventions
+- Commit messages: **single line only**, no body, no blank lines
+- Format: `type: short description` (e.g. `feat: add login screen`)
+
 ## Key commands
 - `/resume` — load session context from vault
 - `/wrap-up` — save session state to vault
