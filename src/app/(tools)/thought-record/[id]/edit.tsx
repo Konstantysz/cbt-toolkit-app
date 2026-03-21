@@ -1,6 +1,8 @@
 import React from 'react';
-import { View } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+import { NewRecordFlow } from '../../../../tools/thought-record/screens/NewRecordFlow';
 
 export default function EditRoute() {
-  return <View />;
+  const { id } = useLocalSearchParams<{ id: string }>();
+  return <NewRecordFlow existingId={id} />;
 }
