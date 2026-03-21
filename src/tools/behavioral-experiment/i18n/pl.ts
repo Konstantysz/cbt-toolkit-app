@@ -1,0 +1,74 @@
+export const pl = {
+  toolName: 'Eksperyment Behawioralny',
+  toolDescription: 'Testuj swoje przekonania przez działanie',
+  list: {
+    title: 'Eksperymenty',
+    empty: 'Brak eksperymentów',
+    emptySub: 'Dotknij + aby zaplanować pierwszy eksperyment.',
+    new: 'Nowy eksperyment',
+  },
+  status: {
+    planned: 'Zaplanowany',
+    completed: 'Ukończony',
+  },
+  step1: {
+    title: 'Jakie przekonanie chcesz sprawdzić?',
+    hint: 'Opisz myśl, którą chcesz przetestować. Zazwyczaj zaczyna się od "Jeśli..., to..."',
+    sliderLabel: 'Jak bardzo w to wierzysz?',
+    placeholder: 'Np. Jeśli odmówię szefowi, zwolni mnie...',
+  },
+  step2: {
+    title: 'Jaka jest alternatywna hipoteza?',
+    hint: 'Co by się mogło stać, gdyby Twoje przekonanie było błędne?',
+    placeholder: 'Np. Może szef przyjmie odmowę spokojnie...',
+  },
+  step3: {
+    title: 'Co konkretnie zrobisz?',
+    hint: 'Opisz eksperyment — co dokładnie zrobisz, kiedy i gdzie.',
+    placeholder: 'Np. W piątek na 1:1 powiem szefowi, że nie mogę wziąć dodatkowego projektu...',
+  },
+  step4: {
+    title: 'Jak myślisz — co się stanie?',
+    hint: 'Zapisz swoje przewidywanie zanim przeprowadzisz eksperyment.',
+    placeholder: 'Np. Szef się zdenerwuje i zacznie traktować mnie gorzej...',
+  },
+  step5: {
+    title: 'Kiedy i co zrobiłeś?',
+    hint: 'Wybierz datę i opisz co dokładnie zrobiłeś w ramach eksperymentu.',
+    dateLabel: 'Data wykonania',
+    notesPlaceholder: 'Np. Odmówiłem wzięcia dodatkowego projektu...',
+  },
+  step6: {
+    title: 'Co się wydarzyło?',
+    hint: 'Opisz rzeczywisty wynik eksperymentu.',
+    placeholder: 'Np. Szef przyjął to spokojnie i powiedział, że docenia szczerość...',
+  },
+  step7: {
+    title: 'Czego się nauczyłeś?',
+    hint: 'Opisz wnioski. Co to mówi o Twoim pierwotnym przekonaniu?',
+    sliderLabel: 'Jak mocno teraz wierzysz w to przekonanie?',
+    placeholder: 'Np. Moje przekonanie było błędne. Odmowa nie skończyła się żadnymi negatywnymi konsekwencjami...',
+  },
+  detail: {
+    addResult: 'Dodaj wynik',
+    beliefBefore: 'Przed',
+    beliefAfter: 'Po',
+    planSection: 'Plan',
+    resultSection: 'Wynik',
+    alternativeBelief: 'Alternatywna hipoteza',
+    plan: 'Co zrobiłem',
+    predictedOutcome: 'Przewidywany wynik',
+    executionDate: 'Data wykonania',
+    executionNotes: 'Co zrobiłem',
+    actualOutcome: 'Co się wydarzyło',
+    conclusion: 'Wnioski',
+  },
+  nav: {
+    next: 'Dalej',
+    back: 'Wstecz',
+    finish: 'Zakończ',
+  },
+  onboarding: {
+    badge: 'Przykład',
+  },
+};
