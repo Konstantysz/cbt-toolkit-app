@@ -1,5 +1,8 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+import { ExperimentDetailScreen } from '../../../../tools/behavioral-experiment/screens/ExperimentDetailScreen';
+
 export default function ExperimentDetailRoute() {
-  return <View><Text>Szczegóły — TODO</Text></View>;
+  const { id } = useLocalSearchParams<{ id: string }>();
+  return <ExperimentDetailScreen id={id!} />;
 }
