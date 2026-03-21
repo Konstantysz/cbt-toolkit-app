@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { ExperimentListScreen } from '../../../tools/behavioral-experiment/screens/ExperimentListScreen';
 export default function ExperimentListRoute() {
-  return <View><Text>Lista — TODO</Text></View>;
+  return <ExperimentListScreen />;
 }
