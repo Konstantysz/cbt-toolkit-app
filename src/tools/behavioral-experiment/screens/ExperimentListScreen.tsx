@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
   },
   cardTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
   date: { fontSize: 11, color: colors.textMuted, letterSpacing: 0.5 },
-  badge: { fontSize: 10, letterSpacing: 0.8, paddingHorizontal: 7, paddingVertical: 2, borderRadius: 4, overflow: 'hidden', textTransform: 'uppercase' },
+  badge: { fontSize: 10, letterSpacing: 0.8, paddingHorizontal: 7, paddingVertical: 2, borderRadius: 4, overflow: 'hidden', textTransform: 'uppercase', includeFontPadding: false },
   badgePlanned: { backgroundColor: 'rgba(108,142,239,0.12)', color: colors.accent },
   badgeCompleted: { backgroundColor: 'rgba(122,158,126,0.12)', color: colors.success },
   badgeExample: { backgroundColor: 'rgba(184,151,74,0.12)', color: colors.inProgress, borderWidth: 1, borderColor: 'rgba(184,151,74,0.25)' },

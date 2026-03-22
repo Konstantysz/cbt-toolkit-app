@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
   },
   actionBtnText: { fontSize: 10, color: colors.textMuted, letterSpacing: 0.06 },
   headerDate: { fontSize: 12, color: colors.textMuted, letterSpacing: 0.5 },
-  badge: { fontSize: 10, letterSpacing: 0.8, paddingHorizontal: 7, paddingVertical: 2, borderRadius: 4, overflow: 'hidden', textTransform: 'uppercase' },
+  badge: { fontSize: 10, letterSpacing: 0.8, paddingHorizontal: 7, paddingVertical: 2, borderRadius: 4, overflow: 'hidden', textTransform: 'uppercase', includeFontPadding: false },
   badgeComplete: { backgroundColor: 'rgba(122,158,126,0.12)', color: colors.success },
   badgeInProgress: { backgroundColor: 'rgba(184,151,74,0.1)', color: colors.inProgress },
   section: { marginBottom: 20 },
