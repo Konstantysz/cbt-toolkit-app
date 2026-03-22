@@ -22,6 +22,15 @@ describe('StepHelper', () => {
     expect(getByText('Przykład')).toBeTruthy();
   });
 
+  it('shows ▾ chevron when collapsed and ▴ when expanded', () => {
+    const { getByText, queryByText } = render(<StepHelper hint={hint} />);
+    expect(queryByText('▾')).toBeTruthy();
+    expect(queryByText('▴')).toBeNull();
+    fireEvent.press(getByText('Wskazówka'));
+    expect(queryByText('▴')).toBeTruthy();
+    expect(queryByText('▾')).toBeNull();
+  });
+
   it('hides hint text after pressing toggle button twice', () => {
     const { getByText, queryByText } = render(<StepHelper hint={hint} />);
     fireEvent.press(getByText('Wskazówka'));

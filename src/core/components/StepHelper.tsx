@@ -23,19 +23,46 @@ export function StepHelper({
           <Text style={styles.hint}>{hint}</Text>
         </View>
       )}
-      <TouchableOpacity style={styles.toggle} onPress={() => setOpen(o => !o)}>
-        <Text style={[styles.toggleText, open && styles.toggleOpen]}>
-          {toggleLabel}
-        </Text>
+      <TouchableOpacity
+        style={[styles.toggle, open && styles.toggleActive]}
+        onPress={() => setOpen(o => !o)}
+        activeOpacity={0.7}
+      >
+        <Text style={styles.toggleText}>{toggleLabel}</Text>
+        <Text style={styles.chevron}>{open ? '▴' : '▾'}</Text>
       </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  toggle: { paddingVertical: 6, marginTop: 6, alignSelf: 'flex-start' },
-  toggleText: { fontSize: 10, color: colors.textDim, letterSpacing: 0.08 },
-  toggleOpen: { color: colors.accent },
+  toggle: {
+    marginTop: 10,
+    alignSelf: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    backgroundColor: colors.accentDim,
+    borderWidth: 1,
+    borderColor: colors.accentBorder,
+    borderRadius: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+  toggleActive: {
+    backgroundColor: 'rgba(196,149,106,0.22)',
+  },
+  toggleText: {
+    fontSize: 11,
+    color: colors.accent,
+    letterSpacing: 0.3,
+    includeFontPadding: false,
+  },
+  chevron: {
+    fontSize: 8,
+    color: colors.accent,
+    includeFontPadding: false,
+  },
   panel: {
     backgroundColor: colors.surface,
     borderWidth: 1,
