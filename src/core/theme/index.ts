@@ -16,6 +16,24 @@ export const colors = {
   inProgress: '#B8974A',
 } as const;
 
+export const highContrastColors = {
+  bg: '#000000',
+  surface: '#0D0D0D',
+  surfaceRaised: '#1A1A1A',
+  border: '#5C5650',
+  borderFocus: '#8C8276',
+  accent: '#C4956A',
+  accentDim: 'rgba(196,149,106,0.20)',
+  accentBorder: 'rgba(196,149,106,0.40)',
+  text: '#FFFFFF',
+  textMuted: '#B0A898',
+  textDim: '#6B6560',
+  danger: '#E8706A',
+  dangerDim: 'rgba(232,112,106,0.20)',
+  success: '#8BBF90',
+  inProgress: '#D4AF6A',
+} as const;
+
 export const spacing = {
   xs: 4, sm: 8, md: 16, lg: 24, xl: 32,
 } as const;
