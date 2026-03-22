@@ -14,7 +14,6 @@ import { StepHelper } from '../../../core/components/StepHelper';
 import { IntensitySlider } from '../../../core/components/IntensitySlider';
 import { pl } from '../i18n/pl';
 import * as repo from '../repository';
-import type { BehavioralExperiment } from '../types';
 
 interface Props {
   phase: 'plan' | 'result';

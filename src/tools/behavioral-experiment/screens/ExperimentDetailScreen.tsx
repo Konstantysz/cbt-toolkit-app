@@ -50,7 +50,7 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
 
       {/* Belief comparison card */}
       <View style={styles.beliefCard}>
-        <Text style={styles.beliefText}>„{experiment.belief}"</Text>
+        <Text style={styles.beliefText}>{'„'}{experiment.belief}{'"'}</Text>
         <View style={styles.sliderRow}>
           <View style={styles.sliderHalf}>
             <Text style={styles.sliderSideLabel}>{pl.detail.beliefBefore}</Text>
