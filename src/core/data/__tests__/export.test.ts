@@ -1,21 +1,13 @@
 jest.mock('expo-sqlite');
-
-const mockFileWrite = jest.fn().mockResolvedValue(undefined);
-jest.mock('expo-file-system', () => ({
-  Paths: {
-    cache: 'file:///cache/',
-  },
-  File: jest.fn(() => ({
-    uri: 'file:///cache/test.json',
-    write: mockFileWrite,
-  })),
+jest.mock('expo-file-system/legacy', () => ({
+  cacheDirectory: 'file:///cache/',
+  writeAsStringAsync: jest.fn().mockResolvedValue(undefined),
 }));
-
 jest.mock('expo-sharing', () => ({
   shareAsync: jest.fn().mockResolvedValue(undefined),
 }));
 
-import { Paths, File } from 'expo-file-system';
+import { cacheDirectory, writeAsStringAsync } from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import * as SQLite from 'expo-sqlite';
 import { exportData } from '../export';
@@ -38,8 +30,9 @@ describe('exportData', () => {
   it('writes JSON with correct shape and calls shareAsync', async () => {
     await exportData(mockDb);
 
-    expect(mockFileWrite).toHaveBeenCalledTimes(1);
-    const content = (mockFileWrite as jest.Mock).mock.calls[0][0] as string;
+    expect(writeAsStringAsync).toHaveBeenCalledTimes(1);
+    const [filePath, content] = (writeAsStringAsync as jest.Mock).mock.calls[0] as [string, string];
+    expect(filePath).toMatch(/cbt-export-\d+\.json$/);
 
     const parsed = JSON.parse(content) as {
       version: number;
@@ -52,6 +45,6 @@ describe('exportData', () => {
     expect(parsed.thoughtRecords).toEqual(thoughtRows);
     expect(parsed.behavioralExperiments).toEqual(experimentRows);
 
-    expect(Sharing.shareAsync).toHaveBeenCalledWith('file:///cache/test.json', expect.any(Object));
+    expect(Sharing.shareAsync).toHaveBeenCalledWith(filePath, expect.any(Object));
   });
 });
