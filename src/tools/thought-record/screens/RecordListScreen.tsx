@@ -75,10 +75,14 @@ export function RecordListScreen(): React.JSX.Element {
         {emotionNames.length > 0 && (
           <View style={styles.tags}>
             {emotionNames.slice(0, 3).map(name => (
-              <Text key={name} style={styles.tag}>{name}</Text>
+              <View key={name} style={styles.tag}>
+                <Text style={styles.tagText}>{name}</Text>
+              </View>
             ))}
             {emotionNames.length > 3 && (
-              <Text style={[styles.tag, styles.tagOverflow]}>+{emotionNames.length - 3}</Text>
+              <View style={styles.tag}>
+                <Text style={[styles.tagText, styles.tagOverflow]}>+{emotionNames.length - 3}</Text>
+              </View>
             )}
           </View>
         )}
@@ -156,7 +160,8 @@ const styles = StyleSheet.create({
   situation: { fontSize: 14, color: colors.text, lineHeight: 21, marginBottom: 10 },
   situationEmpty: { color: colors.textDim, fontStyle: 'italic' },
   tags: { flexDirection: 'row', flexWrap: 'wrap', gap: 5 },
-  tag: { fontSize: 10, color: colors.accent, backgroundColor: colors.accentDim, borderRadius: 4, paddingHorizontal: 8, paddingVertical: 2, overflow: 'hidden', includeFontPadding: false },
+  tag: { backgroundColor: colors.accentDim, borderRadius: 4, paddingHorizontal: 8, paddingVertical: 3, overflow: 'hidden', justifyContent: 'center', alignItems: 'center' },
+  tagText: { fontSize: 10, color: colors.accent, includeFontPadding: false, lineHeight: 12 },
   tagOverflow: { color: colors.textDim },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 8, padding: 32 },
   emptyIcon: { fontSize: 40, opacity: 0.2 },
