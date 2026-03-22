@@ -9,6 +9,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.3.0]
+
+### Added
+- **Behavioral Experiment tool** — second CBT module, fully self-contained
+  - 7-step plan phase: belief + intensity, prediction, experiment design, safety behaviours check, scheduled date
+  - Result phase: actual outcome, belief intensity after, reflection
+  - Status transitions: `planned` → `completed` / `abandoned`
+  - Experiment list with status badges and date
+  - Experiment detail screen (read-only) with belief comparison card
+  - Edit and delete with confirmation dialog
+- **StepHelper** promoted to `core/components` — shared across all tools
+- **StepProgress** promoted to `core/components` — shared across all tools
+- **useFocusEffect** data refresh — list screens reload on focus (no stale data after edit/delete)
+- **GitHub repo hygiene** — issue templates (bug report, feature request), PR template, Dependabot (weekly npm, grouped)
+- **CI workflow** — lint + typecheck + test + `expo export` on every PR to main
+- **ESLint** — `eslint-config-expo` (flat config), 0 errors, 0 warnings
+
+### Changed
+- `android.package` corrected: `com.anonymous.cbttoolkitapp` → `com.cbttoolkit.app`
+- StepHelper redesigned as pill with chevron ▾/▴ indicator; hint panel renders above toggle
+- Edit and Delete buttons unified to bottom action row in both detail screens (thought-record + behavioral-experiment)
+- List screens: spinner only shown when list is empty (not on every refresh)
+
+### Fixed
+- Badge and emotion tag vertical centering on Android (`View` wrapper + `includeFontPadding: false`)
+- Intensity bars right-aligned in RecordDetailScreen
+- `behavioral-experiment` route hidden from tab bar (`href: null`)
+- Hint panel previously hidden outside ScrollView visible area
+
 ## [v0.2.0]
 
 ### Added
@@ -65,7 +94,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Dark theme** — warm dark palette with amber accent
 - **Jest test infrastructure** — jest-expo + @testing-library/react-native
 
-[Unreleased]: https://github.com/Konstantysz/cbt-toolkit-app/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/Konstantysz/cbt-toolkit-app/compare/v0.3.0...HEAD
+[v0.3.0]: https://github.com/Konstantysz/cbt-toolkit-app/compare/v0.2.0...v0.3.0
 [v0.2.0]: https://github.com/Konstantysz/cbt-toolkit-app/compare/v0.1.1...v0.2.0
 [v0.1.1]: https://github.com/Konstantysz/cbt-toolkit-app/compare/v0.1.0...v0.1.1
 [v0.1.0]: https://github.com/Konstantysz/cbt-toolkit-app/releases/tag/v0.1.0
