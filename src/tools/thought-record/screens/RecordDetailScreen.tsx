@@ -88,20 +88,12 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
               : <View style={[styles.badge, styles.badgeInProgress]}><Text style={[styles.badgeText, { color: colors.inProgress }]}>W toku</Text></View>
             }
           </View>
-          <View style={styles.actionBtns}>
-            <TouchableOpacity
-              style={styles.actionBtn}
-              onPress={() => router.push(`/(tools)/thought-record/${id}/compare`)}
-            >
-              <Text style={styles.actionBtnText}>⊞ {pl.compare.btnLabel}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.actionBtn}
-              onPress={() => router.push(`/(tools)/thought-record/${id}/edit`)}
-            >
-              <Text style={styles.actionBtnText}>✏ {pl.edit.title}</Text>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity
+            style={styles.actionBtn}
+            onPress={() => router.push(`/(tools)/thought-record/${id}/compare`)}
+          >
+            <Text style={styles.actionBtnText}>⊞ {pl.compare.btnLabel}</Text>
+          </TouchableOpacity>
         </View>
 
         {/* Emotions (step 02) */}
@@ -132,9 +124,18 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
           </React.Fragment>
         ))}
 
-        <TouchableOpacity style={styles.deleteBtn} onPress={confirmDelete}>
-          <Text style={styles.deleteBtnText}>Usuń wpis</Text>
-        </TouchableOpacity>
+        <View style={styles.actionRow}>
+          <TouchableOpacity
+            style={styles.editBtn}
+            onPress={() => router.push(`/(tools)/thought-record/${id}/edit`)}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.editBtnText}>✏ {pl.edit.title}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.deleteBtn} onPress={confirmDelete} activeOpacity={0.8}>
+            <Text style={styles.deleteBtnText}>Usuń wpis</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </View>
   );
@@ -182,7 +183,6 @@ const styles = StyleSheet.create({
   scroll: { padding: 20 },
   metaRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20, gap: 12 },
   metaLeft: { flexDirection: 'column', gap: 5 },
-  actionBtns: { flexDirection: 'row', gap: 8, flexShrink: 0 },
   actionBtn: {
     borderWidth: 1, borderColor: colors.border, borderRadius: 9,
     paddingVertical: 6, paddingHorizontal: 10,
@@ -209,15 +209,16 @@ const styles = StyleSheet.create({
   ibarTrack: { width: 120, height: 6, backgroundColor: colors.border, borderRadius: 3, overflow: 'hidden' },
   ibarFill: { height: '100%', borderRadius: 3 },
   ibarNum: { fontSize: 10, color: colors.textMuted },
-  deleteBtn: {
-    marginTop: 32,
-    paddingVertical: 14,
-    borderRadius: 12,
-    backgroundColor: colors.dangerDim,
-    borderWidth: 1,
-    borderColor: 'rgba(196,96,90,0.22)',
-    alignItems: 'center',
+  actionRow: { flexDirection: 'row', gap: 10, marginTop: 32 },
+  editBtn: {
+    flex: 1, paddingVertical: 13, borderRadius: 12, alignItems: 'center',
+    borderWidth: 1, borderColor: colors.border,
   },
-  deleteBtnText: { color: colors.danger, fontSize: 15 },
+  editBtnText: { fontSize: 14, color: colors.textMuted },
+  deleteBtn: {
+    flex: 1, paddingVertical: 13, borderRadius: 12, alignItems: 'center',
+    backgroundColor: colors.dangerDim, borderWidth: 1, borderColor: 'rgba(196,96,90,0.22)',
+  },
+  deleteBtnText: { color: colors.danger, fontSize: 14 },
   errorText: { fontSize: 15, color: colors.textMuted },
 });
