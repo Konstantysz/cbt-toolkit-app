@@ -23,7 +23,7 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.anonymous.cbttoolkitapp"
+      "package": "com.cbttoolkit.app"
     },
     "web": {
       "bundler": "metro",
