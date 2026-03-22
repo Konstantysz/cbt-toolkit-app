@@ -17,23 +17,23 @@ export function StepHelper({
 
   return (
     <View>
-      <TouchableOpacity style={styles.toggle} onPress={() => setOpen(o => !o)}>
-        <Text style={[styles.toggleText, open && styles.toggleOpen]}>
-          {toggleLabel}
-        </Text>
-      </TouchableOpacity>
       {open && (
         <View style={styles.panel}>
           <Text style={styles.label}>{exampleLabel}</Text>
           <Text style={styles.hint}>{hint}</Text>
         </View>
       )}
+      <TouchableOpacity style={styles.toggle} onPress={() => setOpen(o => !o)}>
+        <Text style={[styles.toggleText, open && styles.toggleOpen]}>
+          {toggleLabel}
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  toggle: { paddingVertical: 6, marginTop: 10, alignSelf: 'flex-start' },
+  toggle: { paddingVertical: 6, marginTop: 6, alignSelf: 'flex-start' },
   toggleText: { fontSize: 10, color: colors.textDim, letterSpacing: 0.08 },
   toggleOpen: { color: colors.accent },
   panel: {
@@ -42,7 +42,8 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     borderRadius: 10,
     padding: 12,
-    marginTop: 8,
+    marginTop: 10,
+    marginBottom: 4,
   },
   label: { fontSize: 9, color: colors.textDim, letterSpacing: 0.14, textTransform: 'uppercase', marginBottom: 6 },
   hint: { fontSize: 15, color: colors.textMuted, lineHeight: 22, fontStyle: 'italic' },
