@@ -174,3 +174,8 @@ export async function insertSeedExperiment(db: SQLite.SQLiteDatabase): Promise<v
     ]
   );
 }
+
+export async function deleteAll(db: SQLite.SQLiteDatabase): Promise<void> {
+  await db.runAsync('DELETE FROM behavioral_experiments');
+  await db.runAsync("DELETE FROM tool_entries WHERE tool_id = 'behavioral-experiment'");
+}
