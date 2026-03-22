@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
   emotionName: { fontSize: 13, color: colors.text },
   emotionDrop: { fontSize: 12, color: colors.success, fontWeight: '700' },
   intensityBars: { flex: 1 },
-  ibarRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 },
+  ibarRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4, justifyContent: 'flex-end' },
   ibarLabel: { fontSize: 10, color: colors.textDim, width: 28, textAlign: 'right' },
   ibarTrack: { width: 120, height: 6, backgroundColor: colors.border, borderRadius: 3, overflow: 'hidden' },
   ibarFill: { height: '100%', borderRadius: 3 },
