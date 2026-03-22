@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
-  ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View,
+  ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
 import { router } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
@@ -10,12 +10,35 @@ import { colors } from '../../../core/theme';
 import { useBehavioralExperiment } from '../hooks/useBehavioralExperiments';
 import { IntensitySlider } from '../../../core/components/IntensitySlider';
 import { pl } from '../i18n/pl';
+import * as repo from '../repository';
 
 interface Props { id: string; }
 
 export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
   const db = useSQLiteContext();
   const { experiment, loading } = useBehavioralExperiment(db, id);
+
+  const confirmDelete = useCallback(() => {
+    Alert.alert(
+      'Usuń eksperyment',
+      'Czy na pewno chcesz usunąć ten eksperyment? Tej operacji nie można cofnąć.',
+      [
+        { text: 'Anuluj', style: 'cancel' },
+        {
+          text: 'Usuń',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await repo.deleteExperiment(db, id);
+              router.back();
+            } catch {
+              Alert.alert('Błąd', 'Nie udało się usunąć eksperymentu. Spróbuj ponownie.');
+            }
+          },
+        },
+      ]
+    );
+  }, [db, id]);
 
   if (loading) return <View style={styles.centered}><ActivityIndicator color={colors.accent} /></View>;
   if (!experiment) return <View style={styles.centered}><Text style={styles.missing}>Nie znaleziono eksperymentu.</Text></View>;
@@ -78,6 +101,20 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
         </TouchableOpacity>
       )}
 
+      {/* Edit / Delete */}
+      <View style={styles.actionRow}>
+        <TouchableOpacity
+          style={styles.editBtn}
+          onPress={() => router.push(`/(tools)/behavioral-experiment/${id}/edit`)}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.editBtnText}>✏ Edytuj</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.deleteBtn} onPress={confirmDelete} activeOpacity={0.8}>
+          <Text style={styles.deleteBtnText}>Usuń</Text>
+        </TouchableOpacity>
+      </View>
+
     </ScrollView>
   );
 }
@@ -117,4 +154,15 @@ const styles = StyleSheet.create({
     paddingVertical: 14, alignItems: 'center', marginTop: 16,
   },
   addResultText: { fontSize: 15, color: colors.bg, fontWeight: '600' },
+  actionRow: { flexDirection: 'row', gap: 10, marginTop: 24 },
+  editBtn: {
+    flex: 1, paddingVertical: 13, borderRadius: 12, alignItems: 'center',
+    borderWidth: 1, borderColor: colors.border,
+  },
+  editBtnText: { fontSize: 14, color: colors.textMuted },
+  deleteBtn: {
+    flex: 1, paddingVertical: 13, borderRadius: 12, alignItems: 'center',
+    backgroundColor: colors.dangerDim, borderWidth: 1, borderColor: 'rgba(196,96,90,0.22)',
+  },
+  deleteBtnText: { fontSize: 14, color: colors.danger },
 });

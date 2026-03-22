@@ -62,10 +62,10 @@ export function RecordListScreen(): React.JSX.Element {
         <View style={styles.cardTop}>
           <Text style={styles.date}>{formatDate(item.createdAt)}</Text>
           {item.isExample
-            ? <Text style={[styles.badge, styles.badgeExample]}>{pl.onboarding.badge}</Text>
+            ? <View style={[styles.badge, styles.badgeExample]}><Text style={[styles.badgeText, { color: colors.inProgress }]}>{pl.onboarding.badge}</Text></View>
             : item.isComplete
-              ? <Text style={[styles.badge, styles.badgeComplete]}>Kompletny</Text>
-              : <Text style={[styles.badge, styles.badgeInProgress]}>W toku</Text>
+              ? <View style={[styles.badge, styles.badgeComplete]}><Text style={[styles.badgeText, { color: colors.success }]}>Kompletny</Text></View>
+              : <View style={[styles.badge, styles.badgeInProgress]}><Text style={[styles.badgeText, { color: colors.inProgress }]}>W toku</Text></View>
           }
         </View>
         {item.situation
@@ -153,10 +153,11 @@ const styles = StyleSheet.create({
   },
   cardTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
   date: { fontSize: 11, color: colors.textMuted, letterSpacing: 0.5 },
-  badge: { fontSize: 10, letterSpacing: 0.8, paddingHorizontal: 7, paddingVertical: 2, borderRadius: 4, overflow: 'hidden', textTransform: 'uppercase', includeFontPadding: false },
-  badgeComplete: { backgroundColor: 'rgba(122,158,126,0.12)', color: colors.success },
-  badgeInProgress: { backgroundColor: 'rgba(184,151,74,0.1)', color: colors.inProgress },
-  badgeExample: { backgroundColor: 'rgba(184,151,74,0.12)', color: colors.inProgress, borderWidth: 1, borderColor: 'rgba(184,151,74,0.25)' },
+  badge: { paddingHorizontal: 7, paddingVertical: 3, borderRadius: 4, overflow: 'hidden', justifyContent: 'center', alignItems: 'center' },
+  badgeText: { fontSize: 10, letterSpacing: 0.8, textTransform: 'uppercase', includeFontPadding: false, lineHeight: 12 },
+  badgeComplete: { backgroundColor: 'rgba(122,158,126,0.12)' },
+  badgeInProgress: { backgroundColor: 'rgba(184,151,74,0.1)' },
+  badgeExample: { backgroundColor: 'rgba(184,151,74,0.12)', borderWidth: 1, borderColor: 'rgba(184,151,74,0.25)' },
   situation: { fontSize: 14, color: colors.text, lineHeight: 21, marginBottom: 10 },
   situationEmpty: { color: colors.textDim, fontStyle: 'italic' },
   tags: { flexDirection: 'row', flexWrap: 'wrap', gap: 5 },

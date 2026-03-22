@@ -84,8 +84,8 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
           <View style={styles.metaLeft}>
             <Text style={styles.headerDate}>{formattedDate}</Text>
             {record.isComplete
-              ? <Text style={[styles.badge, styles.badgeComplete]}>Kompletny</Text>
-              : <Text style={[styles.badge, styles.badgeInProgress]}>W toku</Text>
+              ? <View style={[styles.badge, styles.badgeComplete]}><Text style={[styles.badgeText, { color: colors.success }]}>Kompletny</Text></View>
+              : <View style={[styles.badge, styles.badgeInProgress]}><Text style={[styles.badgeText, { color: colors.inProgress }]}>W toku</Text></View>
             }
           </View>
           <View style={styles.actionBtns}>
@@ -189,9 +189,10 @@ const styles = StyleSheet.create({
   },
   actionBtnText: { fontSize: 10, color: colors.textMuted, letterSpacing: 0.06 },
   headerDate: { fontSize: 12, color: colors.textMuted, letterSpacing: 0.5 },
-  badge: { fontSize: 10, letterSpacing: 0.8, paddingHorizontal: 7, paddingVertical: 2, borderRadius: 4, overflow: 'hidden', textTransform: 'uppercase', includeFontPadding: false },
-  badgeComplete: { backgroundColor: 'rgba(122,158,126,0.12)', color: colors.success },
-  badgeInProgress: { backgroundColor: 'rgba(184,151,74,0.1)', color: colors.inProgress },
+  badge: { paddingHorizontal: 7, paddingVertical: 3, borderRadius: 4, overflow: 'hidden', justifyContent: 'center', alignItems: 'center' },
+  badgeText: { fontSize: 10, letterSpacing: 0.8, textTransform: 'uppercase', includeFontPadding: false, lineHeight: 12 },
+  badgeComplete: { backgroundColor: 'rgba(122,158,126,0.12)' },
+  badgeInProgress: { backgroundColor: 'rgba(184,151,74,0.1)' },
   section: { marginBottom: 20 },
   stepNum: { fontSize: 10, color: colors.textDim, letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 3 },
   stepTitle: { fontSize: 17, color: colors.accent, fontWeight: '500', marginBottom: 8 },

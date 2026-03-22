@@ -48,11 +48,11 @@ export function ExperimentListScreen(): React.JSX.Element {
         <View style={styles.cardTop}>
           <Text style={styles.date}>{formatDate(item.createdAt)}</Text>
           {item.isExample ? (
-            <Text style={[styles.badge, styles.badgeExample]}>{pl.onboarding.badge}</Text>
+            <View style={[styles.badge, styles.badgeExample]}><Text style={[styles.badgeText, { color: colors.inProgress }]}>{pl.onboarding.badge}</Text></View>
           ) : item.status === 'completed' ? (
-            <Text style={[styles.badge, styles.badgeCompleted]}>{pl.status.completed}</Text>
+            <View style={[styles.badge, styles.badgeCompleted]}><Text style={[styles.badgeText, { color: colors.success }]}>{pl.status.completed}</Text></View>
           ) : (
-            <Text style={[styles.badge, styles.badgePlanned]}>{pl.status.planned}</Text>
+            <View style={[styles.badge, styles.badgePlanned]}><Text style={[styles.badgeText, { color: colors.accent }]}>{pl.status.planned}</Text></View>
           )}
         </View>
         <Text style={styles.belief} numberOfLines={2}>{item.belief}</Text>
@@ -103,10 +103,11 @@ const styles = StyleSheet.create({
   },
   cardTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
   date: { fontSize: 11, color: colors.textMuted, letterSpacing: 0.5 },
-  badge: { fontSize: 10, letterSpacing: 0.8, paddingHorizontal: 7, paddingVertical: 2, borderRadius: 4, overflow: 'hidden', textTransform: 'uppercase', includeFontPadding: false },
-  badgePlanned: { backgroundColor: 'rgba(108,142,239,0.12)', color: colors.accent },
-  badgeCompleted: { backgroundColor: 'rgba(122,158,126,0.12)', color: colors.success },
-  badgeExample: { backgroundColor: 'rgba(184,151,74,0.12)', color: colors.inProgress, borderWidth: 1, borderColor: 'rgba(184,151,74,0.25)' },
+  badge: { paddingHorizontal: 7, paddingVertical: 3, borderRadius: 4, overflow: 'hidden', justifyContent: 'center', alignItems: 'center' },
+  badgeText: { fontSize: 10, letterSpacing: 0.8, textTransform: 'uppercase', includeFontPadding: false, lineHeight: 12 },
+  badgePlanned: { backgroundColor: 'rgba(108,142,239,0.12)' },
+  badgeCompleted: { backgroundColor: 'rgba(122,158,126,0.12)' },
+  badgeExample: { backgroundColor: 'rgba(184,151,74,0.12)', borderWidth: 1, borderColor: 'rgba(184,151,74,0.25)' },
   belief: { fontSize: 14, color: colors.text, lineHeight: 21, marginBottom: 6 },
   change: { fontSize: 12, color: colors.textMuted },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 8, padding: 32 },
