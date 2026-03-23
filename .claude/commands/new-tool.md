@@ -1,8 +1,8 @@
 Scaffold a new CBT tool module. Usage: /new-tool <tool-id>
 
 In the vault:
-1. Create ../cbt-toolkit-brain/01_Product/TOOLS/<tool-id>/SPEC.md from _TEMPLATE.md
-2. Update ../cbt-toolkit-brain/01_Product/TOOLS/INDEX.md
+1. Create ../cbt-toolkit-brain/01_Product/Tools/<tool-id>/Spec.md from _Template.md
+2. Update ../cbt-toolkit-brain/01_Product/Tools/tools.md
 
 In the code repo:
 3. Create src/tools/<tool-id>/ with: index.ts, types.ts, repository.ts, migrations/, screens/, components/, hooks/, i18n/pl.ts

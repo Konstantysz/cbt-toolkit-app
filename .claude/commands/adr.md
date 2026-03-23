@@ -1,4 +1,4 @@
-Create an Architecture Decision Record in ../cbt-toolkit-brain/02_Engineering/DECISIONS/.
+Create an Architecture Decision Record in ../cbt-toolkit-brain/02_Engineering/Decisions/.
 
 Auto-increment the ADR number based on existing files. Name the file ADR-NNN-<title>.md.
 

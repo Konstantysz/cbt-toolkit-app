@@ -13,10 +13,10 @@ This should be available via --add-dir. If not, ask the user to restart with:
 - State management: zustand
 - Database: expo-sqlite
 - All code identifiers: English
-- All user-facing strings: Polish (source of truth: vault's 03_Design/COPY.md)
+- All user-facing strings: Polish (source of truth: vault's 03_Design/Copy.md)
 
 ## Architecture
-Modular plugin system — see vault's 02_Engineering/ARCHITECTURE.md
+Modular plugin system — see vault's 02_Engineering/Architecture.md
 - `src/core/` — shared infrastructure (DB, theme, components)
 - `src/tools/<tool-id>/` — self-contained CBT tool modules
 - `src/app/(tools)/<tool-id>/` — Expo Router routes per tool
