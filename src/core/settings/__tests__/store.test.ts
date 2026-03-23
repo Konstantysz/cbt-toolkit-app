@@ -8,6 +8,7 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
 }));
 
 import { useSettings } from '../store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const DEFAULTS = {
   reminderEnabled: false,
@@ -61,9 +62,6 @@ describe('useSettings — setters', () => {
 
 describe('useSettings — persist rehydration', () => {
   it('rehydrates state from AsyncStorage', async () => {
-    const AsyncStorage = require('@react-native-async-storage/async-storage') as {
-      getItem: jest.Mock;
-    };
     const stored = {
       state: {
         reminderEnabled: true,
@@ -74,7 +72,7 @@ describe('useSettings — persist rehydration', () => {
       },
       version: 0,
     };
-    AsyncStorage.getItem.mockResolvedValueOnce(JSON.stringify(stored));
+    jest.mocked(AsyncStorage.getItem).mockResolvedValueOnce(JSON.stringify(stored));
 
     await useSettings.persist.rehydrate();
 

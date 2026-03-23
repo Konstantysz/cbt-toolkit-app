@@ -7,7 +7,7 @@ jest.mock('expo-sharing', () => ({
   shareAsync: jest.fn().mockResolvedValue(undefined),
 }));
 
-import { cacheDirectory, writeAsStringAsync } from 'expo-file-system/legacy';
+import { writeAsStringAsync } from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import * as SQLite from 'expo-sqlite';
 import { exportData } from '../export';

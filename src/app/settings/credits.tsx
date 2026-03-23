@@ -26,7 +26,7 @@ export default function CreditsScreen() {
     packageDesc: { fontSize: fs(13), color: colors.textMuted, flex: 1 },
   });
 
-  const packages: Array<[string, string]> = [
+  const packages: [string, string][] = [
     ['React Native', 'Interfejs użytkownika'],
     ['Expo', 'Platforma mobilna'],
     ['Zustand', 'Zarządzanie stanem'],

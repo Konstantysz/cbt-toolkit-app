@@ -151,7 +151,7 @@ export default function SettingsScreen() {
     appVersion: { fontSize: fs(12), color: colors.textMuted, marginTop: 2 },
   });
 
-  const fontSizes: Array<{ key: 'sm' | 'md' | 'lg'; label: string; size: number }> = [
+  const fontSizes: { key: 'sm' | 'md' | 'lg'; label: string; size: number }[] = [
     { key: 'sm', label: 'A', size: 12 },
     { key: 'md', label: 'A', size: 15 },
     { key: 'lg', label: 'A', size: 18 },
