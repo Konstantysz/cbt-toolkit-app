@@ -19,7 +19,7 @@ const DEFAULTS = {
 };
 
 beforeEach(() => {
-  useSettings.setState(DEFAULTS, true);
+  useSettings.setState(DEFAULTS);
 });
 
 describe('useSettings — defaults', () => {

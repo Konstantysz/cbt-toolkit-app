@@ -6,6 +6,10 @@ jest.mock('expo-file-system/legacy', () => ({
 jest.mock('expo-sharing', () => ({
   shareAsync: jest.fn().mockResolvedValue(undefined),
 }));
+jest.mock('@react-native-async-storage/async-storage', () => ({
+  getItem: jest.fn().mockResolvedValue(null),
+  setItem: jest.fn().mockResolvedValue(undefined),
+}));
 
 import { writeAsStringAsync } from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
@@ -37,6 +41,7 @@ describe('exportData', () => {
     const parsed = JSON.parse(content) as {
       version: number;
       exportedAt: string;
+      settings: Record<string, unknown>;
       thoughtRecords: unknown[];
       behavioralExperiments: unknown[];
     };
@@ -44,6 +49,13 @@ describe('exportData', () => {
     expect(typeof parsed.exportedAt).toBe('string');
     expect(parsed.thoughtRecords).toEqual(thoughtRows);
     expect(parsed.behavioralExperiments).toEqual(experimentRows);
+    expect(parsed.settings).toMatchObject({
+      reminderEnabled: expect.any(Boolean),
+      reminderTime: expect.any(String),
+      fontSize: expect.stringMatching(/^(sm|md|lg)$/),
+      reducedMotion: expect.any(Boolean),
+      highContrast: expect.any(Boolean),
+    });
 
     expect(Sharing.shareAsync).toHaveBeenCalledWith(filePath, expect.any(Object));
   });

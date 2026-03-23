@@ -8,9 +8,8 @@ import { initCoreTables, runMigrations } from '../core/db/database';
 import { getAllMigrations } from '../tools/registry';
 import { pl } from '../core/i18n/pl';
 import { colors } from '../core/theme';
-import * as Notifications from 'expo-notifications';
 import { useSettings } from '../core/settings/store';
-import { scheduleReminder } from '../core/notifications/schedule';
+import { scheduleReminder, cancelReminder } from '../core/notifications/schedule';
 
 async function onInit(db: import('expo-sqlite').SQLiteDatabase) {
   await initCoreTables(db);
@@ -31,11 +30,7 @@ export default function RootLayout(): React.JSX.Element {
 
   useEffect(() => {
     if (!reminderEnabled) return;
-    Notifications.getAllScheduledNotificationsAsync().then((scheduled) => {
-      if (scheduled.length === 0) {
-        scheduleReminder(reminderTime);
-      }
-    });
+    cancelReminder().then(() => scheduleReminder(reminderTime));
   }, [reminderEnabled, reminderTime]);
 
   return (

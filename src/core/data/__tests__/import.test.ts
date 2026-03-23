@@ -8,6 +8,10 @@ jest.mock('expo-file-system/legacy', () => ({
 jest.mock('expo-crypto', () => ({
   randomUUID: () => 'import-uuid-1234',
 }));
+jest.mock('@react-native-async-storage/async-storage', () => ({
+  getItem: jest.fn().mockResolvedValue(null),
+  setItem: jest.fn().mockResolvedValue(undefined),
+}));
 
 import * as FileSystem from 'expo-file-system/legacy';
 import * as SQLite from 'expo-sqlite';
@@ -16,6 +20,7 @@ import { importData, validateExportFile } from '../import';
 const mockDb = {
   runAsync: jest.fn().mockResolvedValue(undefined),
   getFirstAsync: jest.fn().mockResolvedValue(null),
+  withTransactionAsync: jest.fn().mockImplementation((fn: () => Promise<void>) => fn()),
 } as unknown as SQLite.SQLiteDatabase;
 
 beforeEach(() => jest.clearAllMocks());

@@ -1,6 +1,7 @@
 import { cacheDirectory, writeAsStringAsync } from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import type * as SQLite from 'expo-sqlite';
+import { useSettings } from '../settings/store';
 
 export async function exportData(db: SQLite.SQLiteDatabase): Promise<void> {
   const thoughtRecords = await db.getAllAsync(`
@@ -17,9 +18,13 @@ export async function exportData(db: SQLite.SQLiteDatabase): Promise<void> {
     ORDER BY te.created_at ASC
   `);
 
+  const { reminderEnabled, reminderTime, fontSize, reducedMotion, highContrast } =
+    useSettings.getState();
+
   const exportObj = {
     version: 1,
     exportedAt: new Date().toISOString(),
+    settings: { reminderEnabled, reminderTime, fontSize, reducedMotion, highContrast },
     thoughtRecords,
     behavioralExperiments,
   };

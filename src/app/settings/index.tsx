@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -42,13 +42,21 @@ export default function SettingsScreen() {
   } = useSettings();
 
   const [showTimePicker, setShowTimePicker] = useState(false);
+  const [tempTime, setTempTime] = useState(reminderTime);
 
-  const reminderDate = (() => {
+  const reminderDate = useMemo(() => {
     const [h, m] = reminderTime.split(':').map(Number);
     const d = new Date();
     d.setHours(h, m, 0, 0);
     return d;
-  })();
+  }, [reminderTime]);
+
+  const tempDate = useMemo(() => {
+    const [h, m] = tempTime.split(':').map(Number);
+    const d = new Date();
+    d.setHours(h, m, 0, 0);
+    return d;
+  }, [tempTime]);
 
   const fs = (base: number) => scaledFont(base, fontSize);
 
@@ -74,16 +82,30 @@ export default function SettingsScreen() {
     }
   }
 
-  async function handleTimeChange(_event: unknown, date?: Date) {
-    if (Platform.OS === 'android') setShowTimePicker(false);
+  function handlePickerChange(_event: unknown, date?: Date) {
     if (!date) return;
     const h = String(date.getHours()).padStart(2, '0');
     const m = String(date.getMinutes()).padStart(2, '0');
-    const newTime = `${h}:${m}`;
-    setReminderTime(newTime);
+    if (Platform.OS === 'android') {
+      // Android closes picker on selection — commit immediately
+      setShowTimePicker(false);
+      const newTime = `${h}:${m}`;
+      setReminderTime(newTime);
+      if (reminderEnabled) {
+        cancelReminder().then(() => scheduleReminder(newTime));
+      }
+    } else {
+      // iOS fires continuously while spinning — only update local state
+      setTempTime(`${h}:${m}`);
+    }
+  }
+
+  async function commitTimeChange() {
+    setShowTimePicker(false);
+    setReminderTime(tempTime);
     if (reminderEnabled) {
       await cancelReminder();
-      await scheduleReminder(newTime);
+      await scheduleReminder(tempTime);
     }
   }
 
@@ -181,7 +203,7 @@ export default function SettingsScreen() {
           />
         </View>
         {reminderEnabled && (
-          <TouchableOpacity style={[s.row, s.rowBorder]} onPress={() => setShowTimePicker(true)}>
+          <TouchableOpacity style={[s.row, s.rowBorder]} onPress={() => { setTempTime(reminderTime); setShowTimePicker(true); }}>
             <View style={s.rowLabel}>
               <Text style={s.rowLabelText}>{pl.settings.notifications.time}</Text>
             </View>
@@ -327,15 +349,15 @@ export default function SettingsScreen() {
           <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' }}>
             <View style={{ backgroundColor: colors.surface, padding: spacing.md, borderRadius: radius.lg }}>
               <DateTimePicker
-                value={reminderDate}
+                value={tempDate}
                 mode="time"
                 display="spinner"
-                onChange={handleTimeChange}
+                onChange={handlePickerChange}
                 textColor={colors.text}
               />
               <TouchableOpacity
                 style={{ alignItems: 'center', paddingVertical: spacing.sm }}
-                onPress={() => setShowTimePicker(false)}
+                onPress={commitTimeChange}
               >
                 <Text style={{ color: colors.accent, fontSize: fs(16), fontWeight: '600' }}>
                   {pl.common.done}
@@ -350,7 +372,7 @@ export default function SettingsScreen() {
             value={reminderDate}
             mode="time"
             display="default"
-            onChange={handleTimeChange}
+            onChange={handlePickerChange}
           />
         )
       )}
