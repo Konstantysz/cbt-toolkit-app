@@ -3,7 +3,7 @@ const expoConfig = require('eslint-config-expo/flat');
 module.exports = [
   ...expoConfig,
   {
-    ignores: ['dist/', '.expo/', 'android/', 'ios/', 'components/'],
+    ignores: ['dist/', '.expo/', 'android/', 'ios/', 'components/', '.worktrees/'],
   },
   {
     // Jest mocks must be declared before imports — import/first is intentionally violated
