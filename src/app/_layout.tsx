@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { Tabs } from 'expo-router';
 import { SQLiteProvider } from 'expo-sqlite';
@@ -8,6 +8,9 @@ import { initCoreTables, runMigrations } from '../core/db/database';
 import { getAllMigrations } from '../tools/registry';
 import { pl } from '../core/i18n/pl';
 import { colors } from '../core/theme';
+import * as Notifications from 'expo-notifications';
+import { useSettings } from '../core/settings/store';
+import { scheduleReminder } from '../core/notifications/schedule';
 
 async function onInit(db: import('expo-sqlite').SQLiteDatabase) {
   await initCoreTables(db);
@@ -23,6 +26,18 @@ function DbLoading() {
 }
 
 export default function RootLayout(): React.JSX.Element {
+  const reminderEnabled = useSettings((s) => s.reminderEnabled);
+  const reminderTime = useSettings((s) => s.reminderTime);
+
+  useEffect(() => {
+    if (!reminderEnabled) return;
+    Notifications.getAllScheduledNotificationsAsync().then((scheduled) => {
+      if (scheduled.length === 0) {
+        scheduleReminder(reminderTime);
+      }
+    });
+  }, [reminderEnabled, reminderTime]);
+
   return (
     <SafeAreaProvider>
     <Suspense fallback={<DbLoading />}>
