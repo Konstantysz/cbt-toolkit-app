@@ -165,3 +165,8 @@ export async function insertSeedRecord(db: SQLite.SQLiteDatabase): Promise<void>
     ]
   );
 }
+
+export async function deleteAll(db: SQLite.SQLiteDatabase): Promise<void> {
+  await db.runAsync('DELETE FROM thought_records');
+  await db.runAsync("DELETE FROM tool_entries WHERE tool_id = 'thought-record'");
+}

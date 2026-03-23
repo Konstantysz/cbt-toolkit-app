@@ -10,6 +10,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Settings screen** — platform features accessible from the bottom tab bar
+  - Notification reminder — daily push notification with configurable time
+  - Font size selector — Small / Medium / Large, applied app-wide via `scaledFont()`
+  - Reduced motion toggle
+  - High contrast mode toggle (alternate color palette via `useColors()`)
+  - Data export — full JSON backup (including settings) shared via native share sheet
+  - Data import — restore from JSON file with validation and duplicate-skip logic; settings restored if present
+  - Delete all data — two-step confirmation dialog
+  - Credits screen (static)
+  - Bibliography screen (static)
+- **Settings store** — Zustand + AsyncStorage persist middleware; all preferences survive app restart
+- **App launch notification sync** — reminder rescheduled on boot if enabled, always in sync with stored time
 - **Behavioral Experiment tool** — second CBT module, fully self-contained
   - 7-step plan phase: belief + intensity, prediction, experiment design, safety behaviours check, scheduled date
   - Result phase: actual outcome, belief intensity after, reflection
@@ -31,6 +43,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - List screens: spinner only shown when list is empty (not on every refresh)
 
 ### Fixed
+- N+1 database inserts during import wrapped in single `withTransactionAsync` transaction
+- iOS time picker (`display="spinner"`) no longer calls notification API on every wheel tick — commits only on "Gotowe"
+- Notification sync on boot: removed stale `scheduled.length === 0` guard; always reschedules when enabled
+- Zustand store restructured from monkey-patched `setState` to standard `(set) => ({...})` initializer pattern
 - Badge and emotion tag vertical centering on Android (`View` wrapper + `includeFontPadding: false`)
 - Intensity bars right-aligned in RecordDetailScreen
 - `behavioral-experiment` route hidden from tab bar (`href: null`)

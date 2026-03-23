@@ -109,3 +109,15 @@ describe('insertSeedExperiment', () => {
     expect(calls[1][1]).toContain(1);   // is_example
   });
 });
+
+describe('deleteAll', () => {
+  it('executes DELETE on behavioral_experiments and tool_entries', async () => {
+    await repo.deleteAll(mockDb);
+
+    const calls = (mockDb.runAsync as jest.Mock).mock.calls.map(
+      (c: unknown[]) => c[0] as string
+    );
+    expect(calls.some((sql) => sql.includes('DELETE') && sql.includes('behavioral_experiments'))).toBe(true);
+    expect(calls.some((sql) => sql.includes('DELETE') && sql.includes('tool_entries'))).toBe(true);
+  });
+});
