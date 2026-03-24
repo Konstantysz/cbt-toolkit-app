@@ -80,7 +80,7 @@ export function NewExperimentFlow({ phase, experimentId }: Props): React.JSX.Ele
           executionNotes: exp.executionNotes ?? '',
           actualOutcome: exp.actualOutcome ?? '',
           conclusion: exp.conclusion ?? '',
-          beliefStrengthAfter: exp.beliefStrengthAfter ?? exp.beliefStrengthBefore,
+          beliefStrengthAfter: exp.beliefStrengthAfter ?? prev.beliefStrengthAfter,
         }));
       }
       setLoading(false);
@@ -217,7 +217,6 @@ function renderPlanStep(
   if (step === 1) return (
     <View>
       <Text style={styles.stepTitle}>{pl.step1.title}</Text>
-      <StepHelper hint={pl.step1.hint} />
       <TextInput
         style={styles.input}
         value={state.belief}
@@ -227,6 +226,7 @@ function renderPlanStep(
         multiline
         textAlignVertical="top"
       />
+      <StepHelper hint={pl.step1.hint} />
       <IntensitySlider
         label={pl.step1.sliderLabel}
         value={state.beliefStrengthBefore}
@@ -237,7 +237,6 @@ function renderPlanStep(
   if (step === 2) return (
     <View>
       <Text style={styles.stepTitle}>{pl.step2.title}</Text>
-      <StepHelper hint={pl.step2.hint} />
       <TextInput
         style={styles.input}
         value={state.alternativeBelief}
@@ -247,12 +246,12 @@ function renderPlanStep(
         multiline
         textAlignVertical="top"
       />
+      <StepHelper hint={pl.step2.hint} />
     </View>
   );
   if (step === 3) return (
     <View>
       <Text style={styles.stepTitle}>{pl.step3.title}</Text>
-      <StepHelper hint={pl.step3.hint} />
       <TextInput
         style={styles.input}
         value={state.plan}
@@ -262,12 +261,12 @@ function renderPlanStep(
         multiline
         textAlignVertical="top"
       />
+      <StepHelper hint={pl.step3.hint} />
     </View>
   );
   return (
     <View>
       <Text style={styles.stepTitle}>{pl.step4.title}</Text>
-      <StepHelper hint={pl.step4.hint} />
       <TextInput
         style={styles.input}
         value={state.predictedOutcome}
@@ -277,6 +276,7 @@ function renderPlanStep(
         multiline
         textAlignVertical="top"
       />
+      <StepHelper hint={pl.step4.hint} />
     </View>
   );
 }
@@ -294,7 +294,6 @@ function renderResultStep(
     return (
       <View>
         <Text style={styles.stepTitle}>{pl.step5.title}</Text>
-        <StepHelper hint={pl.step5.hint} />
         <TouchableOpacity style={styles.dateRow} onPress={() => setShowDatePicker(true)}>
           <Text style={styles.dateLabel}>{pl.step5.dateLabel}</Text>
           <Text style={styles.dateValue}>{dateLabel}</Text>
@@ -319,13 +318,13 @@ function renderResultStep(
           multiline
           textAlignVertical="top"
           />
+        <StepHelper hint={pl.step5.hint} />
       </View>
     );
   }
   if (step === 2) return (
     <View>
       <Text style={styles.stepTitle}>{pl.step6.title}</Text>
-      <StepHelper hint={pl.step6.hint} />
       <TextInput
         style={styles.input}
         value={state.actualOutcome}
@@ -335,12 +334,12 @@ function renderResultStep(
         multiline
         textAlignVertical="top"
       />
+      <StepHelper hint={pl.step6.hint} />
     </View>
   );
   return (
     <View>
       <Text style={styles.stepTitle}>{pl.step7.title}</Text>
-      <StepHelper hint={pl.step7.hint} />
       <TextInput
         style={styles.input}
         value={state.conclusion}
@@ -350,6 +349,7 @@ function renderResultStep(
         multiline
         textAlignVertical="top"
       />
+      <StepHelper hint={pl.step7.hint} />
       <IntensitySlider
         label={pl.step7.sliderLabel}
         value={state.beliefStrengthAfter}

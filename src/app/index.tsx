@@ -14,7 +14,7 @@ export default function HomeScreen(): React.JSX.Element {
     <TouchableOpacity
       style={styles.card}
       activeOpacity={0.75}
-      onPress={() => router.push(`/(tools)${item.routePrefix}` as Parameters<typeof router.push>[0])}
+      onPress={() => router.navigate(`/(tools)${item.routePrefix}` as Parameters<typeof router.navigate>[0])}
     >
       <View style={styles.cardAccent} />
       <View style={styles.cardContent}>

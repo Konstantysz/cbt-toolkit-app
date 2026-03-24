@@ -52,22 +52,26 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
       <View style={styles.beliefCard}>
         <Text style={styles.beliefText}>{'„'}{experiment.belief}{'"'}</Text>
         <View style={styles.sliderRow}>
-          <View style={styles.sliderHalf}>
+          <View style={experiment.beliefStrengthAfter != null ? styles.sliderHalf : styles.sliderFull}>
             <Text style={styles.sliderSideLabel}>{pl.detail.beliefBefore}</Text>
             <IntensitySlider
               value={experiment.beliefStrengthBefore}
               onChange={() => {}}
               label=""
+              readOnly
             />
           </View>
-          <View style={styles.sliderHalf}>
-            <Text style={styles.sliderSideLabel}>{pl.detail.beliefAfter}</Text>
-            <IntensitySlider
-              value={experiment.beliefStrengthAfter ?? experiment.beliefStrengthBefore}
-              onChange={() => {}}
-              label=""
-            />
-          </View>
+          {experiment.beliefStrengthAfter != null && (
+            <View style={styles.sliderHalf}>
+              <Text style={styles.sliderSideLabel}>{pl.detail.beliefAfter}</Text>
+              <IntensitySlider
+                value={experiment.beliefStrengthAfter}
+                onChange={() => {}}
+                label=""
+                readOnly
+              />
+            </View>
+          )}
         </View>
       </View>
 
@@ -140,6 +144,7 @@ const styles = StyleSheet.create({
   beliefText: { fontSize: 15, color: colors.text, fontStyle: 'italic', lineHeight: 22, marginBottom: 16 },
   sliderRow: { flexDirection: 'row', gap: 8 },
   sliderHalf: { flex: 1 },
+  sliderFull: { flex: 1 },
   sliderSideLabel: { fontSize: 11, color: colors.textMuted, textAlign: 'center', marginBottom: 4, letterSpacing: 0.5 },
   sectionHeader: { fontSize: 11, color: colors.textDim, textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8, marginTop: 8 },
   detailRow: {

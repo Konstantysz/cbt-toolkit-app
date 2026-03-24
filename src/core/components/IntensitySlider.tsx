@@ -7,11 +7,12 @@ interface Props {
   value: number;       // 0–100
   onChange: (v: number) => void;
   label?: string;
+  readOnly?: boolean;
 }
 
-export function IntensitySlider({ value, onChange, label }: Props) {
+export function IntensitySlider({ value, onChange, label, readOnly }: Props) {
   return (
-    <View style={styles.container}>
+    <View style={styles.container} pointerEvents={readOnly ? 'none' : 'auto'}>
       <View style={styles.header}>
         {label ? <Text style={styles.label}>{label}</Text> : <View />}
         <Text style={styles.value}>{value}%</Text>
