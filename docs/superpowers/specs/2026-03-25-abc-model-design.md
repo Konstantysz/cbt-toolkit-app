@@ -48,7 +48,7 @@ interface AbcEntry {
 - Lista wpisów posortowana od najnowszego
 - Karta wpisu: data + pierwsze ~80 znaków pola `situation` jako preview
 - Badge: "Kompletny" / "W toku"
-- Wyszukiwarka filtrująca po `situation`
+- Wyszukiwarka filtrująca po `situation` — używa shared `SearchBar` z `core/components` (ADR-005)
 - Seed przykładowy (`isExample: true`) przy pierwszym uruchomieniu
 - FAB / przycisk "Nowy wpis" → NewAbcFlow
 
@@ -142,6 +142,22 @@ src/app/(tools)/abc-model/
     index.tsx                     # → AbcDetailScreen
     edit.tsx                      # → NewAbcFlow (existingId)
 ```
+
+---
+
+## Shared component: SearchBar
+
+`src/core/components/SearchBar.tsx` — nowy shared komponent (ADR-005).
+
+```ts
+interface SearchBarProps {
+  value: string;
+  onChangeText: (text: string) => void;
+  placeholder?: string;
+}
+```
+
+Logika filtrowania zostaje w każdym narzędziu osobno (różne pola). `abc-model` jest pierwszym narzędziem używającym tego komponentu. Migracja istniejących narzędzi w osobnym Phase 4 tasku.
 
 ---
 
