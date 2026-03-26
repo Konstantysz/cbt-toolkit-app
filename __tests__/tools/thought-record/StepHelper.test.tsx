@@ -22,13 +22,11 @@ describe('StepHelper', () => {
     expect(getByText('Przykład')).toBeTruthy();
   });
 
-  it('shows ▾ chevron when collapsed and ▴ when expanded', () => {
-    const { getByText, queryByText } = render(<StepHelper hint={hint} />);
-    expect(queryByText('▾')).toBeTruthy();
-    expect(queryByText('▴')).toBeNull();
+  it('shows chevron-down icon when collapsed and chevron-up when expanded', () => {
+    const { getByTestId, getByText } = render(<StepHelper hint={hint} />);
+    expect(getByTestId('step-helper-chevron').props.name).toBe('chevron-down');
     fireEvent.press(getByText('Wskazówka'));
-    expect(queryByText('▴')).toBeTruthy();
-    expect(queryByText('▾')).toBeNull();
+    expect(getByTestId('step-helper-chevron').props.name).toBe('chevron-up');
   });
 
   it('hides hint text after pressing toggle button twice', () => {

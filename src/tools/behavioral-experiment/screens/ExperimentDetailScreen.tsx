@@ -6,11 +6,12 @@ import { router } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { format, parseISO } from 'date-fns';
 import { pl as dateFnsPl } from 'date-fns/locale';
-import { colors } from '../../../core/theme';
+import { colors, iconRow } from '../../../core/theme';
 import { IntensitySlider } from '../../../core/components/IntensitySlider';
 import { useBehavioralExperiment } from '../hooks/useBehavioralExperiments';
 import { pl } from '../i18n/pl';
 import * as repo from '../repository';
+import { Ionicons } from '@expo/vector-icons';
 
 interface Props { id: string; }
 
@@ -122,11 +123,15 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
           style={styles.editBtn}
           onPress={() => router.push(`/(tools)/behavioral-experiment/${id}/edit`)}
           activeOpacity={0.8}
+          accessibilityLabel="Edytuj eksperyment"
         >
-          <Text style={styles.editBtnText}>✏ Edytuj</Text>
+          <View style={iconRow}>
+            <Ionicons name="create-outline" size={14} color={colors.accent} accessible={false} />
+            <Text style={styles.editBtnText}>{pl.detail.edit}</Text>
+          </View>
         </TouchableOpacity>
         <TouchableOpacity style={styles.deleteBtn} onPress={confirmDelete} activeOpacity={0.8}>
-          <Text style={styles.deleteBtnText}>Usuń</Text>
+          <Text style={styles.deleteBtnText}>{pl.detail.delete}</Text>
         </TouchableOpacity>
       </View>
 

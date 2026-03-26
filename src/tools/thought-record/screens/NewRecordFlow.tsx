@@ -16,7 +16,7 @@ import { useSQLiteContext } from 'expo-sqlite';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { format, parseISO } from 'date-fns';
 import { pl as dateFnsPl } from 'date-fns/locale';
-import { colors } from '../../../core/theme';
+import { colors, iconRow } from '../../../core/theme';
 import { StepProgress } from '../../../core/components/StepProgress';
 import { TextStep } from '../components/TextStep';
 import { EmotionPicker } from '../../../core/components/EmotionPicker';
@@ -25,6 +25,7 @@ import { StepHelper } from '../../../core/components/StepHelper';
 import { pl } from '../i18n/pl';
 import * as repo from '../repository';
 import type { Emotion } from '../types';
+import { Ionicons } from '@expo/vector-icons';
 
 const TOTAL_STEPS = 7;
 
@@ -367,6 +368,24 @@ export function NewRecordFlow({ existingId }: NewRecordFlowProps): React.JSX.Ele
     scrollRef.current?.scrollTo({ y: 0, animated: false });
   }
 
+  function renderNextContent(saving: boolean, step: number, total: number) {
+    if (saving) return <Text style={styles.btnPrimaryText}>...</Text>;
+    if (step === total) {
+      return (
+        <View style={iconRow}>
+          <Text style={styles.btnPrimaryText}>Zakończ</Text>
+          <Ionicons name="checkmark" size={15} color={colors.bg} accessible={false} />
+        </View>
+      );
+    }
+    return (
+      <View style={iconRow}>
+        <Text style={styles.btnPrimaryText}>Dalej</Text>
+        <Ionicons name="arrow-forward" size={15} color={colors.bg} accessible={false} />
+      </View>
+    );
+  }
+
   if (editLoading) {
     return (
       <View testID="loading-indicator" style={styles.centered}>
@@ -399,18 +418,21 @@ export function NewRecordFlow({ existingId }: NewRecordFlowProps): React.JSX.Ele
       </ScrollView>
       <View style={styles.nav}>
         <TouchableOpacity style={styles.btnGhost} onPress={goBack}>
-          <Text style={styles.btnGhostText}>
-            {currentStep === 1 ? 'Anuluj' : '← Wstecz'}
-          </Text>
+          {currentStep === 1 ? (
+            <Text style={styles.btnGhostText}>Anuluj</Text>
+          ) : (
+            <View style={iconRow}>
+              <Ionicons name="arrow-back" size={15} color={colors.textMuted} accessible={false} />
+              <Text style={styles.btnGhostText}>Wstecz</Text>
+            </View>
+          )}
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.btnPrimary, currentStep === TOTAL_STEPS && styles.btnSuccess]}
           onPress={goNext}
           disabled={saving}
         >
-          <Text style={styles.btnPrimaryText}>
-            {saving ? '...' : currentStep === TOTAL_STEPS ? 'Zakończ ✓' : 'Dalej →'}
-          </Text>
+          {renderNextContent(saving, currentStep, TOTAL_STEPS)}
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
