@@ -62,4 +62,23 @@ export const pl = {
     badge: 'Przykład',
     deleteNote: 'To jest przykładowy wpis. Możesz go usunąć, gdy nie jest już potrzebny.',
   },
+  form: {
+    title: 'Formularz Zapisu Myśli',
+    btn: 'Formularz',
+    sections: {
+      situation: 'Sytuacja',
+      emotionsBefore: 'Emocje przed',
+      automaticThought: 'Myśl automatyczna',
+      evidenceFor: 'Dowody potwierdzające',
+      evidenceAgainst: 'Dowody przeczące',
+      alternativeThought: 'Myśli alternatywne',
+      emotionsAfter: 'Emocje po',
+    },
+    export: {
+      pdf: 'Eksportuj PDF',
+      png: 'Eksportuj PNG',
+      errorTitle: 'Błąd eksportu',
+      errorMsg: 'Nie udało się wyeksportować formularza. Spróbuj ponownie.',
+    },
+  },
 };
