@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme';
 
 interface StepHelperProps {
@@ -29,7 +30,11 @@ export function StepHelper({
         activeOpacity={0.7}
       >
         <Text style={styles.toggleText}>{toggleLabel}</Text>
-        <Text style={styles.chevron}>{open ? '▴' : '▾'}</Text>
+        <Ionicons
+          name={open ? 'chevron-up' : 'chevron-down'}
+          size={12}
+          color={colors.accent}
+        />
       </TouchableOpacity>
     </View>
   );
@@ -56,11 +61,6 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: colors.accent,
     letterSpacing: 0.3,
-    includeFontPadding: false,
-  },
-  chevron: {
-    fontSize: 8,
-    color: colors.accent,
     includeFontPadding: false,
   },
   panel: {
