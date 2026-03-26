@@ -37,9 +37,9 @@ export function ExperimentListScreen(): React.JSX.Element {
     format(parseISO(iso), 'd MMM yyyy', { locale: dateFnsPl }), []);
 
   const renderItem = useCallback(({ item }: { item: BehavioralExperiment }) => {
-    const changeStr = item.beliefStrengthAfter !== null
-      ? `${item.beliefStrengthBefore}% → ${item.beliefStrengthAfter}%`
-      : `${item.beliefStrengthBefore}% → —`;
+    const confirmStr = item.status === 'completed' && item.confirmationPercent != null
+      ? `Potwierdzenie: ${item.confirmationPercent}%`
+      : '';
 
     return (
       <TouchableOpacity
@@ -58,7 +58,7 @@ export function ExperimentListScreen(): React.JSX.Element {
           )}
         </View>
         <Text style={styles.belief} numberOfLines={2}>{item.belief}</Text>
-        <Text style={styles.change}>{changeStr}</Text>
+        {confirmStr ? <Text style={styles.change}>{confirmStr}</Text> : null}
       </TouchableOpacity>
     );
   }, [formatDate]);
