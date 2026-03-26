@@ -1,4 +1,6 @@
-import { View, Text } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+import { AbcDetailScreen } from '../../../../tools/abc-model/screens/AbcDetailScreen';
 export default function AbcDetailRoute() {
-  return <View><Text>ABC Detail — coming soon</Text></View>;
+  const { id } = useLocalSearchParams<{ id: string }>();
+  return <AbcDetailScreen id={id} />;
 }
