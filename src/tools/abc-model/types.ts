@@ -7,7 +7,7 @@ export interface AbcEntry {
   physicalSymptoms: string; // C3 — Jak reagowało twoje ciało?
   isComplete: boolean;
   isExample: boolean;
-  currentStep: number;      // 1 | 2
+  currentStep: 1 | 2;
   createdAt: string;        // ISO 8601
   updatedAt: string;        // ISO 8601
 }

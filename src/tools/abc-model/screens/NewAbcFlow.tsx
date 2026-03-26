@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   View,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { router } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
@@ -84,6 +85,8 @@ export function NewAbcFlow({ existingId }: Props): React.JSX.Element {
         currentStep: 1,
       });
       setStep(2);
+    } catch {
+      Alert.alert('Błąd', 'Nie udało się zapisać danych. Spróbuj ponownie.');
     } finally {
       setSaving(false);
     }
@@ -101,6 +104,8 @@ export function NewAbcFlow({ existingId }: Props): React.JSX.Element {
         currentStep: 2,
       });
       router.navigate(`/(tools)/abc-model/${state.entryId}`);
+    } catch {
+      Alert.alert('Błąd', 'Nie udało się zapisać wpisu. Spróbuj ponownie.');
     } finally {
       setSaving(false);
     }

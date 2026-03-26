@@ -10,6 +10,7 @@ const mockDb = {
   runAsync: jest.fn().mockResolvedValue(undefined),
   getAllAsync: jest.fn(),
   getFirstAsync: jest.fn(),
+  withTransactionAsync: jest.fn().mockImplementation((cb: () => Promise<void>) => cb()),
 } as unknown as SQLite.SQLiteDatabase;
 
 beforeEach(() => jest.clearAllMocks());

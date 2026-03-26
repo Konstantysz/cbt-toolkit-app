@@ -26,7 +26,7 @@ function rowToEntry(row: DbRow): AbcEntry {
     physicalSymptoms: row.physical_symptoms,
     isExample: row.is_example === 1,
     isComplete: row.is_complete === 1,
-    currentStep: row.current_step,
+    currentStep: row.current_step as 1 | 2,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -35,11 +35,13 @@ function rowToEntry(row: DbRow): AbcEntry {
 export async function createEntry(db: SQLite.SQLiteDatabase): Promise<AbcEntry> {
   const id = Crypto.randomUUID();
   const now = new Date().toISOString();
-  await db.runAsync(
-    `INSERT INTO tool_entries (id, tool_id, created_at, updated_at) VALUES (?, 'abc-model', ?, ?)`,
-    [id, now, now]
-  );
-  await db.runAsync(`INSERT INTO abc_entries (id) VALUES (?)`, [id]);
+  await db.withTransactionAsync(async () => {
+    await db.runAsync(
+      `INSERT INTO tool_entries (id, tool_id, created_at, updated_at) VALUES (?, 'abc-model', ?, ?)`,
+      [id, now, now]
+    );
+    await db.runAsync(`INSERT INTO abc_entries (id) VALUES (?)`, [id]);
+  });
   return (await getEntryById(db, id))!;
 }
 
@@ -79,42 +81,47 @@ export async function updateEntry(
     updates.emotions !== undefined ||
     updates.physicalSymptoms !== undefined
   );
-  if (hasContent) {
-    await db.runAsync(`
-      UPDATE abc_entries SET
-        situation = COALESCE(?, situation),
-        thoughts = COALESCE(?, thoughts),
-        behaviors = COALESCE(?, behaviors),
-        emotions = COALESCE(?, emotions),
-        physical_symptoms = COALESCE(?, physical_symptoms)
-      WHERE id = ?
-    `, [
-      updates.situation ?? null,
-      updates.thoughts ?? null,
-      updates.behaviors ?? null,
-      updates.emotions ?? null,
-      updates.physicalSymptoms ?? null,
-      id,
-    ]);
-  }
-  if (updates.isComplete !== undefined || updates.currentStep !== undefined) {
-    await db.runAsync(`
-      UPDATE tool_entries SET
-        is_complete = COALESCE(?, is_complete),
-        current_step = COALESCE(?, current_step),
-        updated_at = ?
-      WHERE id = ?
-    `, [
-      updates.isComplete !== undefined ? (updates.isComplete ? 1 : 0) : null,
-      updates.currentStep ?? null,
-      now,
-      id,
-    ]);
-  }
+  await db.withTransactionAsync(async () => {
+    if (hasContent) {
+      await db.runAsync(`
+        UPDATE abc_entries SET
+          situation = COALESCE(?, situation),
+          thoughts = COALESCE(?, thoughts),
+          behaviors = COALESCE(?, behaviors),
+          emotions = COALESCE(?, emotions),
+          physical_symptoms = COALESCE(?, physical_symptoms)
+        WHERE id = ?
+      `, [
+        updates.situation ?? null,
+        updates.thoughts ?? null,
+        updates.behaviors ?? null,
+        updates.emotions ?? null,
+        updates.physicalSymptoms ?? null,
+        id,
+      ]);
+    }
+    if (updates.isComplete !== undefined || updates.currentStep !== undefined) {
+      await db.runAsync(`
+        UPDATE tool_entries SET
+          is_complete = COALESCE(?, is_complete),
+          current_step = COALESCE(?, current_step),
+          updated_at = ?
+        WHERE id = ?
+      `, [
+        updates.isComplete !== undefined ? (updates.isComplete ? 1 : 0) : null,
+        updates.currentStep ?? null,
+        now,
+        id,
+      ]);
+    }
+  });
 }
 
 export async function deleteEntry(db: SQLite.SQLiteDatabase, id: string): Promise<void> {
-  await db.runAsync('DELETE FROM tool_entries WHERE id = ?', [id]);
+  await db.withTransactionAsync(async () => {
+    await db.runAsync('DELETE FROM abc_entries WHERE id = ?', [id]);
+    await db.runAsync('DELETE FROM tool_entries WHERE id = ?', [id]);
+  });
 }
 
 export async function insertSeedEntry(db: SQLite.SQLiteDatabase): Promise<void> {
@@ -140,5 +147,10 @@ export async function insertSeedEntry(db: SQLite.SQLiteDatabase): Promise<void> 
 }
 
 export async function deleteAll(db: SQLite.SQLiteDatabase): Promise<void> {
-  await db.runAsync("DELETE FROM tool_entries WHERE tool_id = 'abc-model'");
+  await db.withTransactionAsync(async () => {
+    await db.runAsync(
+      `DELETE FROM abc_entries WHERE id IN (SELECT id FROM tool_entries WHERE tool_id = 'abc-model')`
+    );
+    await db.runAsync("DELETE FROM tool_entries WHERE tool_id = 'abc-model'");
+  });
 }
