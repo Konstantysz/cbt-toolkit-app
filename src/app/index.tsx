@@ -1,29 +1,26 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, StatusBar } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  StatusBar,
+  Dimensions,
+} from 'react-native';
 import { router } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getEnabledTools } from '../tools/registry';
 import { colors, spacing, radius } from '../core/theme';
 import type { ToolDefinition } from '../core/types/tool';
 
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const CARD_SIZE = (SCREEN_WIDTH - 2 * spacing.lg - spacing.sm) / 2;
+
 export default function HomeScreen(): React.JSX.Element {
   const tools = getEnabledTools();
   const insets = useSafeAreaInsets();
-
-  const renderTool = ({ item }: { item: ToolDefinition }) => (
-    <TouchableOpacity
-      style={styles.card}
-      activeOpacity={0.75}
-      onPress={() => router.navigate(`/(tools)${item.routePrefix}` as Parameters<typeof router.navigate>[0])}
-    >
-      <View style={styles.cardAccent} />
-      <View style={styles.cardContent}>
-        <Text style={styles.toolName}>{item.name}</Text>
-        <Text style={styles.toolDescription}>{item.description}</Text>
-      </View>
-      <Text style={styles.cardArrow}>›</Text>
-    </TouchableOpacity>
-  );
 
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -31,7 +28,9 @@ export default function HomeScreen(): React.JSX.Element {
 
       <View style={styles.header}>
         <Text style={styles.appTitle}>CBT Toolkit</Text>
-        <Text style={styles.appSubtitle}>Narzędzia terapii poznawczo-behawioralnej</Text>
+        <Text style={styles.appSubtitle}>
+          Narzędzia terapii poznawczo-behawioralnej
+        </Text>
       </View>
 
       <View style={styles.sectionHeader}>
@@ -39,12 +38,35 @@ export default function HomeScreen(): React.JSX.Element {
         <View style={styles.sectionLine} />
       </View>
 
-      <FlatList
-        data={tools}
-        keyExtractor={item => item.id}
-        renderItem={renderTool}
-        contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + spacing.md }]}
-      />
+      <ScrollView
+        contentContainerStyle={[
+          styles.grid,
+          { paddingBottom: insets.bottom + spacing.md },
+        ]}
+      >
+        {tools.map((tool: ToolDefinition) => (
+          <TouchableOpacity
+            key={tool.id}
+            style={styles.card}
+            activeOpacity={0.75}
+            onPress={() =>
+              router.navigate(
+                `/(tools)${tool.routePrefix}` as Parameters<
+                  typeof router.navigate
+                >[0],
+              )
+            }
+          >
+            <View style={styles.cardAccentLine} />
+            <Ionicons
+              name={tool.icon as React.ComponentProps<typeof Ionicons>['name']}
+              size={52}
+              color={colors.accent}
+            />
+            <Text style={styles.toolName}>{tool.name}</Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
     </View>
   );
 }
@@ -89,43 +111,39 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: colors.border,
   },
-  list: {
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.sm,
+    gap: spacing.sm,
   },
   card: {
+    width: CARD_SIZE,
+    height: CARD_SIZE,
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
-    marginBottom: spacing.sm,
-    flexDirection: 'row',
-    alignItems: 'center',
     borderWidth: 1,
     borderColor: colors.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 14,
     overflow: 'hidden',
   },
-  cardAccent: {
-    width: 3,
-    alignSelf: 'stretch',
-    backgroundColor: colors.accent,
-  },
-  cardContent: {
-    flex: 1,
-    padding: spacing.md,
+  cardAccentLine: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 2,
+    backgroundColor: colors.accentBorder,
   },
   toolName: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
     color: colors.text,
-    marginBottom: 3,
-  },
-  toolDescription: {
-    fontSize: 13,
-    color: colors.textMuted,
-    lineHeight: 18,
-  },
-  cardArrow: {
-    fontSize: 22,
-    color: colors.textDim,
-    paddingRight: spacing.md,
+    textAlign: 'center',
+    paddingHorizontal: 12,
+    lineHeight: 19,
   },
 });
