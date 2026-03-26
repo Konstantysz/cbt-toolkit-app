@@ -11,6 +11,7 @@ import { IntensitySlider } from '../../../core/components/IntensitySlider';
 import { useBehavioralExperiment } from '../hooks/useBehavioralExperiments';
 import { pl } from '../i18n/pl';
 import * as repo from '../repository';
+import { Ionicons } from '@expo/vector-icons';
 
 interface Props { id: string; }
 
@@ -123,7 +124,10 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
           onPress={() => router.push(`/(tools)/behavioral-experiment/${id}/edit`)}
           activeOpacity={0.8}
         >
-          <Text style={styles.editBtnText}>✏ Edytuj</Text>
+          <View style={styles.iconRow}>
+            <Ionicons name="create-outline" size={14} color={colors.accent} />
+            <Text style={styles.editBtnText}>Edytuj</Text>
+          </View>
         </TouchableOpacity>
         <TouchableOpacity style={styles.deleteBtn} onPress={confirmDelete} activeOpacity={0.8}>
           <Text style={styles.deleteBtnText}>Usuń</Text>
@@ -184,4 +188,5 @@ const styles = StyleSheet.create({
     backgroundColor: colors.dangerDim, borderWidth: 1, borderColor: 'rgba(196,96,90,0.22)',
   },
   deleteBtnText: { fontSize: 14, color: colors.danger },
+  iconRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
 });

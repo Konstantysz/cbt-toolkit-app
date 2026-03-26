@@ -19,6 +19,7 @@ import { StepHelper } from '../../../core/components/StepHelper';
 import { pl } from '../i18n/pl';
 import * as repo from '../repository';
 import type { AbcEntry } from '../types';
+import { Ionicons } from '@expo/vector-icons';
 
 const TOTAL_STEPS = 2;
 
@@ -137,7 +138,10 @@ export function NewAbcFlow({ existingId }: Props): React.JSX.Element {
             disabled={saving}
             activeOpacity={0.85}
           >
-            <Text style={styles.btnText}>{pl.flow.next}</Text>
+            <View style={styles.iconRow}>
+              <Text style={styles.btnText}>{pl.flow.next}</Text>
+              <Ionicons name="arrow-forward" size={15} color={colors.bg} />
+            </View>
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
@@ -250,4 +254,5 @@ const styles = StyleSheet.create({
   },
   btnDisabled: { opacity: 0.5 },
   btnText: { fontSize: 15, fontWeight: '600', color: colors.bg, letterSpacing: 0.02 },
+  iconRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
 });

@@ -48,7 +48,7 @@ describe('NewAbcFlow — new mode', () => {
     await act(async () => {});
 
     await act(async () => {
-      fireEvent.press(getByText('Dalej →'));
+      fireEvent.press(getByText('Dalej'));
     });
 
     expect(repo.updateEntry).toHaveBeenCalledWith(
@@ -66,7 +66,7 @@ describe('NewAbcFlow — new mode', () => {
     await act(async () => {});
 
     // advance to step 2
-    await act(async () => { fireEvent.press(getByText('Dalej →')); });
+    await act(async () => { fireEvent.press(getByText('Dalej')); });
 
     await act(async () => { fireEvent.press(getByText('Zapisz')); });
 

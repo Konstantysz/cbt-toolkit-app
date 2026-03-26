@@ -17,6 +17,7 @@ import { useThoughtRecord } from '../hooks/useThoughtRecords';
 import * as repo from '../repository';
 import type { Emotion } from '../types';
 import { pl } from '../i18n/pl';
+import { Ionicons } from '@expo/vector-icons';
 
 interface Props {
   id: string;
@@ -93,13 +94,19 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
               style={styles.actionBtn}
               onPress={() => router.push(`/(tools)/thought-record/${id}/compare`)}
             >
-              <Text style={styles.actionBtnText}>⊞ {pl.compare.btnLabel}</Text>
+              <View style={styles.iconRow}>
+                <Ionicons name="layers-outline" size={14} color={colors.accent} />
+                <Text style={styles.actionBtnText}>{pl.compare.btnLabel}</Text>
+              </View>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.actionBtn}
               onPress={() => router.push(`/(tools)/thought-record/${id}/form`)}
             >
-              <Text style={styles.actionBtnText}>◻ {pl.form.btn}</Text>
+              <View style={styles.iconRow}>
+                <Ionicons name="document-outline" size={14} color={colors.accent} />
+                <Text style={styles.actionBtnText}>{pl.form.btn}</Text>
+              </View>
             </TouchableOpacity>
           </View>
         </View>
@@ -138,7 +145,10 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
             onPress={() => router.push(`/(tools)/thought-record/${id}/edit`)}
             activeOpacity={0.8}
           >
-            <Text style={styles.editBtnText}>✏ {pl.edit.title}</Text>
+            <View style={styles.iconRow}>
+              <Ionicons name="create-outline" size={14} color={colors.accent} />
+              <Text style={styles.editBtnText}>{pl.edit.title}</Text>
+            </View>
           </TouchableOpacity>
           <TouchableOpacity style={styles.deleteBtn} onPress={confirmDelete} activeOpacity={0.8}>
             <Text style={styles.deleteBtnText}>Usuń wpis</Text>
@@ -230,4 +240,5 @@ const styles = StyleSheet.create({
   },
   deleteBtnText: { color: colors.danger, fontSize: 14 },
   errorText: { fontSize: 15, color: colors.textMuted },
+  iconRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
 });

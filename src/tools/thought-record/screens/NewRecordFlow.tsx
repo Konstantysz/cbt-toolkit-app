@@ -25,6 +25,7 @@ import { StepHelper } from '../../../core/components/StepHelper';
 import { pl } from '../i18n/pl';
 import * as repo from '../repository';
 import type { Emotion } from '../types';
+import { Ionicons } from '@expo/vector-icons';
 
 const TOTAL_STEPS = 7;
 
@@ -399,18 +400,33 @@ export function NewRecordFlow({ existingId }: NewRecordFlowProps): React.JSX.Ele
       </ScrollView>
       <View style={styles.nav}>
         <TouchableOpacity style={styles.btnGhost} onPress={goBack}>
-          <Text style={styles.btnGhostText}>
-            {currentStep === 1 ? 'Anuluj' : '← Wstecz'}
-          </Text>
+          {currentStep === 1 ? (
+            <Text style={styles.btnGhostText}>Anuluj</Text>
+          ) : (
+            <View style={styles.iconRow}>
+              <Ionicons name="arrow-back" size={15} color={colors.textMuted} />
+              <Text style={styles.btnGhostText}>Wstecz</Text>
+            </View>
+          )}
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.btnPrimary, currentStep === TOTAL_STEPS && styles.btnSuccess]}
           onPress={goNext}
           disabled={saving}
         >
-          <Text style={styles.btnPrimaryText}>
-            {saving ? '...' : currentStep === TOTAL_STEPS ? 'Zakończ ✓' : 'Dalej →'}
-          </Text>
+          {saving ? (
+            <Text style={styles.btnPrimaryText}>...</Text>
+          ) : currentStep === TOTAL_STEPS ? (
+            <View style={styles.iconRow}>
+              <Text style={styles.btnPrimaryText}>Zakończ</Text>
+              <Ionicons name="checkmark" size={15} color={colors.bg} />
+            </View>
+          ) : (
+            <View style={styles.iconRow}>
+              <Text style={styles.btnPrimaryText}>Dalej</Text>
+              <Ionicons name="arrow-forward" size={15} color={colors.bg} />
+            </View>
+          )}
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -449,4 +465,5 @@ const styles = StyleSheet.create({
   },
   btnSuccess: { backgroundColor: colors.success },
   btnPrimaryText: { color: colors.bg, fontSize: 15, fontWeight: '600' },
+  iconRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
 });

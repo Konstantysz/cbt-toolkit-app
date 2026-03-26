@@ -12,6 +12,7 @@ import { AbcGraph } from '../components/AbcGraph';
 import { useAbcEntry } from '../hooks/useAbcEntries';
 import * as repo from '../repository';
 import { pl } from '../i18n/pl';
+import { Ionicons } from '@expo/vector-icons';
 
 interface Props {
   id: string;
@@ -117,7 +118,10 @@ export function AbcDetailScreen({ id }: Props): React.JSX.Element {
           onPress={() => router.push(`/(tools)/abc-model/${id}/edit`)}
           activeOpacity={0.8}
         >
-          <Text style={styles.editBtnText}>✏ {pl.detail.editBtn}</Text>
+          <View style={styles.iconRow}>
+            <Ionicons name="create-outline" size={14} color={colors.accent} />
+            <Text style={styles.editBtnText}>{pl.detail.editBtn}</Text>
+          </View>
         </TouchableOpacity>
         <TouchableOpacity style={styles.deleteBtn} onPress={confirmDelete} activeOpacity={0.8}>
           <Text style={styles.deleteBtnText}>{pl.detail.deleteBtn}</Text>
@@ -159,4 +163,5 @@ const styles = StyleSheet.create({
   },
   deleteBtnText: { color: colors.danger, fontSize: 14 },
   errorText: { fontSize: 15, color: colors.textMuted },
+  iconRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
 });
