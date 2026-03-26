@@ -92,8 +92,9 @@ describe('NewExperimentFlow phase=plan', () => {
     fireEvent.changeText(screen.getByPlaceholderText(/Np\. W piątek/), 'Zrobię X');
     fireEvent.press(screen.getByText('Dalej'));
 
-    // Step 3: Dalej (optional)
+    // Step 3: predictedOutcome required — type → Dalej
     await waitFor(() => screen.getByText('Jak myślisz — co się stanie?'));
+    fireEvent.changeText(screen.getByPlaceholderText(/Np\. Szef się zdenerwuje/), 'Przewiduję X');
     fireEvent.press(screen.getByText('Dalej'));
 
     // Step 4: Dalej (optional)

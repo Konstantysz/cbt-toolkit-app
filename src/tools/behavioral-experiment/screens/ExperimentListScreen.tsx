@@ -37,7 +37,7 @@ export function ExperimentListScreen(): React.JSX.Element {
     format(parseISO(iso), 'd MMM yyyy', { locale: dateFnsPl }), []);
 
   const renderItem = useCallback(({ item }: { item: BehavioralExperiment }) => {
-    const confirmStr = item.confirmationPercent != null
+    const confirmStr = item.status === 'completed' && item.confirmationPercent != null
       ? `Potwierdzenie: ${item.confirmationPercent}%`
       : '';
 

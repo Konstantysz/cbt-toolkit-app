@@ -85,6 +85,7 @@ export function NewExperimentFlow({ phase, experimentId }: Props): React.JSX.Ele
     if (phase === 'plan') {
       if (currentStep === 1) return planState.belief.trim().length > 0;
       if (currentStep === 2) return planState.plan.trim().length > 0;
+      if (currentStep === 3) return planState.predictedOutcome.trim().length > 0;
       return true;
     } else {
       if (currentStep === 1) return resultState.actualOutcome.trim().length > 0;

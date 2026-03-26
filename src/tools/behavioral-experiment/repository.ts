@@ -87,6 +87,11 @@ export async function updateExperiment(
 
   const hasBEUpdate = [...planFields, ...resultFields].some(k => updates[k] !== undefined);
   if (hasBEUpdate) {
+    // Use flag+value pairs for nullable fields so callers can explicitly set them to NULL
+    const aoSet = 'actualOutcome' in updates;
+    const cpSet = 'confirmationPercent' in updates;
+    const clSet = 'conclusion' in updates;
+
     await db.runAsync(`
       UPDATE behavioral_experiments SET
         status               = COALESCE(?, status),
@@ -95,9 +100,9 @@ export async function updateExperiment(
         predicted_outcome    = COALESCE(?, predicted_outcome),
         potential_problems   = COALESCE(?, potential_problems),
         problem_strategies   = COALESCE(?, problem_strategies),
-        actual_outcome       = CASE WHEN ? IS NOT NULL THEN ? ELSE actual_outcome END,
-        confirmation_percent = CASE WHEN ? IS NOT NULL THEN ? ELSE confirmation_percent END,
-        conclusion           = CASE WHEN ? IS NOT NULL THEN ? ELSE conclusion END
+        actual_outcome       = CASE WHEN ? = 1 THEN ? ELSE actual_outcome END,
+        confirmation_percent = CASE WHEN ? = 1 THEN ? ELSE confirmation_percent END,
+        conclusion           = CASE WHEN ? = 1 THEN ? ELSE conclusion END
       WHERE id = ?
     `, [
       updates.status ?? null,
@@ -106,9 +111,9 @@ export async function updateExperiment(
       updates.predictedOutcome ?? null,
       updates.potentialProblems ?? null,
       updates.problemStrategies ?? null,
-      updates.actualOutcome ?? null, updates.actualOutcome ?? null,
-      updates.confirmationPercent ?? null, updates.confirmationPercent ?? null,
-      updates.conclusion ?? null, updates.conclusion ?? null,
+      aoSet ? 1 : 0, aoSet ? (updates.actualOutcome ?? null) : null,
+      cpSet ? 1 : 0, cpSet ? (updates.confirmationPercent ?? null) : null,
+      clSet ? 1 : 0, clSet ? (updates.conclusion ?? null) : null,
       id,
     ]);
   }
