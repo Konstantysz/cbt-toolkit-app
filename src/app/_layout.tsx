@@ -61,6 +61,7 @@ export default function RootLayout(): React.JSX.Element {
           />
           <Tabs.Screen name="(tools)/thought-record" options={{ href: null }} />
           <Tabs.Screen name="(tools)/behavioral-experiment" options={{ href: null }} />
+          <Tabs.Screen name="(tools)/abc-model" options={{ href: null }} />
         </Tabs>
       </SQLiteProvider>
     </Suspense>
