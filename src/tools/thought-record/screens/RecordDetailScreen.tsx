@@ -88,12 +88,20 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
               : <View style={[styles.badge, styles.badgeInProgress]}><Text style={[styles.badgeText, { color: colors.inProgress }]}>W toku</Text></View>
             }
           </View>
-          <TouchableOpacity
-            style={styles.actionBtn}
-            onPress={() => router.push(`/(tools)/thought-record/${id}/compare`)}
-          >
-            <Text style={styles.actionBtnText}>⊞ {pl.compare.btnLabel}</Text>
-          </TouchableOpacity>
+          <View style={styles.metaActions}>
+            <TouchableOpacity
+              style={styles.actionBtn}
+              onPress={() => router.push(`/(tools)/thought-record/${id}/compare`)}
+            >
+              <Text style={styles.actionBtnText}>⊞ {pl.compare.btnLabel}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.actionBtn}
+              onPress={() => router.push(`/(tools)/thought-record/${id}/form`)}
+            >
+              <Text style={styles.actionBtnText}>◻ {pl.form.btn}</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Emotions (step 02) */}
@@ -183,6 +191,7 @@ const styles = StyleSheet.create({
   scroll: { padding: 20 },
   metaRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20, gap: 12 },
   metaLeft: { flexDirection: 'column', gap: 5 },
+  metaActions: { flexDirection: 'row', gap: 6, flexWrap: 'wrap', justifyContent: 'flex-end' },
   actionBtn: {
     borderWidth: 1, borderColor: colors.border, borderRadius: 9,
     paddingVertical: 6, paddingHorizontal: 10,
