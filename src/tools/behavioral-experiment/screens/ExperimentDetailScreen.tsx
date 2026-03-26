@@ -7,8 +7,8 @@ import { useSQLiteContext } from 'expo-sqlite';
 import { format, parseISO } from 'date-fns';
 import { pl as dateFnsPl } from 'date-fns/locale';
 import { colors } from '../../../core/theme';
-import { useBehavioralExperiment } from '../hooks/useBehavioralExperiments';
 import { IntensitySlider } from '../../../core/components/IntensitySlider';
+import { useBehavioralExperiment } from '../hooks/useBehavioralExperiments';
 import { pl } from '../i18n/pl';
 import * as repo from '../repository';
 
@@ -43,17 +43,16 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
   if (loading) return <View style={styles.centered}><ActivityIndicator color={colors.accent} /></View>;
   if (!experiment) return <View style={styles.centered}><Text style={styles.missing}>Nie znaleziono eksperymentu.</Text></View>;
 
-  const formatDate = (iso: string) => format(parseISO(iso), 'd MMMM yyyy', { locale: dateFnsPl });
-
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
 
-      {/* Belief comparison card */}
+      {/* Weryfikowana myśl + porównanie suwakowe */}
       <View style={styles.beliefCard}>
+        <Text style={styles.beliefLabel}>{pl.detail.belief}</Text>
         <Text style={styles.beliefText}>{'„'}{experiment.belief}{'"'}</Text>
         <View style={styles.sliderRow}>
-          <View style={experiment.beliefStrengthAfter != null ? styles.sliderHalf : styles.sliderFull}>
-            <Text style={styles.sliderSideLabel}>{pl.detail.beliefBefore}</Text>
+          <View style={styles.sliderHalf}>
+            <Text style={styles.sliderSideLabel}>{pl.detail.beliefStrengthBefore}</Text>
             <IntensitySlider
               value={experiment.beliefStrengthBefore}
               onChange={() => {}}
@@ -63,7 +62,7 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
           </View>
           {experiment.beliefStrengthAfter != null && (
             <View style={styles.sliderHalf}>
-              <Text style={styles.sliderSideLabel}>{pl.detail.beliefAfter}</Text>
+              <Text style={styles.sliderSideLabel}>{pl.detail.beliefStrengthAfter}</Text>
               <IntensitySlider
                 value={experiment.beliefStrengthAfter}
                 onChange={() => {}}
@@ -77,22 +76,10 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
 
       {/* Plan section */}
       <Text style={styles.sectionHeader}>{pl.detail.planSection}</Text>
-      <DetailRow label={pl.detail.alternativeBelief} value={experiment.alternativeBelief || '—'} />
       <DetailRow label={pl.detail.plan} value={experiment.plan || '—'} />
       <DetailRow label={pl.detail.predictedOutcome} value={experiment.predictedOutcome || '—'} />
-
-      {/* Result section */}
-      {experiment.status === 'completed' && (
-        <>
-          <Text style={styles.sectionHeader}>{pl.detail.resultSection}</Text>
-          {experiment.executionDate && (
-            <DetailRow label={pl.detail.executionDate} value={formatDate(experiment.executionDate)} />
-          )}
-          <DetailRow label={pl.detail.executionNotes} value={experiment.executionNotes || '—'} />
-          <DetailRow label={pl.detail.actualOutcome} value={experiment.actualOutcome || '—'} />
-          <DetailRow label={pl.detail.conclusion} value={experiment.conclusion || '—'} />
-        </>
-      )}
+      <DetailRow label={pl.detail.potentialProblems} value={experiment.potentialProblems || '—'} />
+      <DetailRow label={pl.detail.problemStrategies} value={experiment.problemStrategies || '—'} />
 
       {/* Add result button */}
       {experiment.status === 'planned' && (
@@ -103,6 +90,30 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
         >
           <Text style={styles.addResultText}>{pl.detail.addResult}</Text>
         </TouchableOpacity>
+      )}
+
+      {/* Result section */}
+      {experiment.status === 'completed' && (
+        <>
+          <Text style={styles.sectionHeader}>{pl.detail.resultSection}</Text>
+          {experiment.executionDate && (
+            <DetailRow
+              label={pl.detail.executionDate}
+              value={format(parseISO(experiment.executionDate), 'd MMMM yyyy', { locale: dateFnsPl })}
+            />
+          )}
+          <DetailRow label={pl.detail.actualOutcome} value={experiment.actualOutcome || '—'} />
+          {experiment.confirmationPercent != null && (
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>{pl.detail.confirmationPercent}</Text>
+              <View style={styles.percentBar}>
+                <View style={[styles.percentFill, { width: `${experiment.confirmationPercent}%` as `${number}%` }]} />
+              </View>
+              <Text style={styles.percentNum}>{experiment.confirmationPercent}%</Text>
+            </View>
+          )}
+          <DetailRow label={pl.detail.conclusion} value={experiment.conclusion || '—'} />
+        </>
       )}
 
       {/* Edit / Delete */}
@@ -141,10 +152,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface, borderRadius: 14,
     borderWidth: 1, borderColor: colors.border, padding: 16, marginBottom: 20,
   },
+  beliefLabel: { fontSize: 10, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 6 },
   beliefText: { fontSize: 15, color: colors.text, fontStyle: 'italic', lineHeight: 22, marginBottom: 16 },
   sliderRow: { flexDirection: 'row', gap: 8 },
   sliderHalf: { flex: 1 },
-  sliderFull: { flex: 1 },
   sliderSideLabel: { fontSize: 11, color: colors.textMuted, textAlign: 'center', marginBottom: 4, letterSpacing: 0.5 },
   sectionHeader: { fontSize: 11, color: colors.textDim, textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8, marginTop: 8 },
   detailRow: {
@@ -154,9 +165,12 @@ const styles = StyleSheet.create({
   },
   detailLabel: { fontSize: 11, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 4 },
   detailValue: { fontSize: 14, color: colors.text, lineHeight: 21 },
+  percentBar: { height: 6, backgroundColor: colors.border, borderRadius: 3, overflow: 'hidden', marginVertical: 6 },
+  percentFill: { height: '100%', backgroundColor: colors.accent, borderRadius: 3 },
+  percentNum: { fontSize: 13, color: colors.accent, fontWeight: '600' },
   addResultBtn: {
     backgroundColor: colors.success, borderRadius: 12,
-    paddingVertical: 14, alignItems: 'center', marginTop: 16,
+    paddingVertical: 14, alignItems: 'center', marginTop: 16, marginBottom: 4,
   },
   addResultText: { fontSize: 15, color: colors.bg, fontWeight: '600' },
   actionRow: { flexDirection: 'row', gap: 10, marginTop: 24 },
