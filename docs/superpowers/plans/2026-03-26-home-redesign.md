@@ -1,3 +1,50 @@
+# Home Screen Redesign Implementation Plan
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** Replace the horizontal-list home screen with a 2-column square-tile grid showing icon + name per tool.
+
+**Architecture:** Single file change — `src/app/index.tsx`. Replace `FlatList` with `ScrollView` + `flexWrap` grid. Card width calculated from screen dimensions. Icons rendered via existing `ToolDefinition.icon` field (Ionicons names already stored there).
+
+**Tech Stack:** React Native, Expo Router, `@expo/vector-icons` (Ionicons), `react-native-safe-area-context`
+
+---
+
+## File Map
+
+| Action | File | Notes |
+|---|---|---|
+| Modify | `src/app/index.tsx` | Complete rewrite of layout — only file changed |
+
+---
+
+### Task 0: Create worktree
+
+- [ ] **Step 1: Create worktree**
+
+```bash
+git worktree add .worktrees/home-redesign -b feat/home-redesign
+```
+
+- [ ] **Step 2: Verify baseline tests pass**
+
+```bash
+cd F:/cbt-toolkit/cbt-toolkit-app
+npx jest --passWithNoTests 2>&1 | tail -5
+```
+
+Expected: all tests pass (108/108).
+
+---
+
+### Task 1: Implement 2-column grid home screen
+
+**Files:**
+- Modify: `src/app/index.tsx`
+
+- [ ] **Step 1: Replace `src/app/index.tsx` with new implementation**
+
+```tsx
 import React from 'react';
 import {
   View,
@@ -147,3 +194,81 @@ const styles = StyleSheet.create({
     lineHeight: 19,
   },
 });
+```
+
+- [ ] **Step 2: Run TypeScript check**
+
+```bash
+cd F:/cbt-toolkit/cbt-toolkit-app
+npx tsc --noEmit 2>&1 | head -20
+```
+
+Expected: no errors.
+
+- [ ] **Step 3: Run tests**
+
+```bash
+npx jest --passWithNoTests 2>&1 | tail -5
+```
+
+Expected: 108/108 tests pass (no home screen logic tests exist — this verifies nothing regressed).
+
+- [ ] **Step 4: Run ESLint**
+
+```bash
+npx eslint src/app/index.tsx 2>&1
+```
+
+Expected: no errors or warnings.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add src/app/index.tsx
+git commit -m "feat: redesign home screen with 2-column icon grid"
+```
+
+---
+
+### Task 2: PR + merge
+
+- [ ] **Step 1: Push branch**
+
+```bash
+git push -u origin feat/home-redesign
+```
+
+- [ ] **Step 2: Create PR**
+
+```bash
+gh pr create \
+  --title "feat: home screen 2-column icon grid" \
+  --body "$(cat <<'EOF'
+## Summary
+- Replace FlatList horizontal list with 2-column square tile grid
+- Each tile: large Ionicons icon (52px, accent) + tool name
+- 2px accent top border on each card
+- ScrollView replaces FlatList for future growth
+- Zero changes outside src/app/index.tsx
+
+## Test plan
+- [ ] 108/108 Jest tests pass
+- [ ] TypeScript: no errors
+- [ ] ESLint: no errors
+- [ ] Visual check on Android emulator
+EOF
+)"
+```
+
+- [ ] **Step 3: Merge PR after CI passes**
+
+```bash
+gh pr merge --squash --delete-branch
+```
+
+- [ ] **Step 4: Pull main and remove worktree**
+
+```bash
+git checkout main && git pull
+git worktree remove .worktrees/home-redesign
+```
