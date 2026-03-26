@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   FlatList, StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
@@ -7,6 +7,7 @@ import { useSQLiteContext } from 'expo-sqlite';
 import { format, parseISO } from 'date-fns';
 import { pl as dateFnsPl } from 'date-fns/locale';
 import { colors } from '../../../core/theme';
+import { SearchBar } from '../../../core/components/SearchBar';
 import { useBehavioralExperiments } from '../hooks/useBehavioralExperiments';
 import { insertSeedExperiment } from '../repository';
 import { pl } from '../i18n/pl';
@@ -15,6 +16,7 @@ import type { BehavioralExperiment } from '../types';
 export function ExperimentListScreen(): React.JSX.Element {
   const db = useSQLiteContext();
   const { experiments, loading, refresh } = useBehavioralExperiments(db);
+  const [query, setQuery] = useState('');
 
   useFocusEffect(useCallback(() => { refresh(); }, [refresh]));
 
@@ -61,19 +63,38 @@ export function ExperimentListScreen(): React.JSX.Element {
     );
   }, [formatDate]);
 
+  const filtered = useMemo(() => {
+    if (!query) return experiments;
+    const q = query.toLowerCase();
+    return experiments.filter(e => e.belief.toLowerCase().includes(q));
+  }, [experiments, query]);
+
   if (loading) return <View style={styles.container} />;
+
+  const showEmpty = filtered.length === 0;
+  const showNoResults = showEmpty && query.length > 0;
 
   return (
     <View style={styles.container}>
-      {experiments.length === 0 ? (
+      <SearchBar
+        value={query}
+        onChangeText={setQuery}
+        placeholder={pl.list.searchPlaceholder}
+      />
+      {showEmpty ? (
         <View style={styles.empty}>
           <Text style={styles.emptyIcon}>🧪</Text>
-          <Text style={styles.emptyText}>{pl.list.empty}</Text>
-          <Text style={styles.emptySub}>{pl.list.emptySub}</Text>
+          {showNoResults
+            ? <Text style={styles.emptyText}>{pl.list.noResults(query)}</Text>
+            : <>
+                <Text style={styles.emptyText}>{pl.list.empty}</Text>
+                <Text style={styles.emptySub}>{pl.list.emptySub}</Text>
+              </>
+          }
         </View>
       ) : (
         <FlatList
-          data={experiments}
+          data={filtered}
           keyExtractor={item => item.id}
           renderItem={renderItem}
           contentContainerStyle={styles.list}

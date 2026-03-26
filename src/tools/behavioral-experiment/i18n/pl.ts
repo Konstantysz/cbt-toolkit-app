@@ -6,6 +6,8 @@ export const pl = {
     empty: 'Brak eksperymentów',
     emptySub: 'Dotknij + aby zaplanować pierwszy eksperyment.',
     new: 'Nowy eksperyment',
+    searchPlaceholder: 'Szukaj eksperymentów...',
+    noResults: (q: string) => `Brak wyników dla „${q}"`,
   },
   status: {
     planned: 'Zaplanowany',

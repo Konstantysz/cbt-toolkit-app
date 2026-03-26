@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View,
+  FlatList, StyleSheet, Text, TouchableOpacity, View,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router, useFocusEffect } from 'expo-router';
@@ -8,6 +8,7 @@ import { useSQLiteContext } from 'expo-sqlite';
 import { format, parseISO } from 'date-fns';
 import { pl as dateFnsPl } from 'date-fns/locale';
 import { colors } from '../../../core/theme';
+import { SearchBar } from '../../../core/components/SearchBar';
 import { useThoughtRecords } from '../hooks/useThoughtRecords';
 import { insertSeedRecord } from '../repository';
 import { pl } from '../i18n/pl';
@@ -97,17 +98,11 @@ export function RecordListScreen(): React.JSX.Element {
 
   return (
     <View style={styles.container}>
-      <View style={styles.searchWrap}>
-        <Text style={styles.searchIcon}>⌕</Text>
-        <TextInput
-          style={styles.searchInput}
-          value={query}
-          onChangeText={setQuery}
-          placeholder={pl.search.placeholder}
-          placeholderTextColor={colors.textDim}
-          clearButtonMode="while-editing"
-        />
-      </View>
+      <SearchBar
+        value={query}
+        onChangeText={setQuery}
+        placeholder={pl.search.placeholder}
+      />
 
       {showEmpty ? (
         <View style={styles.empty}>
@@ -168,14 +163,6 @@ const styles = StyleSheet.create({
   emptyIcon: { fontSize: 40, opacity: 0.2 },
   emptyText: { fontSize: 18, color: colors.textMuted, fontStyle: 'italic' },
   emptySub: { fontSize: 13, color: colors.textDim, textAlign: 'center' },
-  searchWrap: { position: 'relative', marginHorizontal: 16, marginTop: 12, marginBottom: 4 },
-  searchIcon: { position: 'absolute', left: 14, top: 11, fontSize: 14, color: colors.textDim, zIndex: 1 },
-  searchInput: {
-    backgroundColor: colors.surface,
-    borderWidth: 1, borderColor: colors.border, borderRadius: 12,
-    paddingVertical: 11, paddingHorizontal: 14, paddingLeft: 36,
-    fontSize: 13, color: colors.text,
-  },
   fab: {
     position: 'absolute',
     bottom: 20,
