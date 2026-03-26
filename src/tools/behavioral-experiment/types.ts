@@ -4,19 +4,17 @@ export interface BehavioralExperiment {
   id: string;
   status: ExperimentStatus;
 
-  // Plan phase
-  belief: string;
-  beliefStrengthBefore: number;       // 0–100
-  alternativeBelief: string;
-  plan: string;
-  predictedOutcome: string;
+  // Plan phase (5 kroków)
+  belief: string;             // Weryfikowana myśl
+  plan: string;               // Eksperyment — co zrobisz
+  predictedOutcome: string;   // Przewidywana reakcja
+  potentialProblems: string;  // Potencjalne problemy
+  problemStrategies: string;  // Strategie rozwiązania problemów
 
-  // Result phase
-  executionDate: string | null;       // ISO date string
-  executionNotes: string | null;      // what the user actually did (step 5)
-  actualOutcome: string | null;       // what happened (step 6)
-  conclusion: string | null;          // learnings (step 7)
-  beliefStrengthAfter: number | null; // 0–100
+  // Result phase (3 kroki)
+  actualOutcome: string | null;         // Wynik eksperymentu
+  confirmationPercent: number | null;   // 0–100%
+  conclusion: string | null;            // Czego nauczył mnie eksperyment
 
   isExample: boolean;
   createdAt: string;
