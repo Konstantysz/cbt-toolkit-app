@@ -1,10 +1,10 @@
 export interface AbcEntry {
   id: string;
-  situation: string;        // A — Co się wydarzyło?
-  thoughts: string;         // B — Co wtedy myślałeś?
-  behaviors: string;        // C1 — Co zrobiłeś?
-  emotions: string;         // C2 — Co czułeś?
-  physicalSymptoms: string; // C3 — Jak reagowało twoje ciało?
+  situation: string;        // A — triggering event
+  thoughts: string;         // B — automatic beliefs/thoughts
+  behaviors: string;        // C1 — behavioral response
+  emotions: string;         // C2 — emotional response
+  physicalSymptoms: string; // C3 — physiological response
   isComplete: boolean;
   isExample: boolean;
   currentStep: 1 | 2;
