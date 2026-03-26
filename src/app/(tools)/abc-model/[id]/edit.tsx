@@ -1,4 +1,6 @@
-import { View, Text } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+import { NewAbcFlow } from '../../../../tools/abc-model/screens/NewAbcFlow';
 export default function AbcEditRoute() {
-  return <View><Text>ABC Edit — coming soon</Text></View>;
+  const { id } = useLocalSearchParams<{ id: string }>();
+  return <NewAbcFlow existingId={id} />;
 }

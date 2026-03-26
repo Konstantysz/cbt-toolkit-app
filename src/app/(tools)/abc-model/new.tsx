@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native';
+import { NewAbcFlow } from '../../../tools/abc-model/screens/NewAbcFlow';
 export default function AbcNewRoute() {
-  return <View><Text>New ABC — coming soon</Text></View>;
+  return <NewAbcFlow />;
 }
