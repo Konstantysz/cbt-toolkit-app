@@ -7,7 +7,7 @@ import { router } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { format, parseISO } from 'date-fns';
 import { pl as dateFnsPl } from 'date-fns/locale';
-import { colors } from '../../../core/theme';
+import { colors, iconRow } from '../../../core/theme';
 import { AbcGraph } from '../components/AbcGraph';
 import { useAbcEntry } from '../hooks/useAbcEntries';
 import * as repo from '../repository';
@@ -117,9 +117,10 @@ export function AbcDetailScreen({ id }: Props): React.JSX.Element {
           style={styles.editBtn}
           onPress={() => router.push(`/(tools)/abc-model/${id}/edit`)}
           activeOpacity={0.8}
+          accessibilityLabel="Edytuj wpis"
         >
-          <View style={styles.iconRow}>
-            <Ionicons name="create-outline" size={14} color={colors.accent} />
+          <View style={iconRow}>
+            <Ionicons name="create-outline" size={14} color={colors.accent} accessible={false} />
             <Text style={styles.editBtnText}>{pl.detail.editBtn}</Text>
           </View>
         </TouchableOpacity>
@@ -163,5 +164,4 @@ const styles = StyleSheet.create({
   },
   deleteBtnText: { color: colors.danger, fontSize: 14 },
   errorText: { fontSize: 15, color: colors.textMuted },
-  iconRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
 });

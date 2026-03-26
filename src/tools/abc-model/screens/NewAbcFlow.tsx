@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
-import { colors } from '../../../core/theme';
+import { colors, iconRow } from '../../../core/theme';
 import { StepProgress } from '../../../core/components/StepProgress';
 import { StepHelper } from '../../../core/components/StepHelper';
 import { pl } from '../i18n/pl';
@@ -138,9 +138,9 @@ export function NewAbcFlow({ existingId }: Props): React.JSX.Element {
             disabled={saving}
             activeOpacity={0.85}
           >
-            <View style={styles.iconRow}>
+            <View style={iconRow}>
               <Text style={styles.btnText}>{pl.flow.next}</Text>
-              <Ionicons name="arrow-forward" size={15} color={colors.bg} />
+              <Ionicons name="arrow-forward" size={15} color={colors.bg} accessible={false} />
             </View>
           </TouchableOpacity>
         ) : (
@@ -254,5 +254,4 @@ const styles = StyleSheet.create({
   },
   btnDisabled: { opacity: 0.5 },
   btnText: { fontSize: 15, fontWeight: '600', color: colors.bg, letterSpacing: 0.02 },
-  iconRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
 });

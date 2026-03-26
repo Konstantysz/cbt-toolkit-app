@@ -73,6 +73,8 @@ export const pl = {
     confirmationPercent: 'Potwierdzenie myśli',
     conclusion: 'Czego się nauczyłem',
     addResult: 'Dodaj wynik',
+    edit: 'Edytuj',
+    delete: 'Usuń',
   },
   nav: {
     next: 'Dalej',

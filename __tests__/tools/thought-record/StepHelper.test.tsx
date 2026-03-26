@@ -23,12 +23,10 @@ describe('StepHelper', () => {
   });
 
   it('shows chevron-down icon when collapsed and chevron-up when expanded', () => {
-    const { getByTestId } = render(<StepHelper hint={hint} />);
-    // Icon components render but we test the component is interactive
-    const { getByText } = render(<StepHelper hint={hint} />);
+    const { getByTestId, getByText } = render(<StepHelper hint={hint} />);
+    expect(getByTestId('step-helper-chevron').props.name).toBe('chevron-down');
     fireEvent.press(getByText('Wskazówka'));
-    // After pressing, the component remains interactive
-    expect(getByText('Wskazówka')).toBeTruthy();
+    expect(getByTestId('step-helper-chevron').props.name).toBe('chevron-up');
   });
 
   it('hides hint text after pressing toggle button twice', () => {

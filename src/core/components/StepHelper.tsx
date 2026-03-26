@@ -31,9 +31,11 @@ export function StepHelper({
       >
         <Text style={styles.toggleText}>{toggleLabel}</Text>
         <Ionicons
+          testID="step-helper-chevron"
           name={open ? 'chevron-up' : 'chevron-down'}
           size={12}
           color={colors.accent}
+          accessible={false}
         />
       </TouchableOpacity>
     </View>

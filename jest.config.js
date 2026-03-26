@@ -6,6 +6,8 @@ module.exports = {
   ],
   moduleNameMapper: {
     '^react-native-svg$': '<rootDir>/__mocks__/react-native-svg.js',
+    '^@expo/vector-icons$': '<rootDir>/__mocks__/@expo/vector-icons.js',
+    '^@expo/vector-icons/(.*)$': '<rootDir>/__mocks__/@expo/vector-icons.js',
   },
   testMatch: ['**/__tests__/**/*.test.[jt]s?(x)'],
   testPathIgnorePatterns: ['/node_modules/', '<rootDir>/.worktrees/'],

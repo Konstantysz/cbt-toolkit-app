@@ -12,7 +12,7 @@ import { router } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { format, parseISO } from 'date-fns';
 import { pl as dateFnsPl } from 'date-fns/locale';
-import { colors } from '../../../core/theme';
+import { colors, iconRow } from '../../../core/theme';
 import { useThoughtRecord } from '../hooks/useThoughtRecords';
 import * as repo from '../repository';
 import type { Emotion } from '../types';
@@ -93,18 +93,20 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
             <TouchableOpacity
               style={styles.actionBtn}
               onPress={() => router.push(`/(tools)/thought-record/${id}/compare`)}
+              accessibilityLabel="Porównaj zapisy"
             >
-              <View style={styles.iconRow}>
-                <Ionicons name="layers-outline" size={14} color={colors.accent} />
+              <View style={iconRow}>
+                <Ionicons name="layers-outline" size={14} color={colors.accent} accessible={false} />
                 <Text style={styles.actionBtnText}>{pl.compare.btnLabel}</Text>
               </View>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.actionBtn}
               onPress={() => router.push(`/(tools)/thought-record/${id}/form`)}
+              accessibilityLabel="Formularz papierowy"
             >
-              <View style={styles.iconRow}>
-                <Ionicons name="document-outline" size={14} color={colors.accent} />
+              <View style={iconRow}>
+                <Ionicons name="document-outline" size={14} color={colors.accent} accessible={false} />
                 <Text style={styles.actionBtnText}>{pl.form.btn}</Text>
               </View>
             </TouchableOpacity>
@@ -144,9 +146,10 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
             style={styles.editBtn}
             onPress={() => router.push(`/(tools)/thought-record/${id}/edit`)}
             activeOpacity={0.8}
+            accessibilityLabel="Edytuj wpis"
           >
-            <View style={styles.iconRow}>
-              <Ionicons name="create-outline" size={14} color={colors.accent} />
+            <View style={iconRow}>
+              <Ionicons name="create-outline" size={14} color={colors.accent} accessible={false} />
               <Text style={styles.editBtnText}>{pl.edit.title}</Text>
             </View>
           </TouchableOpacity>
@@ -240,5 +243,4 @@ const styles = StyleSheet.create({
   },
   deleteBtnText: { color: colors.danger, fontSize: 14 },
   errorText: { fontSize: 15, color: colors.textMuted },
-  iconRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
 });

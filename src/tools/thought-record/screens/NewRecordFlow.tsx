@@ -16,7 +16,7 @@ import { useSQLiteContext } from 'expo-sqlite';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { format, parseISO } from 'date-fns';
 import { pl as dateFnsPl } from 'date-fns/locale';
-import { colors } from '../../../core/theme';
+import { colors, iconRow } from '../../../core/theme';
 import { StepProgress } from '../../../core/components/StepProgress';
 import { TextStep } from '../components/TextStep';
 import { EmotionPicker } from '../../../core/components/EmotionPicker';
@@ -368,6 +368,24 @@ export function NewRecordFlow({ existingId }: NewRecordFlowProps): React.JSX.Ele
     scrollRef.current?.scrollTo({ y: 0, animated: false });
   }
 
+  function renderNextContent(saving: boolean, step: number, total: number) {
+    if (saving) return <Text style={styles.btnPrimaryText}>...</Text>;
+    if (step === total) {
+      return (
+        <View style={iconRow}>
+          <Text style={styles.btnPrimaryText}>Zakończ</Text>
+          <Ionicons name="checkmark" size={15} color={colors.bg} accessible={false} />
+        </View>
+      );
+    }
+    return (
+      <View style={iconRow}>
+        <Text style={styles.btnPrimaryText}>Dalej</Text>
+        <Ionicons name="arrow-forward" size={15} color={colors.bg} accessible={false} />
+      </View>
+    );
+  }
+
   if (editLoading) {
     return (
       <View testID="loading-indicator" style={styles.centered}>
@@ -403,8 +421,8 @@ export function NewRecordFlow({ existingId }: NewRecordFlowProps): React.JSX.Ele
           {currentStep === 1 ? (
             <Text style={styles.btnGhostText}>Anuluj</Text>
           ) : (
-            <View style={styles.iconRow}>
-              <Ionicons name="arrow-back" size={15} color={colors.textMuted} />
+            <View style={iconRow}>
+              <Ionicons name="arrow-back" size={15} color={colors.textMuted} accessible={false} />
               <Text style={styles.btnGhostText}>Wstecz</Text>
             </View>
           )}
@@ -414,19 +432,7 @@ export function NewRecordFlow({ existingId }: NewRecordFlowProps): React.JSX.Ele
           onPress={goNext}
           disabled={saving}
         >
-          {saving ? (
-            <Text style={styles.btnPrimaryText}>...</Text>
-          ) : currentStep === TOTAL_STEPS ? (
-            <View style={styles.iconRow}>
-              <Text style={styles.btnPrimaryText}>Zakończ</Text>
-              <Ionicons name="checkmark" size={15} color={colors.bg} />
-            </View>
-          ) : (
-            <View style={styles.iconRow}>
-              <Text style={styles.btnPrimaryText}>Dalej</Text>
-              <Ionicons name="arrow-forward" size={15} color={colors.bg} />
-            </View>
-          )}
+          {renderNextContent(saving, currentStep, TOTAL_STEPS)}
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -465,5 +471,4 @@ const styles = StyleSheet.create({
   },
   btnSuccess: { backgroundColor: colors.success },
   btnPrimaryText: { color: colors.bg, fontSize: 15, fontWeight: '600' },
-  iconRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
 });
