@@ -6,7 +6,7 @@ export const thoughtRecordTool: ToolDefinition = {
   id: 'thought-record',
   name: 'Zapis Myśli',
   description: 'Zapisuj i analizuj swoje myśli automatyczne',
-  icon: 'brain',
+  icon: 'journal-outline',
   routePrefix: '/thought-record',
   migrations: [migration001, migration002],
   enabled: true,
