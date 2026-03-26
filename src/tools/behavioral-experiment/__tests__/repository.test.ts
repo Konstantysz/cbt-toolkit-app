@@ -1,6 +1,5 @@
 import * as SQLite from 'expo-sqlite';
 
-// Mock expo-sqlite and expo-crypto (same pattern as thought-record tests)
 jest.mock('expo-sqlite');
 jest.mock('expo-crypto', () => ({
   randomUUID: () => 'test-uuid-1234',
@@ -14,59 +13,58 @@ const mockDb = {
   getFirstAsync: jest.fn(),
 } as unknown as SQLite.SQLiteDatabase;
 
+const mockRow = {
+  id: 'test-uuid-1234',
+  status: 'planned',
+  belief: '',
+  plan: '',
+  predicted_outcome: '',
+  potential_problems: '',
+  problem_strategies: '',
+  actual_outcome: null,
+  confirmation_percent: null,
+  conclusion: null,
+  is_example: 0,
+  is_complete: 0,
+  current_step: 1,
+  created_at: '2026-01-01T00:00:00.000Z',
+  updated_at: '2026-01-01T00:00:00.000Z',
+};
+
 beforeEach(() => jest.clearAllMocks());
 
 describe('createExperiment', () => {
   it('inserts into tool_entries and behavioral_experiments, returns record', async () => {
-    (mockDb.getFirstAsync as jest.Mock).mockResolvedValueOnce({
-      id: 'test-uuid-1234',
-      status: 'planned',
-      belief: '',
-      belief_strength_before: 50,
-      alternative_belief: '',
-      plan: '',
-      predicted_outcome: '',
-      execution_date: null,
-      execution_notes: null,
-      actual_outcome: null,
-      conclusion: null,
-      belief_strength_after: null,
-      is_example: 0,
-      is_complete: 0,
-      current_step: 1,
-      created_at: '2026-01-01T00:00:00.000Z',
-      updated_at: '2026-01-01T00:00:00.000Z',
-    });
+    (mockDb.getFirstAsync as jest.Mock).mockResolvedValueOnce(mockRow);
 
     const result = await repo.createExperiment(mockDb);
 
     expect(mockDb.runAsync).toHaveBeenCalledTimes(2);
     expect(result.id).toBe('test-uuid-1234');
     expect(result.status).toBe('planned');
+    expect(result.belief).toBe('');
+    expect(result.potentialProblems).toBe('');
+    expect(result.confirmationPercent).toBeNull();
   });
 });
 
 describe('getExperiments', () => {
-  it('returns mapped array from JOIN query', async () => {
+  it('returns mapped array with new fields', async () => {
     (mockDb.getAllAsync as jest.Mock).mockResolvedValueOnce([
       {
+        ...mockRow,
         id: 'abc',
         status: 'completed',
         belief: 'Test belief',
-        belief_strength_before: 80,
-        alternative_belief: '',
-        plan: '',
-        predicted_outcome: '',
-        execution_date: '2026-01-05',
-        execution_notes: 'Did it',
-        actual_outcome: 'Fine',
-        conclusion: 'Was wrong',
-        belief_strength_after: 20,
-        is_example: 0,
+        plan: 'Zrobię X',
+        predicted_outcome: 'Stanie się Y',
+        potential_problems: 'Może przeszkodzić Z',
+        problem_strategies: 'Zaradzę przez W',
+        actual_outcome: 'Stało się Q',
+        confirmation_percent: 30,
+        conclusion: 'Nauczyłem się R',
         is_complete: 1,
-        current_step: 7,
-        created_at: '2026-01-01T00:00:00.000Z',
-        updated_at: '2026-01-05T00:00:00.000Z',
+        current_step: 8,
       },
     ]);
 
@@ -74,20 +72,31 @@ describe('getExperiments', () => {
 
     expect(result).toHaveLength(1);
     expect(result[0].belief).toBe('Test belief');
-    expect(result[0].beliefStrengthBefore).toBe(80);
-    expect(result[0].beliefStrengthAfter).toBe(20);
-    expect(result[0].status).toBe('completed');
+    expect(result[0].potentialProblems).toBe('Może przeszkodzić Z');
+    expect(result[0].problemStrategies).toBe('Zaradzę przez W');
+    expect(result[0].confirmationPercent).toBe(30);
+    expect(result[0].conclusion).toBe('Nauczyłem się R');
   });
 });
 
 describe('updateExperiment', () => {
-  it('updates both tables and sets status=completed when updating result fields', async () => {
+  it('updates result fields and sets status=completed', async () => {
     await repo.updateExperiment(mockDb, 'abc', {
       conclusion: 'Learned something',
-      beliefStrengthAfter: 15,
+      confirmationPercent: 25,
       status: 'completed',
       isComplete: true,
-      currentStep: 7,
+      currentStep: 8,
+    });
+
+    expect(mockDb.runAsync).toHaveBeenCalledTimes(2);
+  });
+
+  it('updates plan fields', async () => {
+    await repo.updateExperiment(mockDb, 'abc', {
+      potentialProblems: 'Może padać deszcz',
+      problemStrategies: 'Wezmę parasol',
+      currentStep: 4,
     });
 
     expect(mockDb.runAsync).toHaveBeenCalledTimes(2);
@@ -100,13 +109,11 @@ describe('insertSeedExperiment', () => {
 
     const calls = (mockDb.runAsync as jest.Mock).mock.calls;
     expect(calls).toHaveLength(2);
-    // First call: tool_entries with is_complete=1, current_step=7
     expect(calls[0][0]).toContain('tool_entries');
-    expect(calls[0][1]).toContain(1);   // is_complete
-    expect(calls[0][1]).toContain(7);   // current_step
-    // Second call: behavioral_experiments with is_example=1
+    expect(calls[0][1]).toContain(1);  // is_complete
+    expect(calls[0][1]).toContain(8);  // current_step (5 plan + 3 result)
     expect(calls[1][0]).toContain('behavioral_experiments');
-    expect(calls[1][1]).toContain(1);   // is_example
+    expect(calls[1][1]).toContain(1);  // is_example
   });
 });
 
