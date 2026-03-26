@@ -2,7 +2,9 @@ const React = require('react');
 const RN = require('react-native');
 
 const mock = (name) => {
-  return ({ children, ...props }) => React.createElement(RN.View, props, children);
+  const Component = ({ children, ...props }) => React.createElement(RN.View, props, children);
+  Component.displayName = name;
+  return Component;
 };
 
 module.exports = {
