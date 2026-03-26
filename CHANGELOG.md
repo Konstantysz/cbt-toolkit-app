@@ -11,6 +11,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v0.4.0]
+
+### Added
+- **ABC Model tool** — third CBT module, fully self-contained
+  - 2-step form: activating event (A), belief (B), consequences (C1 emotional / C2 behavioral)
+  - ABCGraph — SVG visualization of A → B → C1/C2 relationships with curved arrows
+  - List with search/filter, detail screen, edit and delete
+- **Thought Record paper form view + export**
+  - Paper form screen accessible from RecordDetailScreen via "Formularz" button
+  - Export as PDF (`expo-print`) or PNG (`react-native-view-shot`) shared via native share sheet
+- **Thought Record step 1 hint** extended with HALT mnemonic and recurrence prompt
+- **Behavioral Experiment redesign** — replaced original flow with structured CBT format
+  - 5 plan steps: belief + strength (0–100), alternative belief, experiment plan, prediction, safety behaviours + scheduled date
+  - 3 result steps: execution date, actual outcome, belief strength after + reflection
+  - `beliefStrengthBefore` / `beliefStrengthAfter` sliders replace generic intensity
+- **Home screen redesign** — 2-column square tile grid
+  - Large Ionicons icon (52px, accent color) + tool name per tile
+  - Accent top border on each card; ScrollView replaces FlatList
+- **Icon library** — replaced all Unicode symbols (`⊞`, `✏`, `◻`) with `@expo/vector-icons` Ionicons across all tool screens
+  - `accessible={false}` on decorative icons; `accessibilityLabel` on all action buttons
+- **SearchBar shared component** (`core/components/SearchBar`) — used by all three tool list screens
+- **CI**: `npx expo install --check` step added to catch incompatible dependency bumps on PRs
+
+### Fixed
+- `package.json` dependency specs corrected — reverted incompatible bumps to Expo SDK 55 compatible versions
+- `.npmrc` added with `legacy-peer-deps=true` — clean installs after `node_modules` wipe now work
+- `thought-record` icon `brain` → `journal-outline` (invalid Ionicons name caused black screen on home)
+- Home screen navigation: `router.push` → `router.navigate` — fixed SQLiteContext crash on tool open
+- Behavioral Experiment detail screen: intensity slider now read-only (`pointerEvents="none"`)
+- Behavioral Experiment: StepHelper moved below TextInput in all 7 steps (was obscuring input)
+- Behavioral Experiment: "% po" field no longer copies "% przed" value on open
+
+---
+
 ## [v0.3.0]
 
 ### Added
@@ -114,7 +148,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Dark theme** — warm dark palette with amber accent
 - **Jest test infrastructure** — jest-expo + @testing-library/react-native
 
-[Unreleased]: https://github.com/Konstantysz/cbt-toolkit-app/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/Konstantysz/cbt-toolkit-app/compare/v0.4.0...HEAD
+[v0.4.0]: https://github.com/Konstantysz/cbt-toolkit-app/compare/v0.3.0...v0.4.0
 [v0.3.0]: https://github.com/Konstantysz/cbt-toolkit-app/compare/v0.2.0...v0.3.0
 [v0.2.0]: https://github.com/Konstantysz/cbt-toolkit-app/compare/v0.1.1...v0.2.0
 [v0.1.1]: https://github.com/Konstantysz/cbt-toolkit-app/compare/v0.1.0...v0.1.1

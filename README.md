@@ -38,23 +38,42 @@ A guided 7-step CBT thought journal:
 - Delete with confirmation
 - Onboarding example record on first launch
 - Collapsible step hints throughout the flow
+- Paper form view with PDF / PNG export
 
 ---
 
 ### Behavioral Experiment
 A structured tool for testing negative beliefs through real-world experiments:
 
+**Plan phase (5 steps):**
 1. **Belief** — state the belief and rate its strength (0–100)
 2. **Alternative belief** — formulate a balanced counter-belief
 3. **Experiment plan** — describe what you will do
 4. **Prediction** — what do you expect to happen?
-5. **Safety behaviours** — identify behaviours that might prevent a fair test
-6. **Schedule** — pick a date for the experiment
-7. **Results** — record what actually happened and re-rate belief strength
+5. **Safety behaviours + schedule** — identify avoidance behaviours and pick a date
+
+**Result phase (3 steps):**
+6. **Execution date** — when did the experiment take place?
+7. **Outcome** — what actually happened?
+8. **Reflection** — re-rate belief strength and summarize learning
 
 **Additional capabilities:**
 - Status transitions: `Planned` → `Completed` / `Abandoned`
 - Experiment list with status badges and date
+- Edit and delete with confirmation
+
+---
+
+### ABC Model
+A structured tool for analyzing the relationship between events, beliefs, and consequences:
+
+1. **Activating event (A)** — describe the situation that triggered a reaction
+2. **Belief (B)** — what thought or belief was activated?
+3. **Consequences (C)** — emotional (C1) and behavioral (C2) consequences
+
+**Additional capabilities:**
+- SVG graph visualization of A → B → C1/C2 relationships
+- List with search/filter, detail screen
 - Edit and delete with confirmation
 
 ---
@@ -98,6 +117,8 @@ npx expo start
 
 Then press `a` to open in an Android emulator, or scan the QR code with Expo Go.
 
+> **Note:** Some features (notifications, PDF export, PNG capture) require a native dev build. Use `npx expo run:android` instead of Expo Go for full functionality.
+
 ### Build APK
 
 ```bash
@@ -108,13 +129,18 @@ JAVA_HOME=~/.gradle/jdks/eclipse_adoptium-17-amd64-windows.2 ./gradlew assembleR
 
 Output: `android/app/build/outputs/apk/release/app-release.apk`
 
+> **Note:** `android/local.properties` must exist with your SDK path (not committed to git):
+> ```
+> sdk.dir=C\:\\Users\\<you>\\AppData\\Local\\Android\\Sdk
+> ```
+
 ### Run Tests
 
 ```bash
 npm test
 ```
 
-88 tests across 22 suites covering components, hooks, screens, and data layer.
+108 tests across 27 suites covering components, hooks, screens, and data layer.
 
 ---
 
@@ -126,7 +152,7 @@ The app is a **modular platform** — a shell hosting independent CBT tool modul
 src/
 ├── app/                    # Expo Router file-based routing
 │   ├── _layout.tsx         # Root layout (tabs, DB init, notification sync)
-│   ├── index.tsx           # Home screen — tool launcher
+│   ├── index.tsx           # Home screen — 2-column tool grid
 │   ├── settings/           # Settings, Credits, Bibliography screens
 │   └── (tools)/            # Tool routes
 ├── core/                   # Shared infrastructure
@@ -137,18 +163,25 @@ src/
 │   ├── data/               # Export and import logic
 │   ├── i18n/               # Polish UI strings
 │   ├── types/              # Shared types (ToolDefinition, Emotion)
-│   └── components/         # EmotionPicker, IntensitySlider, StepHelper, StepProgress
+│   └── components/         # EmotionPicker, IntensitySlider, StepHelper, StepProgress, SearchBar
 └── tools/
     ├── thought-record/     # Self-contained CBT module
     │   ├── index.ts        # Tool registry entry
     │   ├── repository.ts   # SQLite data layer
     │   ├── hooks/          # useThoughtRecords, useThoughtRecord
-    │   ├── screens/        # List, Detail, New/Edit flow, Compare
+    │   ├── screens/        # List, Detail, New/Edit flow, Compare, Form (export)
     │   └── migrations/     # DB migrations
-    └── behavioral-experiment/
+    ├── behavioral-experiment/
+    │   ├── index.ts
+    │   ├── repository.ts
+    │   ├── hooks/
+    │   ├── screens/        # List, Detail, New/Edit flow (8-step)
+    │   └── migrations/
+    └── abc-model/
         ├── index.ts
         ├── repository.ts
         ├── hooks/
+        ├── components/     # AbcGraph (SVG)
         ├── screens/        # List, Detail, New/Edit flow
         └── migrations/
 ```

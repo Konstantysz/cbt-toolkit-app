@@ -8,7 +8,7 @@ This should be available via --add-dir. If not, ask the user to restart with:
 
 ## Code conventions
 - Language: TypeScript (strict mode)
-- Framework: React Native + Expo (~SDK 52)
+- Framework: React Native + Expo (~SDK 55)
 - Routing: expo-router (file-based)
 - State management: zustand
 - Database: expo-sqlite
