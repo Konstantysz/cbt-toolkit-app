@@ -41,3 +41,9 @@ export const spacing = {
 export const radius = {
   sm: 8, md: 12, lg: 16, xl: 20,
 } as const;
+
+export const iconRow = {
+  flexDirection: 'row' as const,
+  alignItems: 'center' as const,
+  gap: 6,
+};

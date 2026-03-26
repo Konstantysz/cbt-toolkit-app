@@ -51,7 +51,7 @@ export const pl = {
   flow: {
     newTitle: 'Nowy wpis',
     editTitle: 'Edytuj wpis',
-    next: 'Dalej →',
+    next: 'Dalej',
     save: 'Zapisz',
     back: 'Wstecz',
   },

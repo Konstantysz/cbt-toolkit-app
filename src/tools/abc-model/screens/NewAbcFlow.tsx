@@ -13,12 +13,13 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
-import { colors } from '../../../core/theme';
+import { colors, iconRow } from '../../../core/theme';
 import { StepProgress } from '../../../core/components/StepProgress';
 import { StepHelper } from '../../../core/components/StepHelper';
 import { pl } from '../i18n/pl';
 import * as repo from '../repository';
 import type { AbcEntry } from '../types';
+import { Ionicons } from '@expo/vector-icons';
 
 const TOTAL_STEPS = 2;
 
@@ -137,7 +138,10 @@ export function NewAbcFlow({ existingId }: Props): React.JSX.Element {
             disabled={saving}
             activeOpacity={0.85}
           >
-            <Text style={styles.btnText}>{pl.flow.next}</Text>
+            <View style={iconRow}>
+              <Text style={styles.btnText}>{pl.flow.next}</Text>
+              <Ionicons name="arrow-forward" size={15} color={colors.bg} accessible={false} />
+            </View>
           </TouchableOpacity>
         ) : (
           <TouchableOpacity

@@ -12,11 +12,12 @@ import { router } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { format, parseISO } from 'date-fns';
 import { pl as dateFnsPl } from 'date-fns/locale';
-import { colors } from '../../../core/theme';
+import { colors, iconRow } from '../../../core/theme';
 import { useThoughtRecord } from '../hooks/useThoughtRecords';
 import * as repo from '../repository';
 import type { Emotion } from '../types';
 import { pl } from '../i18n/pl';
+import { Ionicons } from '@expo/vector-icons';
 
 interface Props {
   id: string;
@@ -92,14 +93,22 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
             <TouchableOpacity
               style={styles.actionBtn}
               onPress={() => router.push(`/(tools)/thought-record/${id}/compare`)}
+              accessibilityLabel="Porównaj zapisy"
             >
-              <Text style={styles.actionBtnText}>⊞ {pl.compare.btnLabel}</Text>
+              <View style={iconRow}>
+                <Ionicons name="layers-outline" size={14} color={colors.accent} accessible={false} />
+                <Text style={styles.actionBtnText}>{pl.compare.btnLabel}</Text>
+              </View>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.actionBtn}
               onPress={() => router.push(`/(tools)/thought-record/${id}/form`)}
+              accessibilityLabel="Formularz papierowy"
             >
-              <Text style={styles.actionBtnText}>◻ {pl.form.btn}</Text>
+              <View style={iconRow}>
+                <Ionicons name="document-outline" size={14} color={colors.accent} accessible={false} />
+                <Text style={styles.actionBtnText}>{pl.form.btn}</Text>
+              </View>
             </TouchableOpacity>
           </View>
         </View>
@@ -137,8 +146,12 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
             style={styles.editBtn}
             onPress={() => router.push(`/(tools)/thought-record/${id}/edit`)}
             activeOpacity={0.8}
+            accessibilityLabel="Edytuj wpis"
           >
-            <Text style={styles.editBtnText}>✏ {pl.edit.title}</Text>
+            <View style={iconRow}>
+              <Ionicons name="create-outline" size={14} color={colors.accent} accessible={false} />
+              <Text style={styles.editBtnText}>{pl.edit.title}</Text>
+            </View>
           </TouchableOpacity>
           <TouchableOpacity style={styles.deleteBtn} onPress={confirmDelete} activeOpacity={0.8}>
             <Text style={styles.deleteBtnText}>Usuń wpis</Text>
