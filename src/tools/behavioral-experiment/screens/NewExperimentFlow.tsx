@@ -5,6 +5,9 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { format, parseISO } from 'date-fns';
+import { pl as dateFnsPl } from 'date-fns/locale';
 import { colors } from '../../../core/theme';
 import { StepProgress } from '../../../core/components/StepProgress';
 import { StepHelper } from '../../../core/components/StepHelper';
@@ -19,6 +22,7 @@ interface Props {
 
 interface PlanState {
   belief: string;
+  beliefStrengthBefore: number;
   plan: string;
   predictedOutcome: string;
   potentialProblems: string;
@@ -26,13 +30,20 @@ interface PlanState {
 }
 
 interface ResultState {
+  executionDate: string;
+  showDatePicker: boolean;
   actualOutcome: string;
   confirmationPercent: number;
+  beliefStrengthAfter: number;
   conclusion: string;
 }
 
 const PLAN_STEPS = 5;
 const RESULT_STEPS = 3;
+
+function todayIso() {
+  return new Date().toISOString().split('T')[0];
+}
 
 export function NewExperimentFlow({ phase, experimentId }: Props): React.JSX.Element {
   const db = useSQLiteContext();
@@ -42,6 +53,7 @@ export function NewExperimentFlow({ phase, experimentId }: Props): React.JSX.Ele
 
   const [planState, setPlanState] = useState<PlanState>({
     belief: '',
+    beliefStrengthBefore: 50,
     plan: '',
     predictedOutcome: '',
     potentialProblems: '',
@@ -49,8 +61,11 @@ export function NewExperimentFlow({ phase, experimentId }: Props): React.JSX.Ele
   });
 
   const [resultState, setResultState] = useState<ResultState>({
+    executionDate: todayIso(),
+    showDatePicker: false,
     actualOutcome: '',
     confirmationPercent: 50,
+    beliefStrengthAfter: 50,
     conclusion: '',
   });
 
@@ -62,8 +77,10 @@ export function NewExperimentFlow({ phase, experimentId }: Props): React.JSX.Ele
         setExpId(exp.id);
         setResultState(prev => ({
           ...prev,
+          executionDate: exp.executionDate ?? todayIso(),
           actualOutcome: exp.actualOutcome ?? '',
           confirmationPercent: exp.confirmationPercent ?? 50,
+          beliefStrengthAfter: exp.beliefStrengthAfter ?? exp.beliefStrengthBefore,
           conclusion: exp.conclusion ?? '',
         }));
       }
@@ -100,7 +117,7 @@ export function NewExperimentFlow({ phase, experimentId }: Props): React.JSX.Ele
 
     if (phase === 'plan') {
       const updates: Parameters<typeof repo.updateExperiment>[2] = { currentStep: stepNumber };
-      if (currentStep === 1) { updates.belief = planState.belief; }
+      if (currentStep === 1) { updates.belief = planState.belief; updates.beliefStrengthBefore = planState.beliefStrengthBefore; }
       if (currentStep === 2) { updates.plan = planState.plan; }
       if (currentStep === 3) { updates.predictedOutcome = planState.predictedOutcome; }
       if (currentStep === 4) { updates.potentialProblems = planState.potentialProblems; }
@@ -108,8 +125,14 @@ export function NewExperimentFlow({ phase, experimentId }: Props): React.JSX.Ele
       await repo.updateExperiment(db, expId, updates);
     } else {
       const updates: Parameters<typeof repo.updateExperiment>[2] = { currentStep: stepNumber };
-      if (currentStep === 1) { updates.actualOutcome = resultState.actualOutcome; }
-      if (currentStep === 2) { updates.confirmationPercent = resultState.confirmationPercent; }
+      if (currentStep === 1) {
+        updates.executionDate = resultState.executionDate;
+        updates.actualOutcome = resultState.actualOutcome;
+      }
+      if (currentStep === 2) {
+        updates.confirmationPercent = resultState.confirmationPercent;
+        updates.beliefStrengthAfter = resultState.beliefStrengthAfter;
+      }
       if (currentStep === 3) {
         updates.conclusion = resultState.conclusion;
         updates.status = 'completed';
@@ -209,6 +232,11 @@ function renderPlanStep(
         textAlignVertical="top"
       />
       <StepHelper hint={pl.step1.hint} />
+      <IntensitySlider
+        label={pl.step1.sliderLabel}
+        value={state.beliefStrengthBefore}
+        onChange={v => update('beliefStrengthBefore', v)}
+      />
     </View>
   );
   if (step === 2) return (
@@ -278,29 +306,59 @@ function renderResultStep(
   state: ResultState,
   update: <K extends keyof ResultState>(key: K, value: ResultState[K]) => void,
 ): React.ReactNode {
-  if (step === 1) return (
-    <View>
-      <Text style={styles.stepTitle}>{pl.step6.title}</Text>
-      <TextInput
-        style={styles.input}
-        value={state.actualOutcome}
-        onChangeText={v => update('actualOutcome', v)}
-        placeholder={pl.step6.placeholder}
-        placeholderTextColor={colors.textDim}
-        multiline
-        textAlignVertical="top"
-      />
-      <StepHelper hint={pl.step6.hint} />
-    </View>
-  );
+  if (step === 1) {
+    const dateObj = parseISO(state.executionDate);
+    return (
+      <View>
+        <Text style={styles.stepTitle}>{pl.step6.title}</Text>
+        <Text style={styles.fieldLabel}>{pl.step6.dateLabel}</Text>
+        <TouchableOpacity
+          style={styles.datePicker}
+          onPress={() => update('showDatePicker', true)}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.datePickerText}>
+            {format(dateObj, 'd MMMM yyyy', { locale: dateFnsPl })}
+          </Text>
+        </TouchableOpacity>
+        {state.showDatePicker && (
+          <DateTimePicker
+            value={dateObj}
+            mode="date"
+            display="default"
+            maximumDate={new Date()}
+            onChange={(_evt, selected) => {
+              update('showDatePicker', false);
+              if (selected) update('executionDate', selected.toISOString().split('T')[0]);
+            }}
+          />
+        )}
+        <TextInput
+          style={[styles.input, styles.inputTop]}
+          value={state.actualOutcome}
+          onChangeText={v => update('actualOutcome', v)}
+          placeholder={pl.step6.placeholder}
+          placeholderTextColor={colors.textDim}
+          multiline
+          textAlignVertical="top"
+        />
+        <StepHelper hint={pl.step6.hint} />
+      </View>
+    );
+  }
   if (step === 2) return (
     <View>
       <Text style={styles.stepTitle}>{pl.step7.title}</Text>
       <StepHelper hint={pl.step7.hint} />
       <IntensitySlider
-        label={pl.step7.sliderLabel}
+        label={pl.step7.confirmationLabel}
         value={state.confirmationPercent}
         onChange={v => update('confirmationPercent', v)}
+      />
+      <IntensitySlider
+        label={pl.step7.beliefAfterLabel}
+        value={state.beliefStrengthAfter}
+        onChange={v => update('beliefStrengthAfter', v)}
       />
     </View>
   );
@@ -326,12 +384,19 @@ const styles = StyleSheet.create({
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   scrollContent: { padding: 20, paddingBottom: 40 },
   stepTitle: { fontSize: 20, fontWeight: '700', color: colors.text, marginBottom: 12, lineHeight: 28 },
+  fieldLabel: { fontSize: 12, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 6 },
   input: {
     backgroundColor: colors.surface,
     borderWidth: 1, borderColor: colors.border, borderRadius: 12,
     padding: 15, fontSize: 15, color: colors.text, lineHeight: 24,
     minHeight: 100,
   },
+  inputTop: { marginTop: 12 },
+  datePicker: {
+    backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border,
+    borderRadius: 12, padding: 14, marginBottom: 4,
+  },
+  datePickerText: { fontSize: 15, color: colors.text },
   navRow: {
     flexDirection: 'row', gap: 10,
     paddingHorizontal: 20, paddingVertical: 16,

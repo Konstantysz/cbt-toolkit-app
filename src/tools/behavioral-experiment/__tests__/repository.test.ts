@@ -17,12 +17,15 @@ const mockRow = {
   id: 'test-uuid-1234',
   status: 'planned',
   belief: '',
+  belief_strength_before: 50,
   plan: '',
   predicted_outcome: '',
   potential_problems: '',
   problem_strategies: '',
+  execution_date: null,
   actual_outcome: null,
   confirmation_percent: null,
+  belief_strength_after: null,
   conclusion: null,
   is_example: 0,
   is_complete: 0,
@@ -43,8 +46,10 @@ describe('createExperiment', () => {
     expect(result.id).toBe('test-uuid-1234');
     expect(result.status).toBe('planned');
     expect(result.belief).toBe('');
+    expect(result.beliefStrengthBefore).toBe(50);
     expect(result.potentialProblems).toBe('');
     expect(result.confirmationPercent).toBeNull();
+    expect(result.beliefStrengthAfter).toBeNull();
   });
 });
 
@@ -56,12 +61,15 @@ describe('getExperiments', () => {
         id: 'abc',
         status: 'completed',
         belief: 'Test belief',
+        belief_strength_before: 80,
         plan: 'Zrobię X',
         predicted_outcome: 'Stanie się Y',
         potential_problems: 'Może przeszkodzić Z',
         problem_strategies: 'Zaradzę przez W',
+        execution_date: '2026-03-25',
         actual_outcome: 'Stało się Q',
         confirmation_percent: 30,
+        belief_strength_after: 20,
         conclusion: 'Nauczyłem się R',
         is_complete: 1,
         current_step: 8,
@@ -72,9 +80,12 @@ describe('getExperiments', () => {
 
     expect(result).toHaveLength(1);
     expect(result[0].belief).toBe('Test belief');
+    expect(result[0].beliefStrengthBefore).toBe(80);
     expect(result[0].potentialProblems).toBe('Może przeszkodzić Z');
     expect(result[0].problemStrategies).toBe('Zaradzę przez W');
+    expect(result[0].executionDate).toBe('2026-03-25');
     expect(result[0].confirmationPercent).toBe(30);
+    expect(result[0].beliefStrengthAfter).toBe(20);
     expect(result[0].conclusion).toBe('Nauczyłem się R');
   });
 });
@@ -82,8 +93,10 @@ describe('getExperiments', () => {
 describe('updateExperiment', () => {
   it('updates result fields and sets status=completed', async () => {
     await repo.updateExperiment(mockDb, 'abc', {
-      conclusion: 'Learned something',
+      executionDate: '2026-03-25',
+      actualOutcome: 'Poszło dobrze',
       confirmationPercent: 25,
+      beliefStrengthAfter: 15,
       status: 'completed',
       isComplete: true,
       currentStep: 8,
@@ -92,8 +105,9 @@ describe('updateExperiment', () => {
     expect(mockDb.runAsync).toHaveBeenCalledTimes(2);
   });
 
-  it('updates plan fields', async () => {
+  it('updates plan fields including beliefStrengthBefore', async () => {
     await repo.updateExperiment(mockDb, 'abc', {
+      beliefStrengthBefore: 70,
       potentialProblems: 'Może padać deszcz',
       problemStrategies: 'Wezmę parasol',
       currentStep: 4,

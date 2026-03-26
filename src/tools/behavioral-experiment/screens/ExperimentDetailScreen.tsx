@@ -4,7 +4,10 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
+import { format, parseISO } from 'date-fns';
+import { pl as dateFnsPl } from 'date-fns/locale';
 import { colors } from '../../../core/theme';
+import { IntensitySlider } from '../../../core/components/IntensitySlider';
 import { useBehavioralExperiment } from '../hooks/useBehavioralExperiments';
 import { pl } from '../i18n/pl';
 import * as repo from '../repository';
@@ -43,10 +46,32 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
 
-      {/* Weryfikowana myśl */}
+      {/* Weryfikowana myśl + porównanie suwakowe */}
       <View style={styles.beliefCard}>
         <Text style={styles.beliefLabel}>{pl.detail.belief}</Text>
         <Text style={styles.beliefText}>{'„'}{experiment.belief}{'"'}</Text>
+        <View style={styles.sliderRow}>
+          <View style={styles.sliderHalf}>
+            <Text style={styles.sliderSideLabel}>{pl.detail.beliefStrengthBefore}</Text>
+            <IntensitySlider
+              value={experiment.beliefStrengthBefore}
+              onChange={() => {}}
+              label=""
+              readOnly
+            />
+          </View>
+          {experiment.beliefStrengthAfter != null && (
+            <View style={styles.sliderHalf}>
+              <Text style={styles.sliderSideLabel}>{pl.detail.beliefStrengthAfter}</Text>
+              <IntensitySlider
+                value={experiment.beliefStrengthAfter}
+                onChange={() => {}}
+                label=""
+                readOnly
+              />
+            </View>
+          )}
+        </View>
       </View>
 
       {/* Plan section */}
@@ -71,6 +96,12 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
       {experiment.status === 'completed' && (
         <>
           <Text style={styles.sectionHeader}>{pl.detail.resultSection}</Text>
+          {experiment.executionDate && (
+            <DetailRow
+              label={pl.detail.executionDate}
+              value={format(parseISO(experiment.executionDate), 'd MMMM yyyy', { locale: dateFnsPl })}
+            />
+          )}
           <DetailRow label={pl.detail.actualOutcome} value={experiment.actualOutcome || '—'} />
           {experiment.confirmationPercent != null && (
             <View style={styles.detailRow}>
@@ -122,7 +153,10 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: colors.border, padding: 16, marginBottom: 20,
   },
   beliefLabel: { fontSize: 10, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 6 },
-  beliefText: { fontSize: 15, color: colors.text, fontStyle: 'italic', lineHeight: 22 },
+  beliefText: { fontSize: 15, color: colors.text, fontStyle: 'italic', lineHeight: 22, marginBottom: 16 },
+  sliderRow: { flexDirection: 'row', gap: 8 },
+  sliderHalf: { flex: 1 },
+  sliderSideLabel: { fontSize: 11, color: colors.textMuted, textAlign: 'center', marginBottom: 4, letterSpacing: 0.5 },
   sectionHeader: { fontSize: 11, color: colors.textDim, textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8, marginTop: 8 },
   detailRow: {
     backgroundColor: colors.surface, borderRadius: 12,
