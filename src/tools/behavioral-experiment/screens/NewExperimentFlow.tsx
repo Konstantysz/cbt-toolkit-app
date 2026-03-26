@@ -5,9 +5,6 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { format, parseISO } from 'date-fns';
-import { pl as dateFnsPl } from 'date-fns/locale';
 import { colors } from '../../../core/theme';
 import { StepProgress } from '../../../core/components/StepProgress';
 import { StepHelper } from '../../../core/components/StepHelper';
@@ -22,26 +19,20 @@ interface Props {
 
 interface PlanState {
   belief: string;
-  beliefStrengthBefore: number;
-  alternativeBelief: string;
   plan: string;
   predictedOutcome: string;
+  potentialProblems: string;
+  problemStrategies: string;
 }
 
 interface ResultState {
-  executionDate: string;
-  executionNotes: string;
   actualOutcome: string;
+  confirmationPercent: number;
   conclusion: string;
-  beliefStrengthAfter: number;
 }
 
-const PLAN_STEPS = 4;
+const PLAN_STEPS = 5;
 const RESULT_STEPS = 3;
-
-function todayIso() {
-  return new Date().toISOString().split('T')[0];
-}
 
 export function NewExperimentFlow({ phase, experimentId }: Props): React.JSX.Element {
   const db = useSQLiteContext();
@@ -51,23 +42,18 @@ export function NewExperimentFlow({ phase, experimentId }: Props): React.JSX.Ele
 
   const [planState, setPlanState] = useState<PlanState>({
     belief: '',
-    beliefStrengthBefore: 50,
-    alternativeBelief: '',
     plan: '',
     predictedOutcome: '',
+    potentialProblems: '',
+    problemStrategies: '',
   });
 
   const [resultState, setResultState] = useState<ResultState>({
-    executionDate: todayIso(),
-    executionNotes: '',
     actualOutcome: '',
+    confirmationPercent: 50,
     conclusion: '',
-    beliefStrengthAfter: 50,
   });
 
-  const [showDatePicker, setShowDatePicker] = useState(false);
-
-  // Load existing experiment (phase=result)
   useEffect(() => {
     if (phase !== 'result' || !experimentId) return;
     (async () => {
@@ -76,18 +62,15 @@ export function NewExperimentFlow({ phase, experimentId }: Props): React.JSX.Ele
         setExpId(exp.id);
         setResultState(prev => ({
           ...prev,
-          executionDate: exp.executionDate ?? todayIso(),
-          executionNotes: exp.executionNotes ?? '',
           actualOutcome: exp.actualOutcome ?? '',
+          confirmationPercent: exp.confirmationPercent ?? 50,
           conclusion: exp.conclusion ?? '',
-          beliefStrengthAfter: exp.beliefStrengthAfter ?? prev.beliefStrengthAfter,
         }));
       }
       setLoading(false);
     })();
   }, [db, phase, experimentId]);
 
-  // Create new experiment record on mount (phase=plan)
   useEffect(() => {
     if (phase !== 'plan') return;
     (async () => {
@@ -101,10 +84,10 @@ export function NewExperimentFlow({ phase, experimentId }: Props): React.JSX.Ele
   const isNextEnabled = useCallback((): boolean => {
     if (phase === 'plan') {
       if (currentStep === 1) return planState.belief.trim().length > 0;
-      if (currentStep === 3) return planState.plan.trim().length > 0;
+      if (currentStep === 2) return planState.plan.trim().length > 0;
       return true;
     } else {
-      if (currentStep === 1) return resultState.executionDate.trim().length > 0;
+      if (currentStep === 1) return resultState.actualOutcome.trim().length > 0;
       if (currentStep === 3) return resultState.conclusion.trim().length > 0;
       return true;
     }
@@ -112,22 +95,22 @@ export function NewExperimentFlow({ phase, experimentId }: Props): React.JSX.Ele
 
   const saveCurrentStep = useCallback(async () => {
     if (!expId) return;
-    const stepNumber = phase === 'plan' ? currentStep : currentStep + 4;
+    const stepNumber = phase === 'plan' ? currentStep : currentStep + 5;
 
     if (phase === 'plan') {
       const updates: Parameters<typeof repo.updateExperiment>[2] = { currentStep: stepNumber };
-      if (currentStep === 1) { updates.belief = planState.belief; updates.beliefStrengthBefore = planState.beliefStrengthBefore; }
-      if (currentStep === 2) { updates.alternativeBelief = planState.alternativeBelief; }
-      if (currentStep === 3) { updates.plan = planState.plan; }
-      if (currentStep === 4) { updates.predictedOutcome = planState.predictedOutcome; updates.status = 'planned'; }
+      if (currentStep === 1) { updates.belief = planState.belief; }
+      if (currentStep === 2) { updates.plan = planState.plan; }
+      if (currentStep === 3) { updates.predictedOutcome = planState.predictedOutcome; }
+      if (currentStep === 4) { updates.potentialProblems = planState.potentialProblems; }
+      if (currentStep === 5) { updates.problemStrategies = planState.problemStrategies; updates.status = 'planned'; }
       await repo.updateExperiment(db, expId, updates);
     } else {
       const updates: Parameters<typeof repo.updateExperiment>[2] = { currentStep: stepNumber };
-      if (currentStep === 1) { updates.executionDate = resultState.executionDate; updates.executionNotes = resultState.executionNotes; }
-      if (currentStep === 2) { updates.actualOutcome = resultState.actualOutcome; }
+      if (currentStep === 1) { updates.actualOutcome = resultState.actualOutcome; }
+      if (currentStep === 2) { updates.confirmationPercent = resultState.confirmationPercent; }
       if (currentStep === 3) {
         updates.conclusion = resultState.conclusion;
-        updates.beliefStrengthAfter = resultState.beliefStrengthAfter;
         updates.status = 'completed';
         updates.isComplete = true;
       }
@@ -179,8 +162,8 @@ export function NewExperimentFlow({ phase, experimentId }: Props): React.JSX.Ele
       <StepProgress totalSteps={totalSteps} currentStep={currentStep} />
 
       <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
-        {phase === 'plan' && renderPlanStep(currentStep, planState, updatePlan, showDatePicker, setShowDatePicker)}
-        {phase === 'result' && renderResultStep(currentStep, resultState, updateResult, showDatePicker, setShowDatePicker)}
+        {phase === 'plan' && renderPlanStep(currentStep, planState, updatePlan)}
+        {phase === 'result' && renderResultStep(currentStep, resultState, updateResult)}
       </ScrollView>
 
       <View style={styles.navRow}>
@@ -211,8 +194,6 @@ function renderPlanStep(
   step: number,
   state: PlanState,
   update: <K extends keyof PlanState>(key: K, value: PlanState[K]) => void,
-  showDatePicker: boolean,
-  setShowDatePicker: (v: boolean) => void,
 ): React.ReactNode {
   if (step === 1) return (
     <View>
@@ -227,11 +208,6 @@ function renderPlanStep(
         textAlignVertical="top"
       />
       <StepHelper hint={pl.step1.hint} />
-      <IntensitySlider
-        label={pl.step1.sliderLabel}
-        value={state.beliefStrengthBefore}
-        onChange={v => update('beliefStrengthBefore', v)}
-      />
     </View>
   );
   if (step === 2) return (
@@ -239,8 +215,8 @@ function renderPlanStep(
       <Text style={styles.stepTitle}>{pl.step2.title}</Text>
       <TextInput
         style={styles.input}
-        value={state.alternativeBelief}
-        onChangeText={v => update('alternativeBelief', v)}
+        value={state.plan}
+        onChangeText={v => update('plan', v)}
         placeholder={pl.step2.placeholder}
         placeholderTextColor={colors.textDim}
         multiline
@@ -254,8 +230,8 @@ function renderPlanStep(
       <Text style={styles.stepTitle}>{pl.step3.title}</Text>
       <TextInput
         style={styles.input}
-        value={state.plan}
-        onChangeText={v => update('plan', v)}
+        value={state.predictedOutcome}
+        onChangeText={v => update('predictedOutcome', v)}
         placeholder={pl.step3.placeholder}
         placeholderTextColor={colors.textDim}
         multiline
@@ -264,13 +240,13 @@ function renderPlanStep(
       <StepHelper hint={pl.step3.hint} />
     </View>
   );
-  return (
+  if (step === 4) return (
     <View>
       <Text style={styles.stepTitle}>{pl.step4.title}</Text>
       <TextInput
         style={styles.input}
-        value={state.predictedOutcome}
-        onChangeText={v => update('predictedOutcome', v)}
+        value={state.potentialProblems}
+        onChangeText={v => update('potentialProblems', v)}
         placeholder={pl.step4.placeholder}
         placeholderTextColor={colors.textDim}
         multiline
@@ -279,50 +255,29 @@ function renderPlanStep(
       <StepHelper hint={pl.step4.hint} />
     </View>
   );
+  return (
+    <View>
+      <Text style={styles.stepTitle}>{pl.step5.title}</Text>
+      <TextInput
+        style={styles.input}
+        value={state.problemStrategies}
+        onChangeText={v => update('problemStrategies', v)}
+        placeholder={pl.step5.placeholder}
+        placeholderTextColor={colors.textDim}
+        multiline
+        textAlignVertical="top"
+      />
+      <StepHelper hint={pl.step5.hint} />
+    </View>
+  );
 }
 
 function renderResultStep(
   step: number,
   state: ResultState,
   update: <K extends keyof ResultState>(key: K, value: ResultState[K]) => void,
-  showDatePicker: boolean,
-  setShowDatePicker: (v: boolean) => void,
 ): React.ReactNode {
-  if (step === 1) {
-    const date = parseISO(state.executionDate);
-    const dateLabel = format(date, 'd MMMM yyyy', { locale: dateFnsPl });
-    return (
-      <View>
-        <Text style={styles.stepTitle}>{pl.step5.title}</Text>
-        <TouchableOpacity style={styles.dateRow} onPress={() => setShowDatePicker(true)}>
-          <Text style={styles.dateLabel}>{pl.step5.dateLabel}</Text>
-          <Text style={styles.dateValue}>{dateLabel}</Text>
-        </TouchableOpacity>
-        {showDatePicker && (
-          <DateTimePicker
-            value={date}
-            mode="date"
-            maximumDate={new Date()}
-            onChange={(_, selected) => {
-              setShowDatePicker(false);
-              if (selected) update('executionDate', selected.toISOString().split('T')[0]);
-            }}
-          />
-        )}
-        <TextInput
-          style={[styles.input, { marginTop: 12 }]}
-          value={state.executionNotes}
-          onChangeText={v => update('executionNotes', v)}
-          placeholder={pl.step5.notesPlaceholder}
-          placeholderTextColor={colors.textDim}
-          multiline
-          textAlignVertical="top"
-          />
-        <StepHelper hint={pl.step5.hint} />
-      </View>
-    );
-  }
-  if (step === 2) return (
+  if (step === 1) return (
     <View>
       <Text style={styles.stepTitle}>{pl.step6.title}</Text>
       <TextInput
@@ -337,24 +292,30 @@ function renderResultStep(
       <StepHelper hint={pl.step6.hint} />
     </View>
   );
-  return (
+  if (step === 2) return (
     <View>
       <Text style={styles.stepTitle}>{pl.step7.title}</Text>
+      <StepHelper hint={pl.step7.hint} />
+      <IntensitySlider
+        label={pl.step7.sliderLabel}
+        value={state.confirmationPercent}
+        onChange={v => update('confirmationPercent', v)}
+      />
+    </View>
+  );
+  return (
+    <View>
+      <Text style={styles.stepTitle}>{pl.step8.title}</Text>
       <TextInput
         style={styles.input}
         value={state.conclusion}
         onChangeText={v => update('conclusion', v)}
-        placeholder={pl.step7.placeholder}
+        placeholder={pl.step8.placeholder}
         placeholderTextColor={colors.textDim}
         multiline
         textAlignVertical="top"
       />
-      <StepHelper hint={pl.step7.hint} />
-      <IntensitySlider
-        label={pl.step7.sliderLabel}
-        value={state.beliefStrengthAfter}
-        onChange={v => update('beliefStrengthAfter', v)}
-      />
+      <StepHelper hint={pl.step8.hint} />
     </View>
   );
 }
@@ -390,11 +351,4 @@ const styles = StyleSheet.create({
   btnDisabled: { backgroundColor: colors.border },
   btnNextText: { fontSize: 15, color: colors.bg, fontWeight: '600' },
   btnDisabledText: { color: colors.textDim },
-  dateRow: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border,
-    borderRadius: 12, padding: 14,
-  },
-  dateLabel: { fontSize: 13, color: colors.textMuted },
-  dateValue: { fontSize: 14, color: colors.accent, fontWeight: '600' },
 });

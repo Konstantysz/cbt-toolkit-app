@@ -3,7 +3,6 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react-nativ
 
 jest.mock('expo-sqlite', () => ({ useSQLiteContext: () => ({}) }));
 jest.mock('expo-router', () => ({ router: { replace: jest.fn(), back: jest.fn() } }));
-jest.mock('@react-native-community/datetimepicker', () => 'DateTimePicker');
 jest.mock('../repository');
 
 import * as repo from '../repository';
@@ -13,15 +12,13 @@ const mockExperiment = {
   id: 'exp-1',
   status: 'planned' as const,
   belief: 'Test belief',
-  beliefStrengthBefore: 50,
-  alternativeBelief: '',
   plan: '',
   predictedOutcome: '',
-  executionDate: null,
-  executionNotes: null,
+  potentialProblems: '',
+  problemStrategies: '',
   actualOutcome: null,
+  confirmationPercent: null,
   conclusion: null,
-  beliefStrengthAfter: null,
   isExample: false,
   createdAt: '2026-01-01T00:00:00.000Z',
   updatedAt: '2026-01-01T00:00:00.000Z',
@@ -36,37 +33,40 @@ describe('NewExperimentFlow phase=plan', () => {
     render(<NewExperimentFlow phase="plan" />);
 
     await waitFor(() => {
-      expect(screen.getByText('Jakie przekonanie chcesz sprawdzić?')).toBeTruthy();
+      expect(screen.getByText('Jaką myśl chcesz zweryfikować?')).toBeTruthy();
     });
   });
 
-  it('"Dalej" button is disabled when belief field is empty', async () => {
-    (repo.createExperiment as jest.Mock).mockResolvedValue(mockExperiment);
+  it('"Dalej" is disabled when belief field is empty', async () => {
+    (repo.createExperiment as jest.Mock).mockResolvedValue({
+      ...mockExperiment,
+      belief: '',
+    });
 
     render(<NewExperimentFlow phase="plan" />);
 
-    await waitFor(() => screen.getByText('Jakie przekonanie chcesz sprawdzić?'));
+    await waitFor(() => screen.getByText('Jaką myśl chcesz zweryfikować?'));
 
     const dalej = screen.getByText('Dalej');
-    // Belief starts empty → button should be disabled
     expect(dalej.props.accessibilityState?.disabled ?? dalej.parent?.props.disabled).toBeTruthy();
   });
 
   it('moves to step 2 after entering belief and pressing Dalej', async () => {
-    (repo.createExperiment as jest.Mock).mockResolvedValue(mockExperiment);
+    (repo.createExperiment as jest.Mock).mockResolvedValue({ ...mockExperiment, belief: '' });
     (repo.updateExperiment as jest.Mock).mockResolvedValue(undefined);
 
     render(<NewExperimentFlow phase="plan" />);
 
-    await waitFor(() => screen.getByText('Jakie przekonanie chcesz sprawdzić?'));
+    await waitFor(() => screen.getByText('Jaką myśl chcesz zweryfikować?'));
 
-    fireEvent.changeText(screen.getByPlaceholderText(/Np\. Jeśli odmówię/), 'Moje przekonanie');
-
-    const dalej = screen.getByText('Dalej');
-    fireEvent.press(dalej);
+    fireEvent.changeText(
+      screen.getByPlaceholderText(/Np\. Jeśli odmówię szefowi/),
+      'Moje przekonanie'
+    );
+    fireEvent.press(screen.getByText('Dalej'));
 
     await waitFor(() => {
-      expect(screen.getByText('Jaka jest alternatywna hipoteza?')).toBeTruthy();
+      expect(screen.getByText('Co konkretnie zrobisz?')).toBeTruthy();
     });
     expect(repo.updateExperiment).toHaveBeenCalledWith(
       expect.anything(),
@@ -74,35 +74,71 @@ describe('NewExperimentFlow phase=plan', () => {
       expect.objectContaining({ belief: 'Moje przekonanie', currentStep: 1 })
     );
   });
+
+  it('shows "Zakończ" on step 5 (last plan step)', async () => {
+    (repo.createExperiment as jest.Mock).mockResolvedValue(mockExperiment);
+    (repo.updateExperiment as jest.Mock).mockResolvedValue(undefined);
+
+    render(<NewExperimentFlow phase="plan" />);
+
+    await waitFor(() => screen.getByText('Jaką myśl chcesz zweryfikować?'));
+
+    // Step 1: type belief → Dalej
+    fireEvent.changeText(screen.getByPlaceholderText(/Np\. Jeśli odmówię szefowi/), 'Przekonanie');
+    fireEvent.press(screen.getByText('Dalej'));
+
+    // Step 2: type plan → Dalej
+    await waitFor(() => screen.getByText('Co konkretnie zrobisz?'));
+    fireEvent.changeText(screen.getByPlaceholderText(/Np\. W piątek/), 'Zrobię X');
+    fireEvent.press(screen.getByText('Dalej'));
+
+    // Step 3: Dalej (optional)
+    await waitFor(() => screen.getByText('Jak myślisz — co się stanie?'));
+    fireEvent.press(screen.getByText('Dalej'));
+
+    // Step 4: Dalej (optional)
+    await waitFor(() => screen.getByText('Co może przeszkodzić?'));
+    fireEvent.press(screen.getByText('Dalej'));
+
+    // Step 5: Zakończ visible
+    await waitFor(() => {
+      expect(screen.getByText('Jak sobie z tym poradzisz?')).toBeTruthy();
+      expect(screen.getByText('Zakończ')).toBeTruthy();
+    });
+  });
 });
 
 describe('NewExperimentFlow phase=result', () => {
-  it('loads existing experiment and shows step 5 title', async () => {
+  it('loads existing experiment and shows step 6 title', async () => {
     (repo.getExperimentById as jest.Mock).mockResolvedValue(mockExperiment);
 
     render(<NewExperimentFlow phase="result" experimentId="exp-1" />);
 
     await waitFor(() => {
-      expect(screen.getByText('Kiedy i co zrobiłeś?')).toBeTruthy();
+      expect(screen.getByText('Co się wydarzyło?')).toBeTruthy();
     });
   });
 
-  it('saves conclusion and sets status=completed on step 7 finish', async () => {
+  it('saves conclusion and sets status=completed on finish', async () => {
     (repo.getExperimentById as jest.Mock).mockResolvedValue(mockExperiment);
     (repo.updateExperiment as jest.Mock).mockResolvedValue(undefined);
 
     render(<NewExperimentFlow phase="result" experimentId="exp-1" />);
 
-    // Step 5 (local step 1): executionDate is auto-filled → Dalej is enabled
-    await waitFor(() => screen.getByText('Kiedy i co zrobiłeś?'));
-    fireEvent.press(screen.getByText('Dalej'));
-
-    // Step 6 (local step 2): no required field → Dalej is enabled
+    // Step 6 (result step 1): actualOutcome required
     await waitFor(() => screen.getByText('Co się wydarzyło?'));
+    fireEvent.changeText(
+      screen.getByPlaceholderText(/Np\. Szef przyjął to spokojnie/),
+      'Wszystko poszło dobrze'
+    );
     fireEvent.press(screen.getByText('Dalej'));
 
-    // Step 7 (local step 3): conclusion is required → type to enable Zakończ
-    await waitFor(() => screen.getByText('Czego się nauczyłeś?'));
+    // Step 7 (result step 2): slider — optional, Dalej enabled
+    await waitFor(() => screen.getByText('W jakim stopniu to potwierdza twoją myśl?'));
+    fireEvent.press(screen.getByText('Dalej'));
+
+    // Step 8 (result step 3): conclusion required → type → Zakończ
+    await waitFor(() => screen.getByText('Czego nauczył cię ten eksperyment?'));
     fireEvent.changeText(
       screen.getByPlaceholderText(/Moje przekonanie było błędne/),
       'Nauczyłem się czegoś nowego'
@@ -116,15 +152,5 @@ describe('NewExperimentFlow phase=result', () => {
         expect.objectContaining({ status: 'completed', isComplete: true })
       );
     });
-  });
-
-  it('initialises beliefStrengthAfter slider to beliefStrengthBefore when null', async () => {
-    const expWith85 = { ...mockExperiment, beliefStrengthBefore: 85, beliefStrengthAfter: null };
-    (repo.getExperimentById as jest.Mock).mockResolvedValue(expWith85);
-
-    render(<NewExperimentFlow phase="result" experimentId="exp-1" />);
-
-    await waitFor(() => screen.getByText('Kiedy i co zrobiłeś?'));
-    expect(repo.getExperimentById).toHaveBeenCalledWith(expect.anything(), 'exp-1');
   });
 });
