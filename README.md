@@ -14,6 +14,12 @@
     <td align="center"><img src="docs/screenshots/record-detail.png" width="200"/><br/><sub>Record Detail</sub></td>
     <td align="center"><img src="docs/screenshots/compare.png" width="200"/><br/><sub>Emotion Compare</sub></td>
   </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/experiment-list.png" width="200"/><br/><sub>Experiment List</sub></td>
+    <td align="center"><img src="docs/screenshots/new-experiment.png" width="200"/><br/><sub>New Experiment</sub></td>
+    <td align="center"><img src="docs/screenshots/experiment-detail.png" width="200"/><br/><sub>Experiment Detail</sub></td>
+    <td align="center"><img src="docs/screenshots/settings.png" width="200"/><br/><sub>Settings</sub></td>
+  </tr>
 </table>
 
 ---
@@ -35,9 +41,37 @@ A guided 7-step CBT thought journal:
 - Search and filter records
 - Side-by-side emotion comparison (before vs. after)
 - Edit existing records
-- Delete with confirmation dialog
+- Delete with confirmation
 - Onboarding example record on first launch
 - Collapsible step hints throughout the flow
+
+---
+
+### Behavioral Experiment
+A structured tool for testing negative beliefs through real-world experiments:
+
+1. **Belief** — state the belief and rate its strength (0–100)
+2. **Alternative belief** — formulate a balanced counter-belief
+3. **Experiment plan** — describe what you will do
+4. **Prediction** — what do you expect to happen?
+5. **Safety behaviours** — identify behaviours that might prevent a fair test
+6. **Schedule** — pick a date for the experiment
+7. **Results** — record what actually happened and re-rate belief strength
+
+**Additional capabilities:**
+- Status transitions: `Planned` → `Completed` / `Abandoned`
+- Experiment list with status badges and date
+- Edit and delete with confirmation
+
+---
+
+### Settings
+- **Notifications** — daily reminder at a configurable time
+- **Accessibility** — font size (S/M/L), reduced motion, high contrast
+- **Data export** — full JSON backup including settings, shared via native share sheet
+- **Data import** — restore from backup file; duplicates are skipped safely
+- **Delete all data** — with two-step confirmation
+- Credits and Bibliography screens
 
 ---
 
@@ -45,10 +79,10 @@ A guided 7-step CBT thought journal:
 
 | Layer | Technology |
 |-------|------------|
-| Framework | React Native + Expo SDK |
+| Framework | React Native + Expo SDK 55 |
 | Routing | expo-router (file-based) |
 | Database | expo-sqlite |
-| State | Zustand |
+| State | Zustand + AsyncStorage persist |
 | Tests | Jest + @testing-library/react-native |
 | Language | TypeScript (strict mode) |
 
@@ -73,10 +107,12 @@ Then press `a` to open in an Android emulator, or scan the QR code with Expo Go.
 ### Build APK
 
 ```bash
-npx expo run:android --variant release
+npx expo prebuild --platform android --clean
+cd android
+JAVA_HOME=~/.gradle/jdks/eclipse_adoptium-17-amd64-windows.2 ./gradlew assembleRelease
 ```
 
-Output: `android/app/build/outputs/apk/release/`
+Output: `android/app/build/outputs/apk/release/app-release.apk`
 
 ### Run Tests
 
@@ -84,7 +120,7 @@ Output: `android/app/build/outputs/apk/release/`
 npm test
 ```
 
-29 tests across 7 suites covering components, hooks, and screens.
+88 tests across 22 suites covering components, hooks, screens, and data layer.
 
 ---
 
@@ -95,37 +131,36 @@ The app is a **modular platform** — a shell hosting independent CBT tool modul
 ```
 src/
 ├── app/                    # Expo Router file-based routing
-│   ├── _layout.tsx         # Root layout (tabs, SafeAreaProvider)
+│   ├── _layout.tsx         # Root layout (tabs, DB init, notification sync)
 │   ├── index.tsx           # Home screen — tool launcher
+│   ├── settings/           # Settings, Credits, Bibliography screens
 │   └── (tools)/            # Tool routes
 ├── core/                   # Shared infrastructure
 │   ├── db/                 # SQLite init + migration runner
-│   ├── theme/              # Color and spacing tokens
+│   ├── theme/              # Color tokens, useColors() (high contrast support)
+│   ├── settings/           # Zustand settings store + font scaling
+│   ├── notifications/      # Permission request + daily reminder scheduling
+│   ├── data/               # Export and import logic
+│   ├── i18n/               # Polish UI strings
 │   ├── types/              # Shared types (ToolDefinition, Emotion)
-│   └── components/         # EmotionPicker, IntensitySlider
+│   └── components/         # EmotionPicker, IntensitySlider, StepHelper, StepProgress
 └── tools/
-    └── thought-record/     # Self-contained tool module
-        ├── index.ts        # Tool registry entry
-        ├── repository.ts   # SQLite data layer
-        ├── hooks/          # useThoughtRecords, useThoughtRecord
-        ├── screens/        # List, Detail, New record flow
-        ├── components/     # StepHelper, CompareScreen
-        ├── i18n/pl.ts      # Polish UI strings
-        └── migrations/     # DB migrations
+    ├── thought-record/     # Self-contained CBT module
+    │   ├── index.ts        # Tool registry entry
+    │   ├── repository.ts   # SQLite data layer
+    │   ├── hooks/          # useThoughtRecords, useThoughtRecord
+    │   ├── screens/        # List, Detail, New/Edit flow, Compare
+    │   └── migrations/     # DB migrations
+    └── behavioral-experiment/
+        ├── index.ts
+        ├── repository.ts
+        ├── hooks/
+        ├── screens/        # List, Detail, New/Edit flow
+        └── migrations/
 ```
-
----
-
-## Roadmap
-
-- [x] Thought Record — full 7-step flow, list, detail, delete
-- [x] Emotion comparison, edit, search, onboarding, step hints
-- [ ] Second CBT tool (Behavioral Experiment)
-- [ ] Light / dark theme toggle
-- [ ] Google Play + App Store release
 
 ---
 
 ## License
 
-[CC BY-NC 4.0](LICENCE.md) — free to use and adapt for non-commercial purposes.
+[PolyForm Noncommercial 1.0](LICENCE.md) — free to use for non-commercial purposes.
