@@ -9,15 +9,9 @@
 <table>
   <tr>
     <td align="center"><img src="docs/screenshots/home.png" width="200"/><br/><sub>Home</sub></td>
-    <td align="center"><img src="docs/screenshots/record-list.png" width="200"/><br/><sub>Record List</sub></td>
-    <td align="center"><img src="docs/screenshots/new-record.png" width="200"/><br/><sub>New Record</sub></td>
-    <td align="center"><img src="docs/screenshots/record-detail.png" width="200"/><br/><sub>Record Detail</sub></td>
-    <td align="center"><img src="docs/screenshots/compare.png" width="200"/><br/><sub>Emotion Compare</sub></td>
-  </tr>
-  <tr>
-    <td align="center"><img src="docs/screenshots/experiment-list.png" width="200"/><br/><sub>Experiment List</sub></td>
-    <td align="center"><img src="docs/screenshots/new-experiment.png" width="200"/><br/><sub>New Experiment</sub></td>
-    <td align="center"><img src="docs/screenshots/experiment-detail.png" width="200"/><br/><sub>Experiment Detail</sub></td>
+    <td align="center"><img src="docs/screenshots/thought-record.png" width="200"/><br/><sub>Thought Record</sub></td>
+    <td align="center"><img src="docs/screenshots/behavioral-experiment.png" width="200"/><br/><sub>Behavioral Experiment</sub></td>
+    <td align="center"><img src="docs/screenshots/abc-model.png" width="200"/><br/><sub>ABC Model</sub></td>
     <td align="center"><img src="docs/screenshots/settings.png" width="200"/><br/><sub>Settings</sub></td>
   </tr>
 </table>
