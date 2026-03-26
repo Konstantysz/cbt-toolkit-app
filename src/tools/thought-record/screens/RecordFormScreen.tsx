@@ -1,5 +1,5 @@
 // src/tools/thought-record/screens/RecordFormScreen.tsx
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, useState } from 'react';
 import {
   ActivityIndicator, Alert, ScrollView, StyleSheet,
   Text, TouchableOpacity, View,
@@ -19,27 +19,36 @@ export function RecordFormScreen({ id }: Props): React.JSX.Element {
   const db = useSQLiteContext();
   const { record, loading } = useThoughtRecord(db, id);
   const formRef = useRef<View>(null);
+  const [isExporting, setIsExporting] = useState(false);
 
   const handleExportPdf = useCallback(async () => {
-    if (!record) return;
+    if (!record || isExporting) return;
+    setIsExporting(true);
     try {
       const html = buildHtml(record);
       const { uri } = await Print.printToFileAsync({ html });
       await Sharing.shareAsync(uri, { mimeType: 'application/pdf', UTI: 'com.adobe.pdf' });
-    } catch {
+    } catch (err) {
+      console.error('[RecordFormScreen] PDF export failed:', err);
       Alert.alert(pl.form.export.errorTitle, pl.form.export.errorMsg);
+    } finally {
+      setIsExporting(false);
     }
-  }, [record]);
+  }, [record, isExporting]);
 
   const handleExportPng = useCallback(async () => {
-    if (!formRef.current) return;
+    if (!formRef.current || isExporting) return;
+    setIsExporting(true);
     try {
-      const uri = await captureRef(formRef, { format: 'png', quality: 1 });
+      const uri = await captureRef(formRef, { format: 'png', quality: 0.85 });
       await Sharing.shareAsync(uri, { mimeType: 'image/png' });
-    } catch {
+    } catch (err) {
+      console.error('[RecordFormScreen] PNG export failed:', err);
       Alert.alert(pl.form.export.errorTitle, pl.form.export.errorMsg);
+    } finally {
+      setIsExporting(false);
     }
-  }, []);
+  }, [isExporting]);
 
   if (loading) {
     return (
@@ -52,7 +61,7 @@ export function RecordFormScreen({ id }: Props): React.JSX.Element {
   if (!record) {
     return (
       <View style={styles.centered}>
-        <Text style={styles.missing}>Nie znaleziono wpisu.</Text>
+        <Text style={styles.missing}>{pl.form.notFound}</Text>
       </View>
     );
   }
@@ -117,11 +126,27 @@ export function RecordFormScreen({ id }: Props): React.JSX.Element {
 
       {/* Przyciski eksportu */}
       <View style={styles.exportRow}>
-        <TouchableOpacity style={styles.exportBtn} onPress={handleExportPdf} activeOpacity={0.8}>
-          <Text style={styles.exportBtnText}>{pl.form.export.pdf}</Text>
+        <TouchableOpacity
+          style={[styles.exportBtn, isExporting && styles.exportBtnDisabled]}
+          onPress={handleExportPdf}
+          activeOpacity={0.8}
+          disabled={isExporting}
+        >
+          {isExporting
+            ? <ActivityIndicator color={colors.accent} size="small" />
+            : <Text style={styles.exportBtnText}>{pl.form.export.pdf}</Text>
+          }
         </TouchableOpacity>
-        <TouchableOpacity style={styles.exportBtn} onPress={handleExportPng} activeOpacity={0.8}>
-          <Text style={styles.exportBtnText}>{pl.form.export.png}</Text>
+        <TouchableOpacity
+          style={[styles.exportBtn, isExporting && styles.exportBtnDisabled]}
+          onPress={handleExportPng}
+          activeOpacity={0.8}
+          disabled={isExporting}
+        >
+          {isExporting
+            ? <ActivityIndicator color={colors.accent} size="small" />
+            : <Text style={styles.exportBtnText}>{pl.form.export.png}</Text>
+          }
         </TouchableOpacity>
       </View>
 
@@ -145,18 +170,17 @@ function buildHtml(record: {
   evidenceFor: string;
   evidenceAgainst: string;
   alternativeThought: string;
-  outcome: string | null;
 }): string {
-  const accent = '#C4956A';
+  const accent = colors.accent;
 
   const emotionsBefore = record.emotions
     .filter(e => e.intensityBefore !== undefined)
-    .map(e => `${e.name} ${e.intensityBefore}%`)
+    .map(e => `${escapeHtml(e.name)} ${e.intensityBefore}%`)
     .join('<br>') || '—';
 
   const emotionsAfter = record.emotions
     .filter(e => e.intensityAfter !== undefined)
-    .map(e => `${e.name} ${e.intensityAfter}%`)
+    .map(e => `${escapeHtml(e.name)} ${e.intensityAfter}%`)
     .join('<br>') || '—';
 
   return `<!DOCTYPE html>
@@ -224,7 +248,7 @@ function escapeHtml(str: string): string {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
-    .replace(/\n/g, '<br>');
+    .replace(/\r\n|\r|\n/g, '<br>');
 }
 
 const styles = StyleSheet.create({
@@ -255,5 +279,6 @@ const styles = StyleSheet.create({
     flex: 1, paddingVertical: 13, borderRadius: 12, alignItems: 'center',
     borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface,
   },
+  exportBtnDisabled: { opacity: 0.5 },
   exportBtnText: { fontSize: 14, color: colors.textMuted },
 });

@@ -64,6 +64,7 @@ export const pl = {
   },
   form: {
     title: 'Formularz Zapisu Myśli',
+    notFound: 'Nie znaleziono wpisu.',
     btn: 'Formularz',
     sections: {
       situation: 'Sytuacja',
