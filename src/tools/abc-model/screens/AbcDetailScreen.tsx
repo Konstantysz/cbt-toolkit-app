@@ -1,7 +1,12 @@
 import React, { useCallback } from 'react';
 import {
-  ActivityIndicator, Alert, ScrollView,
-  StyleSheet, Text, TouchableOpacity, View,
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { router } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
@@ -23,25 +28,21 @@ export function AbcDetailScreen({ id }: Props): React.JSX.Element {
   const { entry, loading } = useAbcEntry(db, id);
 
   const confirmDelete = useCallback(() => {
-    Alert.alert(
-      pl.detail.deleteConfirmTitle,
-      pl.detail.deleteConfirmMsg,
-      [
-        { text: pl.detail.deleteConfirmCancel, style: 'cancel' },
-        {
-          text: pl.detail.deleteConfirmOk,
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await repo.deleteEntry(db, id);
-              router.back();
-            } catch {
-              Alert.alert('Błąd', pl.detail.deleteError);
-            }
-          },
+    Alert.alert(pl.detail.deleteConfirmTitle, pl.detail.deleteConfirmMsg, [
+      { text: pl.detail.deleteConfirmCancel, style: 'cancel' },
+      {
+        text: pl.detail.deleteConfirmOk,
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await repo.deleteEntry(db, id);
+            router.back();
+          } catch {
+            Alert.alert('Błąd', pl.detail.deleteError);
+          }
         },
-      ]
-    );
+      },
+    ]);
   }, [db, id]);
 
   if (loading) {
@@ -60,11 +61,9 @@ export function AbcDetailScreen({ id }: Props): React.JSX.Element {
     );
   }
 
-  const formattedDate = format(
-    parseISO(entry.createdAt),
-    'd MMMM yyyy · HH:mm',
-    { locale: dateFnsPl }
-  );
+  const formattedDate = format(parseISO(entry.createdAt), 'd MMMM yyyy · HH:mm', {
+    locale: dateFnsPl,
+  });
 
   const textSections = [
     { label: pl.detail.sectionA, text: entry.situation },
@@ -80,10 +79,19 @@ export function AbcDetailScreen({ id }: Props): React.JSX.Element {
         {/* Meta row */}
         <View style={styles.metaRow}>
           <Text style={styles.date}>{formattedDate}</Text>
-          {entry.isComplete
-            ? <View style={[styles.badge, styles.badgeComplete]}><Text style={[styles.badgeText, { color: colors.success }]}>{pl.detail.complete}</Text></View>
-            : <View style={[styles.badge, styles.badgeInProgress]}><Text style={[styles.badgeText, { color: colors.inProgress }]}>{pl.detail.inProgress}</Text></View>
-          }
+          {entry.isComplete ? (
+            <View style={[styles.badge, styles.badgeComplete]}>
+              <Text style={[styles.badgeText, { color: colors.success }]}>
+                {pl.detail.complete}
+              </Text>
+            </View>
+          ) : (
+            <View style={[styles.badge, styles.badgeInProgress]}>
+              <Text style={[styles.badgeText, { color: colors.inProgress }]}>
+                {pl.detail.inProgress}
+              </Text>
+            </View>
+          )}
         </View>
 
         {/* SVG Graph */}
@@ -138,29 +146,60 @@ const styles = StyleSheet.create({
   scroll: { padding: 20 },
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 20 },
   date: { fontSize: 12, color: colors.textMuted, letterSpacing: 0.5, flex: 1 },
-  badge: { paddingHorizontal: 7, paddingVertical: 3, borderRadius: 4, overflow: 'hidden', justifyContent: 'center', alignItems: 'center' },
-  badgeText: { fontSize: 10, letterSpacing: 0.8, textTransform: 'uppercase', includeFontPadding: false, lineHeight: 12 },
+  badge: {
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    borderRadius: 4,
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  badgeText: {
+    fontSize: 10,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+    includeFontPadding: false,
+    lineHeight: 12,
+  },
   badgeComplete: { backgroundColor: 'rgba(122,158,126,0.12)' },
   badgeInProgress: { backgroundColor: 'rgba(184,151,74,0.1)' },
   graphCard: {
     backgroundColor: colors.surface,
-    borderWidth: 1, borderColor: colors.border,
-    borderRadius: 16, padding: 12, marginBottom: 24,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 16,
+    padding: 12,
+    marginBottom: 24,
   },
   section: { marginBottom: 16 },
-  sectionLabel: { fontSize: 10, color: colors.textDim, letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 5 },
+  sectionLabel: {
+    fontSize: 10,
+    color: colors.textDim,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+    marginBottom: 5,
+  },
   sectionBody: { fontSize: 14, color: colors.text, lineHeight: 22 },
   emptyField: { color: colors.textDim, fontStyle: 'italic' },
   divider: { height: 1, backgroundColor: colors.border, marginBottom: 16 },
   actionRow: { flexDirection: 'row', gap: 10, padding: 16, paddingBottom: 28 },
   editBtn: {
-    flex: 1, paddingVertical: 13, borderRadius: 12, alignItems: 'center',
-    borderWidth: 1, borderColor: colors.border,
+    flex: 1,
+    paddingVertical: 13,
+    borderRadius: 12,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   editBtnText: { fontSize: 14, color: colors.textMuted },
   deleteBtn: {
-    flex: 1, paddingVertical: 13, borderRadius: 12, alignItems: 'center',
-    backgroundColor: colors.dangerDim, borderWidth: 1, borderColor: 'rgba(196,96,90,0.22)',
+    flex: 1,
+    paddingVertical: 13,
+    borderRadius: 12,
+    alignItems: 'center',
+    backgroundColor: colors.dangerDim,
+    borderWidth: 1,
+    borderColor: 'rgba(196,96,90,0.22)',
   },
   deleteBtnText: { color: colors.danger, fontSize: 14 },
   errorText: { fontSize: 15, color: colors.textMuted },

@@ -18,10 +18,10 @@ describe('deleteAll', () => {
   it('executes DELETE on thought_records and tool_entries', async () => {
     await repo.deleteAll(mockDb);
 
-    const calls = (mockDb.runAsync as jest.Mock).mock.calls.map(
-      (c: unknown[]) => c[0] as string
+    const calls = (mockDb.runAsync as jest.Mock).mock.calls.map((c: unknown[]) => c[0] as string);
+    expect(calls.some((sql) => sql.includes('DELETE') && sql.includes('thought_records'))).toBe(
+      true
     );
-    expect(calls.some((sql) => sql.includes('DELETE') && sql.includes('thought_records'))).toBe(true);
     expect(calls.some((sql) => sql.includes('DELETE') && sql.includes('tool_entries'))).toBe(true);
   });
 });

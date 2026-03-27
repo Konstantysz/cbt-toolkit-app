@@ -45,10 +45,7 @@ export async function createRecord(db: SQLite.SQLiteDatabase): Promise<ThoughtRe
     `INSERT INTO tool_entries (id, tool_id, created_at, updated_at) VALUES (?, 'thought-record', ?, ?)`,
     [id, now, now]
   );
-  await db.runAsync(
-    `INSERT INTO thought_records (id) VALUES (?)`,
-    [id]
-  );
+  await db.runAsync(`INSERT INTO thought_records (id) VALUES (?)`, [id]);
   return (await getRecordById(db, id))!;
 }
 
@@ -66,12 +63,15 @@ export async function getRecordById(
   db: SQLite.SQLiteDatabase,
   id: string
 ): Promise<ThoughtRecord | null> {
-  const row = await db.getFirstAsync<DbRow>(`
+  const row = await db.getFirstAsync<DbRow>(
+    `
     SELECT tr.*, te.is_complete, te.current_step, te.created_at, te.updated_at
     FROM thought_records tr
     JOIN tool_entries te ON tr.id = te.id
     WHERE tr.id = ?
-  `, [id]);
+  `,
+    [id]
+  );
   return row ? rowToRecord(row) : null;
 }
 
@@ -81,15 +81,18 @@ export async function updateRecord(
   updates: Partial<Omit<ThoughtRecord, 'id' | 'createdAt' | 'updatedAt'>>
 ): Promise<void> {
   const now = new Date().toISOString();
-  if (updates.emotions !== undefined ||
-      updates.situation !== undefined ||
-      updates.situationDate !== undefined ||
-      updates.automaticThoughts !== undefined ||
-      updates.evidenceFor !== undefined ||
-      updates.evidenceAgainst !== undefined ||
-      updates.alternativeThought !== undefined ||
-      updates.outcome !== undefined) {
-    await db.runAsync(`
+  if (
+    updates.emotions !== undefined ||
+    updates.situation !== undefined ||
+    updates.situationDate !== undefined ||
+    updates.automaticThoughts !== undefined ||
+    updates.evidenceFor !== undefined ||
+    updates.evidenceAgainst !== undefined ||
+    updates.alternativeThought !== undefined ||
+    updates.outcome !== undefined
+  ) {
+    await db.runAsync(
+      `
       UPDATE thought_records SET
         situation = COALESCE(?, situation),
         situation_date = CASE WHEN ? IS NOT NULL THEN ? ELSE situation_date END,
@@ -100,31 +103,38 @@ export async function updateRecord(
         alternative_thought = COALESCE(?, alternative_thought),
         outcome = CASE WHEN ? IS NOT NULL THEN ? ELSE outcome END
       WHERE id = ?
-    `, [
-      updates.situation ?? null,
-      updates.situationDate ?? null, updates.situationDate ?? null,
-      updates.emotions ? JSON.stringify(updates.emotions) : null,
-      updates.automaticThoughts ?? null,
-      updates.evidenceFor ?? null,
-      updates.evidenceAgainst ?? null,
-      updates.alternativeThought ?? null,
-      updates.outcome ?? null, updates.outcome ?? null,
-      id,
-    ]);
+    `,
+      [
+        updates.situation ?? null,
+        updates.situationDate ?? null,
+        updates.situationDate ?? null,
+        updates.emotions ? JSON.stringify(updates.emotions) : null,
+        updates.automaticThoughts ?? null,
+        updates.evidenceFor ?? null,
+        updates.evidenceAgainst ?? null,
+        updates.alternativeThought ?? null,
+        updates.outcome ?? null,
+        updates.outcome ?? null,
+        id,
+      ]
+    );
   }
   if (updates.isComplete !== undefined || updates.currentStep !== undefined) {
-    await db.runAsync(`
+    await db.runAsync(
+      `
       UPDATE tool_entries SET
         is_complete = COALESCE(?, is_complete),
         current_step = COALESCE(?, current_step),
         updated_at = ?
       WHERE id = ?
-    `, [
-      updates.isComplete !== undefined ? (updates.isComplete ? 1 : 0) : null,
-      updates.currentStep ?? null,
-      now,
-      id,
-    ]);
+    `,
+      [
+        updates.isComplete !== undefined ? (updates.isComplete ? 1 : 0) : null,
+        updates.currentStep ?? null,
+        now,
+        id,
+      ]
+    );
   }
 }
 

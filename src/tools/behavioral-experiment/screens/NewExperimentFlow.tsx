@@ -1,7 +1,14 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import {
-  ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView,
-  StyleSheet, Text, TextInput, TouchableOpacity, View,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { router } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
@@ -75,7 +82,7 @@ export function NewExperimentFlow({ phase, experimentId }: Props): React.JSX.Ele
       const exp = await repo.getExperimentById(db, experimentId);
       if (exp) {
         setExpId(exp.id);
-        setResultState(prev => ({
+        setResultState((prev) => ({
           ...prev,
           executionDate: exp.executionDate ?? todayIso(),
           actualOutcome: exp.actualOutcome ?? '',
@@ -117,11 +124,23 @@ export function NewExperimentFlow({ phase, experimentId }: Props): React.JSX.Ele
 
     if (phase === 'plan') {
       const updates: Parameters<typeof repo.updateExperiment>[2] = { currentStep: stepNumber };
-      if (currentStep === 1) { updates.belief = planState.belief; updates.beliefStrengthBefore = planState.beliefStrengthBefore; }
-      if (currentStep === 2) { updates.plan = planState.plan; }
-      if (currentStep === 3) { updates.predictedOutcome = planState.predictedOutcome; }
-      if (currentStep === 4) { updates.potentialProblems = planState.potentialProblems; }
-      if (currentStep === 5) { updates.problemStrategies = planState.problemStrategies; updates.status = 'planned'; }
+      if (currentStep === 1) {
+        updates.belief = planState.belief;
+        updates.beliefStrengthBefore = planState.beliefStrengthBefore;
+      }
+      if (currentStep === 2) {
+        updates.plan = planState.plan;
+      }
+      if (currentStep === 3) {
+        updates.predictedOutcome = planState.predictedOutcome;
+      }
+      if (currentStep === 4) {
+        updates.potentialProblems = planState.potentialProblems;
+      }
+      if (currentStep === 5) {
+        updates.problemStrategies = planState.problemStrategies;
+        updates.status = 'planned';
+      }
       await repo.updateExperiment(db, expId, updates);
     } else {
       const updates: Parameters<typeof repo.updateExperiment>[2] = { currentStep: stepNumber };
@@ -145,7 +164,7 @@ export function NewExperimentFlow({ phase, experimentId }: Props): React.JSX.Ele
   const handleNext = useCallback(async () => {
     await saveCurrentStep();
     if (currentStep < totalSteps) {
-      setCurrentStep(s => s + 1);
+      setCurrentStep((s) => s + 1);
     } else {
       router.replace('/(tools)/behavioral-experiment');
     }
@@ -153,18 +172,18 @@ export function NewExperimentFlow({ phase, experimentId }: Props): React.JSX.Ele
 
   const handleBack = useCallback(() => {
     if (currentStep > 1) {
-      setCurrentStep(s => s - 1);
+      setCurrentStep((s) => s - 1);
     } else {
       router.back();
     }
   }, [currentStep]);
 
   const updatePlan = useCallback(<K extends keyof PlanState>(key: K, value: PlanState[K]) => {
-    setPlanState(prev => ({ ...prev, [key]: value }));
+    setPlanState((prev) => ({ ...prev, [key]: value }));
   }, []);
 
   const updateResult = useCallback(<K extends keyof ResultState>(key: K, value: ResultState[K]) => {
-    setResultState(prev => ({ ...prev, [key]: value }));
+    setResultState((prev) => ({ ...prev, [key]: value }));
   }, []);
 
   if (loading) {
@@ -217,80 +236,84 @@ export function NewExperimentFlow({ phase, experimentId }: Props): React.JSX.Ele
 function renderPlanStep(
   step: number,
   state: PlanState,
-  update: <K extends keyof PlanState>(key: K, value: PlanState[K]) => void,
+  update: <K extends keyof PlanState>(key: K, value: PlanState[K]) => void
 ): React.ReactNode {
-  if (step === 1) return (
-    <View>
-      <Text style={styles.stepTitle}>{pl.step1.title}</Text>
-      <TextInput
-        style={styles.input}
-        value={state.belief}
-        onChangeText={v => update('belief', v)}
-        placeholder={pl.step1.placeholder}
-        placeholderTextColor={colors.textDim}
-        multiline
-        textAlignVertical="top"
-      />
-      <StepHelper hint={pl.step1.hint} />
-      <IntensitySlider
-        label={pl.step1.sliderLabel}
-        value={state.beliefStrengthBefore}
-        onChange={v => update('beliefStrengthBefore', v)}
-      />
-    </View>
-  );
-  if (step === 2) return (
-    <View>
-      <Text style={styles.stepTitle}>{pl.step2.title}</Text>
-      <TextInput
-        style={styles.input}
-        value={state.plan}
-        onChangeText={v => update('plan', v)}
-        placeholder={pl.step2.placeholder}
-        placeholderTextColor={colors.textDim}
-        multiline
-        textAlignVertical="top"
-      />
-      <StepHelper hint={pl.step2.hint} />
-    </View>
-  );
-  if (step === 3) return (
-    <View>
-      <Text style={styles.stepTitle}>{pl.step3.title}</Text>
-      <TextInput
-        style={styles.input}
-        value={state.predictedOutcome}
-        onChangeText={v => update('predictedOutcome', v)}
-        placeholder={pl.step3.placeholder}
-        placeholderTextColor={colors.textDim}
-        multiline
-        textAlignVertical="top"
-      />
-      <StepHelper hint={pl.step3.hint} />
-    </View>
-  );
-  if (step === 4) return (
-    <View>
-      <Text style={styles.stepTitle}>{pl.step4.title}</Text>
-      <TextInput
-        style={styles.input}
-        value={state.potentialProblems}
-        onChangeText={v => update('potentialProblems', v)}
-        placeholder={pl.step4.placeholder}
-        placeholderTextColor={colors.textDim}
-        multiline
-        textAlignVertical="top"
-      />
-      <StepHelper hint={pl.step4.hint} />
-    </View>
-  );
+  if (step === 1)
+    return (
+      <View>
+        <Text style={styles.stepTitle}>{pl.step1.title}</Text>
+        <TextInput
+          style={styles.input}
+          value={state.belief}
+          onChangeText={(v) => update('belief', v)}
+          placeholder={pl.step1.placeholder}
+          placeholderTextColor={colors.textDim}
+          multiline
+          textAlignVertical="top"
+        />
+        <StepHelper hint={pl.step1.hint} />
+        <IntensitySlider
+          label={pl.step1.sliderLabel}
+          value={state.beliefStrengthBefore}
+          onChange={(v) => update('beliefStrengthBefore', v)}
+        />
+      </View>
+    );
+  if (step === 2)
+    return (
+      <View>
+        <Text style={styles.stepTitle}>{pl.step2.title}</Text>
+        <TextInput
+          style={styles.input}
+          value={state.plan}
+          onChangeText={(v) => update('plan', v)}
+          placeholder={pl.step2.placeholder}
+          placeholderTextColor={colors.textDim}
+          multiline
+          textAlignVertical="top"
+        />
+        <StepHelper hint={pl.step2.hint} />
+      </View>
+    );
+  if (step === 3)
+    return (
+      <View>
+        <Text style={styles.stepTitle}>{pl.step3.title}</Text>
+        <TextInput
+          style={styles.input}
+          value={state.predictedOutcome}
+          onChangeText={(v) => update('predictedOutcome', v)}
+          placeholder={pl.step3.placeholder}
+          placeholderTextColor={colors.textDim}
+          multiline
+          textAlignVertical="top"
+        />
+        <StepHelper hint={pl.step3.hint} />
+      </View>
+    );
+  if (step === 4)
+    return (
+      <View>
+        <Text style={styles.stepTitle}>{pl.step4.title}</Text>
+        <TextInput
+          style={styles.input}
+          value={state.potentialProblems}
+          onChangeText={(v) => update('potentialProblems', v)}
+          placeholder={pl.step4.placeholder}
+          placeholderTextColor={colors.textDim}
+          multiline
+          textAlignVertical="top"
+        />
+        <StepHelper hint={pl.step4.hint} />
+      </View>
+    );
   return (
     <View>
       <Text style={styles.stepTitle}>{pl.step5.title}</Text>
       <TextInput
         style={styles.input}
         value={state.problemStrategies}
-        onChangeText={v => update('problemStrategies', v)}
+        onChangeText={(v) => update('problemStrategies', v)}
         placeholder={pl.step5.placeholder}
         placeholderTextColor={colors.textDim}
         multiline
@@ -304,7 +327,7 @@ function renderPlanStep(
 function renderResultStep(
   step: number,
   state: ResultState,
-  update: <K extends keyof ResultState>(key: K, value: ResultState[K]) => void,
+  update: <K extends keyof ResultState>(key: K, value: ResultState[K]) => void
 ): React.ReactNode {
   if (step === 1) {
     const dateObj = parseISO(state.executionDate);
@@ -336,7 +359,7 @@ function renderResultStep(
         <TextInput
           style={[styles.input, styles.inputTop]}
           value={state.actualOutcome}
-          onChangeText={v => update('actualOutcome', v)}
+          onChangeText={(v) => update('actualOutcome', v)}
           placeholder={pl.step6.placeholder}
           placeholderTextColor={colors.textDim}
           multiline
@@ -346,29 +369,30 @@ function renderResultStep(
       </View>
     );
   }
-  if (step === 2) return (
-    <View>
-      <Text style={styles.stepTitle}>{pl.step7.title}</Text>
-      <StepHelper hint={pl.step7.hint} />
-      <IntensitySlider
-        label={pl.step7.confirmationLabel}
-        value={state.confirmationPercent}
-        onChange={v => update('confirmationPercent', v)}
-      />
-      <IntensitySlider
-        label={pl.step7.beliefAfterLabel}
-        value={state.beliefStrengthAfter}
-        onChange={v => update('beliefStrengthAfter', v)}
-      />
-    </View>
-  );
+  if (step === 2)
+    return (
+      <View>
+        <Text style={styles.stepTitle}>{pl.step7.title}</Text>
+        <StepHelper hint={pl.step7.hint} />
+        <IntensitySlider
+          label={pl.step7.confirmationLabel}
+          value={state.confirmationPercent}
+          onChange={(v) => update('confirmationPercent', v)}
+        />
+        <IntensitySlider
+          label={pl.step7.beliefAfterLabel}
+          value={state.beliefStrengthAfter}
+          onChange={(v) => update('beliefStrengthAfter', v)}
+        />
+      </View>
+    );
   return (
     <View>
       <Text style={styles.stepTitle}>{pl.step8.title}</Text>
       <TextInput
         style={styles.input}
         value={state.conclusion}
-        onChangeText={v => update('conclusion', v)}
+        onChangeText={(v) => update('conclusion', v)}
         placeholder={pl.step8.placeholder}
         placeholderTextColor={colors.textDim}
         multiline
@@ -383,35 +407,66 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.bg },
   centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   scrollContent: { padding: 20, paddingBottom: 40 },
-  stepTitle: { fontSize: 20, fontWeight: '700', color: colors.text, marginBottom: 12, lineHeight: 28 },
-  fieldLabel: { fontSize: 12, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 6 },
+  stepTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: colors.text,
+    marginBottom: 12,
+    lineHeight: 28,
+  },
+  fieldLabel: {
+    fontSize: 12,
+    color: colors.textMuted,
+    textTransform: 'uppercase',
+    letterSpacing: 0.6,
+    marginBottom: 6,
+  },
   input: {
     backgroundColor: colors.surface,
-    borderWidth: 1, borderColor: colors.border, borderRadius: 12,
-    padding: 15, fontSize: 15, color: colors.text, lineHeight: 24,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 12,
+    padding: 15,
+    fontSize: 15,
+    color: colors.text,
+    lineHeight: 24,
     minHeight: 100,
   },
   inputTop: { marginTop: 12 },
   datePicker: {
-    backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border,
-    borderRadius: 12, padding: 14, marginBottom: 4,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 4,
   },
   datePickerText: { fontSize: 15, color: colors.text },
   navRow: {
-    flexDirection: 'row', gap: 10,
-    paddingHorizontal: 20, paddingVertical: 16,
-    borderTopWidth: 1, borderTopColor: colors.border,
+    flexDirection: 'row',
+    gap: 10,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
     backgroundColor: colors.bg,
   },
   btnBack: {
-    flex: 1, backgroundColor: colors.surface,
-    borderWidth: 1, borderColor: colors.border,
-    borderRadius: 12, paddingVertical: 14, alignItems: 'center',
+    flex: 1,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 12,
+    paddingVertical: 14,
+    alignItems: 'center',
   },
   btnBackText: { fontSize: 15, color: colors.textMuted, fontWeight: '500' },
   btnNext: {
-    flex: 2, backgroundColor: colors.accent,
-    borderRadius: 12, paddingVertical: 14, alignItems: 'center',
+    flex: 2,
+    backgroundColor: colors.accent,
+    borderRadius: 12,
+    paddingVertical: 14,
+    alignItems: 'center',
   },
   btnFinish: { backgroundColor: colors.success },
   btnDisabled: { backgroundColor: colors.border },

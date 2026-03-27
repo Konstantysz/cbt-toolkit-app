@@ -1,6 +1,12 @@
 import React, { useCallback } from 'react';
 import {
-  ActivityIndicator, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View,
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { router } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
@@ -13,7 +19,9 @@ import { pl } from '../i18n/pl';
 import * as repo from '../repository';
 import { Ionicons } from '@expo/vector-icons';
 
-interface Props { id: string; }
+interface Props {
+  id: string;
+}
 
 export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
   const db = useSQLiteContext();
@@ -41,16 +49,29 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
     );
   }, [db, id]);
 
-  if (loading) return <View style={styles.centered}><ActivityIndicator color={colors.accent} /></View>;
-  if (!experiment) return <View style={styles.centered}><Text style={styles.missing}>Nie znaleziono eksperymentu.</Text></View>;
+  if (loading)
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator color={colors.accent} />
+      </View>
+    );
+  if (!experiment)
+    return (
+      <View style={styles.centered}>
+        <Text style={styles.missing}>Nie znaleziono eksperymentu.</Text>
+      </View>
+    );
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-
       {/* Weryfikowana myśl + porównanie suwakowe */}
       <View style={styles.beliefCard}>
         <Text style={styles.beliefLabel}>{pl.detail.belief}</Text>
-        <Text style={styles.beliefText}>{'„'}{experiment.belief}{'"'}</Text>
+        <Text style={styles.beliefText}>
+          {'„'}
+          {experiment.belief}
+          {'"'}
+        </Text>
         <View style={styles.sliderRow}>
           <View style={styles.sliderHalf}>
             <Text style={styles.sliderSideLabel}>{pl.detail.beliefStrengthBefore}</Text>
@@ -100,7 +121,9 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
           {experiment.executionDate && (
             <DetailRow
               label={pl.detail.executionDate}
-              value={format(parseISO(experiment.executionDate), 'd MMMM yyyy', { locale: dateFnsPl })}
+              value={format(parseISO(experiment.executionDate), 'd MMMM yyyy', {
+                locale: dateFnsPl,
+              })}
             />
           )}
           <DetailRow label={pl.detail.actualOutcome} value={experiment.actualOutcome || '—'} />
@@ -108,7 +131,12 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>{pl.detail.confirmationPercent}</Text>
               <View style={styles.percentBar}>
-                <View style={[styles.percentFill, { width: `${experiment.confirmationPercent}%` as `${number}%` }]} />
+                <View
+                  style={[
+                    styles.percentFill,
+                    { width: `${experiment.confirmationPercent}%` as `${number}%` },
+                  ]}
+                />
               </View>
               <Text style={styles.percentNum}>{experiment.confirmationPercent}%</Text>
             </View>
@@ -134,7 +162,6 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
           <Text style={styles.deleteBtnText}>{pl.detail.delete}</Text>
         </TouchableOpacity>
       </View>
-
     </ScrollView>
   );
 }
@@ -154,39 +181,96 @@ const styles = StyleSheet.create({
   content: { padding: 16, paddingBottom: 40 },
   missing: { color: colors.textMuted, fontStyle: 'italic' },
   beliefCard: {
-    backgroundColor: colors.surface, borderRadius: 14,
-    borderWidth: 1, borderColor: colors.border, padding: 16, marginBottom: 20,
+    backgroundColor: colors.surface,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: 16,
+    marginBottom: 20,
   },
-  beliefLabel: { fontSize: 10, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 6 },
-  beliefText: { fontSize: 15, color: colors.text, fontStyle: 'italic', lineHeight: 22, marginBottom: 16 },
+  beliefLabel: {
+    fontSize: 10,
+    color: colors.textMuted,
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+    marginBottom: 6,
+  },
+  beliefText: {
+    fontSize: 15,
+    color: colors.text,
+    fontStyle: 'italic',
+    lineHeight: 22,
+    marginBottom: 16,
+  },
   sliderRow: { flexDirection: 'row', gap: 8 },
   sliderHalf: { flex: 1 },
-  sliderSideLabel: { fontSize: 11, color: colors.textMuted, textAlign: 'center', marginBottom: 4, letterSpacing: 0.5 },
-  sectionHeader: { fontSize: 11, color: colors.textDim, textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 8, marginTop: 8 },
-  detailRow: {
-    backgroundColor: colors.surface, borderRadius: 12,
-    borderWidth: 1, borderColor: colors.border,
-    padding: 14, marginBottom: 8,
+  sliderSideLabel: {
+    fontSize: 11,
+    color: colors.textMuted,
+    textAlign: 'center',
+    marginBottom: 4,
+    letterSpacing: 0.5,
   },
-  detailLabel: { fontSize: 11, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 4 },
+  sectionHeader: {
+    fontSize: 11,
+    color: colors.textDim,
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+    marginBottom: 8,
+    marginTop: 8,
+  },
+  detailRow: {
+    backgroundColor: colors.surface,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: 14,
+    marginBottom: 8,
+  },
+  detailLabel: {
+    fontSize: 11,
+    color: colors.textMuted,
+    textTransform: 'uppercase',
+    letterSpacing: 0.6,
+    marginBottom: 4,
+  },
   detailValue: { fontSize: 14, color: colors.text, lineHeight: 21 },
-  percentBar: { height: 6, backgroundColor: colors.border, borderRadius: 3, overflow: 'hidden', marginVertical: 6 },
+  percentBar: {
+    height: 6,
+    backgroundColor: colors.border,
+    borderRadius: 3,
+    overflow: 'hidden',
+    marginVertical: 6,
+  },
   percentFill: { height: '100%', backgroundColor: colors.accent, borderRadius: 3 },
   percentNum: { fontSize: 13, color: colors.accent, fontWeight: '600' },
   addResultBtn: {
-    backgroundColor: colors.success, borderRadius: 12,
-    paddingVertical: 14, alignItems: 'center', marginTop: 16, marginBottom: 4,
+    backgroundColor: colors.success,
+    borderRadius: 12,
+    paddingVertical: 14,
+    alignItems: 'center',
+    marginTop: 16,
+    marginBottom: 4,
   },
   addResultText: { fontSize: 15, color: colors.bg, fontWeight: '600' },
   actionRow: { flexDirection: 'row', gap: 10, marginTop: 24 },
   editBtn: {
-    flex: 1, paddingVertical: 13, borderRadius: 12, alignItems: 'center',
-    borderWidth: 1, borderColor: colors.border,
+    flex: 1,
+    paddingVertical: 13,
+    borderRadius: 12,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   editBtnText: { fontSize: 14, color: colors.textMuted },
   deleteBtn: {
-    flex: 1, paddingVertical: 13, borderRadius: 12, alignItems: 'center',
-    backgroundColor: colors.dangerDim, borderWidth: 1, borderColor: 'rgba(196,96,90,0.22)',
+    flex: 1,
+    paddingVertical: 13,
+    borderRadius: 12,
+    alignItems: 'center',
+    backgroundColor: colors.dangerDim,
+    borderWidth: 1,
+    borderColor: 'rgba(196,96,90,0.22)',
   },
   deleteBtnText: { fontSize: 14, color: colors.danger },
 });

@@ -127,17 +127,17 @@ describe('insertSeedExperiment', () => {
     // First call: tool_entries with is_complete=1, current_step=8
     expect(calls[0][0]).toContain('tool_entries');
     expect(calls[0][1]).toEqual([
-      'test-uuid-1234',    // id (from mocked randomUUID)
-      expect.any(String),  // created_at
-      expect.any(String),  // updated_at
-      1,                   // is_complete
-      8,                   // current_step (5 plan + 3 result)
+      'test-uuid-1234', // id (from mocked randomUUID)
+      expect.any(String), // created_at
+      expect.any(String), // updated_at
+      1, // is_complete
+      8, // current_step (5 plan + 3 result)
     ]);
 
     // Second call: behavioral_experiments with is_example=1
     expect(calls[1][0]).toContain('behavioral_experiments');
-    expect(calls[1][1][0]).toBe('test-uuid-1234');  // id
-    expect(calls[1][1][1]).toBe('completed');        // status
+    expect(calls[1][1][0]).toBe('test-uuid-1234'); // id
+    expect(calls[1][1][1]).toBe('completed'); // status
     expect(calls[1][1][calls[1][1].length - 1]).toBe(1); // is_example (last param)
   });
 });
@@ -146,10 +146,10 @@ describe('deleteAll', () => {
   it('executes DELETE on behavioral_experiments and tool_entries', async () => {
     await repo.deleteAll(mockDb);
 
-    const calls = (mockDb.runAsync as jest.Mock).mock.calls.map(
-      (c: unknown[]) => c[0] as string
-    );
-    expect(calls.some((sql) => sql.includes('DELETE') && sql.includes('behavioral_experiments'))).toBe(true);
+    const calls = (mockDb.runAsync as jest.Mock).mock.calls.map((c: unknown[]) => c[0] as string);
+    expect(
+      calls.some((sql) => sql.includes('DELETE') && sql.includes('behavioral_experiments'))
+    ).toBe(true);
     expect(calls.some((sql) => sql.includes('DELETE') && sql.includes('tool_entries'))).toBe(true);
   });
 });

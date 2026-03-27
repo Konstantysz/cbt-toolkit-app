@@ -4,7 +4,7 @@ import Slider from '@react-native-community/slider';
 import { colors } from '../theme';
 
 interface Props {
-  value: number;       // 0–100
+  value: number; // 0–100
   onChange: (v: number) => void;
   label?: string;
   readOnly?: boolean;

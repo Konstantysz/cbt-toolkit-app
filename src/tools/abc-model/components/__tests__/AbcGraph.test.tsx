@@ -37,13 +37,7 @@ describe('AbcGraph', () => {
   it('shows truncated situation text', () => {
     const long = 'X'.repeat(60);
     const { UNSAFE_queryAllByProps } = render(
-      <AbcGraph
-        situation={long}
-        thoughts=""
-        behaviors=""
-        emotions=""
-        physicalSymptoms=""
-      />
+      <AbcGraph situation={long} thoughts="" behaviors="" emotions="" physicalSymptoms="" />
     );
     const expected = 'X'.repeat(40) + '…';
     // SvgText renders as RN.View in the mock, so we query by children prop

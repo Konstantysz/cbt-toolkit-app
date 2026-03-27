@@ -47,10 +47,12 @@ export const pl = {
     toggle: 'Wskazówka',
     exampleLabel: 'Przykład',
     hints: {
-      step1: 'Opisz co, gdzie, kiedy i z kim. Dodaj kontekst fizyczny: czy byłeś głodny, zmęczony, samotny, zły (metoda HALT)? Czy ta sytuacja zdarzyła się po raz pierwszy, czy to powtarzający się wzorzec?',
+      step1:
+        'Opisz co, gdzie, kiedy i z kim. Dodaj kontekst fizyczny: czy byłeś głodny, zmęczony, samotny, zły (metoda HALT)? Czy ta sytuacja zdarzyła się po raz pierwszy, czy to powtarzający się wzorzec?',
       step3: '„np. Nie dam rady. Wszyscy widzą, że jestem słaby. Coś jest ze mną nie tak."',
       step4: '„np. Tydzień temu zapomniałem o ważnym spotkaniu. Zdarza mi się mylić daty."',
-      step5: '„np. Przez ostatni rok nie miałem poważnych problemów w pracy. Szef niedawno mnie pochwalił."',
+      step5:
+        '„np. Przez ostatni rok nie miałem poważnych problemów w pracy. Szef niedawno mnie pochwalił."',
       step6: '„np. Odczuwam niepokój, ale to uczucie przeminie. Mam dowody na to, że sobie radzę."',
     },
   },

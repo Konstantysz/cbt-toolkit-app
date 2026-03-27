@@ -32,7 +32,8 @@ export function useAbcEntry(db: SQLite.SQLiteDatabase | null, id: string) {
   useEffect(() => {
     if (!db) return;
     setLoading(true);
-    repo.getEntryById(db, id)
+    repo
+      .getEntryById(db, id)
       .then(setEntry)
       .finally(() => setLoading(false));
   }, [db, id]);

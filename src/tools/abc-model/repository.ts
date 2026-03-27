@@ -59,12 +59,15 @@ export async function getEntryById(
   db: SQLite.SQLiteDatabase,
   id: string
 ): Promise<AbcEntry | null> {
-  const row = await db.getFirstAsync<DbRow>(`
+  const row = await db.getFirstAsync<DbRow>(
+    `
     SELECT ae.*, te.is_complete, te.current_step, te.created_at, te.updated_at
     FROM abc_entries ae
     JOIN tool_entries te ON ae.id = te.id
     WHERE ae.id = ?
-  `, [id]);
+  `,
+    [id]
+  );
   return row ? rowToEntry(row) : null;
 }
 
@@ -74,16 +77,16 @@ export async function updateEntry(
   updates: Partial<Omit<AbcEntry, 'id' | 'createdAt' | 'updatedAt'>>
 ): Promise<void> {
   const now = new Date().toISOString();
-  const hasContent = (
+  const hasContent =
     updates.situation !== undefined ||
     updates.thoughts !== undefined ||
     updates.behaviors !== undefined ||
     updates.emotions !== undefined ||
-    updates.physicalSymptoms !== undefined
-  );
+    updates.physicalSymptoms !== undefined;
   await db.withTransactionAsync(async () => {
     if (hasContent) {
-      await db.runAsync(`
+      await db.runAsync(
+        `
         UPDATE abc_entries SET
           situation = COALESCE(?, situation),
           thoughts = COALESCE(?, thoughts),
@@ -91,28 +94,33 @@ export async function updateEntry(
           emotions = COALESCE(?, emotions),
           physical_symptoms = COALESCE(?, physical_symptoms)
         WHERE id = ?
-      `, [
-        updates.situation ?? null,
-        updates.thoughts ?? null,
-        updates.behaviors ?? null,
-        updates.emotions ?? null,
-        updates.physicalSymptoms ?? null,
-        id,
-      ]);
+      `,
+        [
+          updates.situation ?? null,
+          updates.thoughts ?? null,
+          updates.behaviors ?? null,
+          updates.emotions ?? null,
+          updates.physicalSymptoms ?? null,
+          id,
+        ]
+      );
     }
     if (updates.isComplete !== undefined || updates.currentStep !== undefined) {
-      await db.runAsync(`
+      await db.runAsync(
+        `
         UPDATE tool_entries SET
           is_complete = COALESCE(?, is_complete),
           current_step = COALESCE(?, current_step),
           updated_at = ?
         WHERE id = ?
-      `, [
-        updates.isComplete !== undefined ? (updates.isComplete ? 1 : 0) : null,
-        updates.currentStep ?? null,
-        now,
-        id,
-      ]);
+      `,
+        [
+          updates.isComplete !== undefined ? (updates.isComplete ? 1 : 0) : null,
+          updates.currentStep ?? null,
+          now,
+          id,
+        ]
+      );
     }
   });
 }

@@ -21,7 +21,9 @@ const mockDb = {
 } as unknown as SQLite.SQLiteDatabase;
 
 const thoughtRows = [{ id: 'tr1', situation: 'Sytuacja', created_at: '2026-01-01T00:00:00.000Z' }];
-const experimentRows = [{ id: 'be1', belief: 'Przekonanie', created_at: '2026-01-01T00:00:00.000Z' }];
+const experimentRows = [
+  { id: 'be1', belief: 'Przekonanie', created_at: '2026-01-01T00:00:00.000Z' },
+];
 
 beforeEach(() => {
   jest.clearAllMocks();

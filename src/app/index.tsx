@@ -28,9 +28,7 @@ export default function HomeScreen(): React.JSX.Element {
 
       <View style={styles.header}>
         <Text style={styles.appTitle}>CBT Toolkit</Text>
-        <Text style={styles.appSubtitle}>
-          Narzędzia terapii poznawczo-behawioralnej
-        </Text>
+        <Text style={styles.appSubtitle}>Narzędzia terapii poznawczo-behawioralnej</Text>
       </View>
 
       <View style={styles.sectionHeader}>
@@ -39,10 +37,7 @@ export default function HomeScreen(): React.JSX.Element {
       </View>
 
       <ScrollView
-        contentContainerStyle={[
-          styles.grid,
-          { paddingBottom: insets.bottom + spacing.md },
-        ]}
+        contentContainerStyle={[styles.grid, { paddingBottom: insets.bottom + spacing.md }]}
       >
         {tools.map((tool: ToolDefinition) => (
           <TouchableOpacity
@@ -51,9 +46,7 @@ export default function HomeScreen(): React.JSX.Element {
             activeOpacity={0.75}
             onPress={() =>
               router.navigate(
-                `/(tools)${tool.routePrefix}` as Parameters<
-                  typeof router.navigate
-                >[0],
+                `/(tools)${tool.routePrefix}` as Parameters<typeof router.navigate>[0]
               )
             }
           >
