@@ -23,7 +23,8 @@ Modular plugin system — see vault's 02_Engineering/Architecture.md
 - Adding a new tool must NOT require changes to existing tools
 
 ## Planning artifacts
-- Implementation plans and design specs live in **`../cbt-toolkit-brain/02_Engineering/Plans/superpowers/`**
+- Implementation plans live in **`../cbt-toolkit-brain/02_Engineering/Plans/superpowers/plans/`**
+- Design specs live in **`../cbt-toolkit-brain/02_Engineering/Plans/superpowers/specs/`**
 - `docs/superpowers/` in this repo is gitignored — do NOT commit plans/specs here
 
 ## Git conventions
