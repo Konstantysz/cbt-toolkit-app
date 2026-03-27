@@ -45,5 +45,8 @@ yarn-error.*
 # Claude Code local settings
 .claude/settings.local.json
 
+# Planning artifacts (live in cbt-toolkit-brain/02_Engineering/Plans/superpowers/)
+docs/superpowers/
+
 # IDE
 .idea/
