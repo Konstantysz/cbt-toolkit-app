@@ -31,6 +31,11 @@ Modular plugin system — see vault's 02_Engineering/Architecture.md
 - Commit messages: **single line only**, no body, no blank lines
 - Format: `type: short description` (e.g. `feat: add login screen`)
 
+## Git workflow
+- Feature branches → PR → `develop`
+- `develop` → PR → `main` (release stabilization)
+- Tags / GitHub Releases are cut from `main` only
+
 ## Key commands
 - `/resume` — load session context from vault
 - `/wrap-up` — save session state to vault
