@@ -14,11 +14,31 @@ export default function CreditsScreen() {
 
   const s = StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.bg },
-    header: { flexDirection: 'row', alignItems: 'center', paddingTop: 56, paddingHorizontal: spacing.md, paddingBottom: spacing.md },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingTop: 56,
+      paddingHorizontal: spacing.md,
+      paddingBottom: spacing.md,
+    },
     backText: { fontSize: fs(16), color: colors.accent, marginRight: spacing.sm },
     headerTitle: { fontSize: fs(20), fontWeight: '700', color: colors.text },
-    card: { margin: spacing.md, backgroundColor: colors.surface, borderRadius: radius.md, borderWidth: 1, borderColor: colors.border, padding: spacing.md },
-    sectionTitle: { fontSize: fs(12), fontWeight: '700', color: colors.accent, marginBottom: spacing.xs, textTransform: 'uppercase', letterSpacing: 0.5 },
+    card: {
+      margin: spacing.md,
+      backgroundColor: colors.surface,
+      borderRadius: radius.md,
+      borderWidth: 1,
+      borderColor: colors.border,
+      padding: spacing.md,
+    },
+    sectionTitle: {
+      fontSize: fs(12),
+      fontWeight: '700',
+      color: colors.accent,
+      marginBottom: spacing.xs,
+      textTransform: 'uppercase',
+      letterSpacing: 0.5,
+    },
     body: { fontSize: fs(14), color: colors.text, lineHeight: 22 },
     divider: { height: 1, backgroundColor: colors.border, marginVertical: spacing.md },
     packageRow: { flexDirection: 'row', marginBottom: spacing.xs },
@@ -46,9 +66,8 @@ export default function CreditsScreen() {
       <View style={s.card}>
         <Text style={s.sectionTitle}>Autorzy</Text>
         <Text style={s.body}>
-          Aplikacja Zestaw Narzędzi TPB jest projektem open-source stworzonym z myślą
-          o osobach korzystających z terapii poznawczo-behawioralnej. Kod źródłowy
-          dostępny na GitHub.
+          Aplikacja Zestaw Narzędzi TPB jest projektem open-source stworzonym z myślą o osobach
+          korzystających z terapii poznawczo-behawioralnej. Kod źródłowy dostępny na GitHub.
         </Text>
         <View style={s.divider} />
         <Text style={s.sectionTitle}>Biblioteki open-source</Text>

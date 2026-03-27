@@ -37,8 +37,16 @@ export default function SettingsScreen() {
   const router = useRouter();
   const colors = useColors();
   const {
-    reminderEnabled, reminderTime, fontSize, reducedMotion, highContrast,
-    setReminderEnabled, setReminderTime, setFontSize, setReducedMotion, setHighContrast,
+    reminderEnabled,
+    reminderTime,
+    fontSize,
+    reducedMotion,
+    highContrast,
+    setReminderEnabled,
+    setReminderTime,
+    setFontSize,
+    setReducedMotion,
+    setHighContrast,
   } = useSettings();
 
   const [showTimePicker, setShowTimePicker] = useState(false);
@@ -64,14 +72,13 @@ export default function SettingsScreen() {
     if (value) {
       const granted = await requestPermissions();
       if (!granted) {
-        Alert.alert(
-          pl.settings.notifications.permissionDenied,
-          '',
-          [
-            { text: pl.common.cancel, style: 'cancel' },
-            { text: pl.settings.notifications.permissionDeniedBtn, onPress: () => Linking.openSettings() },
-          ]
-        );
+        Alert.alert(pl.settings.notifications.permissionDenied, '', [
+          { text: pl.common.cancel, style: 'cancel' },
+          {
+            text: pl.settings.notifications.permissionDeniedBtn,
+            onPress: () => Linking.openSettings(),
+          },
+        ]);
         return;
       }
       await scheduleReminder(reminderTime);
@@ -130,32 +137,50 @@ export default function SettingsScreen() {
   }
 
   function handleDeleteAll() {
-    Alert.alert(
-      pl.settings.data.deleteConfirmTitle,
-      pl.settings.data.deleteConfirmMsg,
-      [
-        { text: pl.common.cancel, style: 'cancel' },
-        {
-          text: pl.common.delete,
-          style: 'destructive',
-          onPress: async () => {
-            await ThoughtRecordRepo.deleteAll(db);
-            await ExperimentRepo.deleteAll(db);
-            Alert.alert('Gotowe', 'Wszystkie dane zostały usunięte.');
-          },
+    Alert.alert(pl.settings.data.deleteConfirmTitle, pl.settings.data.deleteConfirmMsg, [
+      { text: pl.common.cancel, style: 'cancel' },
+      {
+        text: pl.common.delete,
+        style: 'destructive',
+        onPress: async () => {
+          await ThoughtRecordRepo.deleteAll(db);
+          await ExperimentRepo.deleteAll(db);
+          Alert.alert('Gotowe', 'Wszystkie dane zostały usunięte.');
         },
-      ]
-    );
+      },
+    ]);
   }
 
   const s = StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.bg },
     header: { paddingTop: 56, paddingHorizontal: spacing.md, paddingBottom: spacing.sm },
     headerTitle: { fontSize: fs(22), fontWeight: '700', color: colors.text },
-    sectionHeader: { paddingHorizontal: spacing.md, paddingTop: spacing.lg, paddingBottom: spacing.xs },
-    sectionTitle: { fontSize: fs(11), fontWeight: '600', color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 0.8 },
-    card: { marginHorizontal: spacing.md, backgroundColor: colors.surface, borderRadius: radius.md, borderWidth: 1, borderColor: colors.border, overflow: 'hidden' },
-    row: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.md, paddingVertical: 14 },
+    sectionHeader: {
+      paddingHorizontal: spacing.md,
+      paddingTop: spacing.lg,
+      paddingBottom: spacing.xs,
+    },
+    sectionTitle: {
+      fontSize: fs(11),
+      fontWeight: '600',
+      color: colors.textMuted,
+      textTransform: 'uppercase',
+      letterSpacing: 0.8,
+    },
+    card: {
+      marginHorizontal: spacing.md,
+      backgroundColor: colors.surface,
+      borderRadius: radius.md,
+      borderWidth: 1,
+      borderColor: colors.border,
+      overflow: 'hidden',
+    },
+    row: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: spacing.md,
+      paddingVertical: 14,
+    },
     rowBorder: { borderTopWidth: 1, borderTopColor: colors.border },
     rowLabel: { flex: 1 },
     rowLabelText: { fontSize: fs(15), color: colors.text, fontWeight: '500' },
@@ -164,7 +189,16 @@ export default function SettingsScreen() {
     chevron: { fontSize: 18, color: colors.textDim },
     dangerText: { fontSize: fs(15), color: colors.danger, fontWeight: '500' },
     fontSelector: { flexDirection: 'row', gap: spacing.xs },
-    fontOption: { width: 36, height: 36, borderRadius: radius.sm, backgroundColor: colors.surfaceRaised, borderWidth: 1, borderColor: colors.border, alignItems: 'center', justifyContent: 'center' },
+    fontOption: {
+      width: 36,
+      height: 36,
+      borderRadius: radius.sm,
+      backgroundColor: colors.surfaceRaised,
+      borderWidth: 1,
+      borderColor: colors.border,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
     fontOptionActive: { backgroundColor: colors.accentDim, borderColor: colors.accent },
     fontOptionText: { color: colors.textMuted, fontWeight: '600' },
     fontOptionTextActive: { color: colors.accent },
@@ -203,7 +237,13 @@ export default function SettingsScreen() {
           />
         </View>
         {reminderEnabled && (
-          <TouchableOpacity style={[s.row, s.rowBorder]} onPress={() => { setTempTime(reminderTime); setShowTimePicker(true); }}>
+          <TouchableOpacity
+            style={[s.row, s.rowBorder]}
+            onPress={() => {
+              setTempTime(reminderTime);
+              setShowTimePicker(true);
+            }}
+          >
             <View style={s.rowLabel}>
               <Text style={s.rowLabelText}>{pl.settings.notifications.time}</Text>
             </View>
@@ -229,7 +269,13 @@ export default function SettingsScreen() {
                 style={[s.fontOption, fontSize === key && s.fontOptionActive]}
                 onPress={() => setFontSize(key)}
               >
-                <Text style={[s.fontOptionText, { fontSize: size }, fontSize === key && s.fontOptionTextActive]}>
+                <Text
+                  style={[
+                    s.fontOptionText,
+                    { fontSize: size },
+                    fontSize === key && s.fontOptionTextActive,
+                  ]}
+                >
                   {label}
                 </Text>
               </TouchableOpacity>
@@ -241,14 +287,24 @@ export default function SettingsScreen() {
             <Text style={s.rowLabelText}>{pl.settings.accessibility.reducedMotion}</Text>
             <Text style={s.rowSubText}>{pl.settings.accessibility.reducedMotionSub}</Text>
           </View>
-          <Switch value={reducedMotion} onValueChange={setReducedMotion} trackColor={{ false: colors.border, true: colors.accent }} thumbColor={colors.text} />
+          <Switch
+            value={reducedMotion}
+            onValueChange={setReducedMotion}
+            trackColor={{ false: colors.border, true: colors.accent }}
+            thumbColor={colors.text}
+          />
         </View>
         <View style={[s.row, s.rowBorder]}>
           <View style={s.rowLabel}>
             <Text style={s.rowLabelText}>{pl.settings.accessibility.highContrast}</Text>
             <Text style={s.rowSubText}>{pl.settings.accessibility.highContrastSub}</Text>
           </View>
-          <Switch value={highContrast} onValueChange={setHighContrast} trackColor={{ false: colors.border, true: colors.accent }} thumbColor={colors.text} />
+          <Switch
+            value={highContrast}
+            onValueChange={setHighContrast}
+            trackColor={{ false: colors.border, true: colors.accent }}
+            thumbColor={colors.text}
+          />
         </View>
       </View>
 
@@ -291,14 +347,20 @@ export default function SettingsScreen() {
           </View>
           <Text style={s.chevron}>›</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[s.row, s.rowBorder]} onPress={() => Linking.openURL('tel:116111')}>
+        <TouchableOpacity
+          style={[s.row, s.rowBorder]}
+          onPress={() => Linking.openURL('tel:116111')}
+        >
           <View style={s.rowLabel}>
             <Text style={s.rowLabelText}>{pl.settings.resources.children}</Text>
             <Text style={s.rowSubText}>116 111</Text>
           </View>
           <Text style={s.chevron}>›</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[s.row, s.rowBorder]} onPress={() => Linking.openURL('https://centrumwsparcia.pl')}>
+        <TouchableOpacity
+          style={[s.row, s.rowBorder]}
+          onPress={() => Linking.openURL('https://centrumwsparcia.pl')}
+        >
           <View style={s.rowLabel}>
             <Text style={s.rowLabelText}>{pl.settings.resources.centrum}</Text>
             <Text style={s.rowSubText}>centrumwsparcia.pl</Text>
@@ -316,26 +378,38 @@ export default function SettingsScreen() {
           <Text style={s.appName}>{pl.app.title}</Text>
           <Text style={s.appVersion}>v{Constants.expoConfig?.version ?? '—'}</Text>
         </View>
-        <TouchableOpacity style={[s.row, s.rowBorder]} onPress={() => router.push('/settings/credits')}>
+        <TouchableOpacity
+          style={[s.row, s.rowBorder]}
+          onPress={() => router.push('/settings/credits')}
+        >
           <View style={s.rowLabel}>
             <Text style={s.rowLabelText}>{pl.settings.about.credits}</Text>
           </View>
           <Text style={s.chevron}>›</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[s.row, s.rowBorder]} onPress={() => router.push('/settings/bibliography')}>
+        <TouchableOpacity
+          style={[s.row, s.rowBorder]}
+          onPress={() => router.push('/settings/bibliography')}
+        >
           <View style={s.rowLabel}>
             <Text style={s.rowLabelText}>{pl.settings.about.bibliography}</Text>
           </View>
           <Text style={s.chevron}>›</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[s.row, s.rowBorder]} onPress={() => Linking.openURL(GITHUB_RELEASES)}>
+        <TouchableOpacity
+          style={[s.row, s.rowBorder]}
+          onPress={() => Linking.openURL(GITHUB_RELEASES)}
+        >
           <View style={s.rowLabel}>
             <Text style={s.rowLabelText}>{pl.settings.about.changelog}</Text>
             <Text style={s.rowSubText}>{pl.settings.about.changelogSub}</Text>
           </View>
           <Text style={s.chevron}>›</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[s.row, s.rowBorder]} onPress={() => Linking.openURL(GITHUB_ISSUES)}>
+        <TouchableOpacity
+          style={[s.row, s.rowBorder]}
+          onPress={() => Linking.openURL(GITHUB_ISSUES)}
+        >
           <View style={s.rowLabel}>
             <Text style={s.rowLabelText}>{pl.settings.about.report}</Text>
           </View>
@@ -347,7 +421,13 @@ export default function SettingsScreen() {
       {Platform.OS === 'ios' ? (
         <Modal visible={showTimePicker} transparent animationType="slide">
           <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' }}>
-            <View style={{ backgroundColor: colors.surface, padding: spacing.md, borderRadius: radius.lg }}>
+            <View
+              style={{
+                backgroundColor: colors.surface,
+                padding: spacing.md,
+                borderRadius: radius.lg,
+              }}
+            >
               <DateTimePicker
                 value={tempDate}
                 mode="time"

@@ -28,9 +28,7 @@ beforeEach(() => jest.clearAllMocks());
 const validFile = {
   version: 1,
   exportedAt: '2026-01-01T00:00:00.000Z',
-  thoughtRecords: [
-    { id: 'tr1', situation: 'Sytuacja', createdAt: '2026-01-01T00:00:00.000Z' },
-  ],
+  thoughtRecords: [{ id: 'tr1', situation: 'Sytuacja', createdAt: '2026-01-01T00:00:00.000Z' }],
   behavioralExperiments: [
     { id: 'be1', belief: 'Przekonanie', createdAt: '2026-01-01T00:00:00.000Z' },
   ],
@@ -60,12 +58,18 @@ describe('validateExportFile', () => {
   });
 
   it('rejects thought record missing id', () => {
-    const bad = { ...validFile, thoughtRecords: [{ situation: 'x', createdAt: '2026-01-01T00:00:00.000Z' }] };
+    const bad = {
+      ...validFile,
+      thoughtRecords: [{ situation: 'x', createdAt: '2026-01-01T00:00:00.000Z' }],
+    };
     expect(validateExportFile(bad)).not.toBeNull();
   });
 
   it('rejects experiment missing belief', () => {
-    const bad = { ...validFile, behavioralExperiments: [{ id: 'x', createdAt: '2026-01-01T00:00:00.000Z' }] };
+    const bad = {
+      ...validFile,
+      behavioralExperiments: [{ id: 'x', createdAt: '2026-01-01T00:00:00.000Z' }],
+    };
     expect(validateExportFile(bad)).not.toBeNull();
   });
 
@@ -73,7 +77,9 @@ describe('validateExportFile', () => {
     const big = {
       ...validFile,
       thoughtRecords: Array.from({ length: 5001 }, (_, i) => ({
-        id: `tr${i}`, situation: 'x', createdAt: '2026-01-01T00:00:00.000Z',
+        id: `tr${i}`,
+        situation: 'x',
+        createdAt: '2026-01-01T00:00:00.000Z',
       })),
     };
     expect(validateExportFile(big)).not.toBeNull();
@@ -82,9 +88,7 @@ describe('validateExportFile', () => {
 
 describe('importData', () => {
   it('inserts records and returns imported/skipped counts', async () => {
-    (FileSystem.readAsStringAsync as jest.Mock).mockResolvedValueOnce(
-      JSON.stringify(validFile)
-    );
+    (FileSystem.readAsStringAsync as jest.Mock).mockResolvedValueOnce(JSON.stringify(validFile));
 
     const result = await importData(mockDb, 'file:///test.json');
 
@@ -98,9 +102,7 @@ describe('importData', () => {
   });
 
   it('skips records with duplicate ids', async () => {
-    (FileSystem.readAsStringAsync as jest.Mock).mockResolvedValueOnce(
-      JSON.stringify(validFile)
-    );
+    (FileSystem.readAsStringAsync as jest.Mock).mockResolvedValueOnce(JSON.stringify(validFile));
     (mockDb.getFirstAsync as jest.Mock).mockResolvedValue({ id: 'exists' });
 
     const result = await importData(mockDb, 'file:///test.json');
@@ -115,11 +117,7 @@ describe('importData', () => {
 
   it('throws with human-readable Polish message on validation failure', async () => {
     const invalidFile = { version: 99, thoughtRecords: [], behavioralExperiments: [] };
-    (FileSystem.readAsStringAsync as jest.Mock).mockResolvedValueOnce(
-      JSON.stringify(invalidFile)
-    );
-    await expect(importData(mockDb, 'file:///bad.json')).rejects.toThrow(
-      'Nieznana wersja pliku'
-    );
+    (FileSystem.readAsStringAsync as jest.Mock).mockResolvedValueOnce(JSON.stringify(invalidFile));
+    await expect(importData(mockDb, 'file:///bad.json')).rejects.toThrow('Nieznana wersja pliku');
   });
 });

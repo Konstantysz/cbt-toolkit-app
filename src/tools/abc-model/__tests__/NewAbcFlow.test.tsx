@@ -19,8 +19,13 @@ jest.mock('expo-sqlite', () => ({
 
 const baseEntry: AbcEntry = {
   id: 'new-id',
-  situation: '', thoughts: '', behaviors: '', emotions: '',
-  physicalSymptoms: '', isComplete: false, isExample: false,
+  situation: '',
+  thoughts: '',
+  behaviors: '',
+  emotions: '',
+  physicalSymptoms: '',
+  isComplete: false,
+  isExample: false,
   currentStep: 1,
   createdAt: '2026-01-01T00:00:00.000Z',
   updatedAt: '2026-01-01T00:00:00.000Z',
@@ -52,7 +57,8 @@ describe('NewAbcFlow — new mode', () => {
     });
 
     expect(repo.updateEntry).toHaveBeenCalledWith(
-      mockDb, 'new-id',
+      mockDb,
+      'new-id',
       expect.objectContaining({ isComplete: false, currentStep: 1 })
     );
     expect(getByText('Co zrobiłeś?')).toBeTruthy();
@@ -66,12 +72,17 @@ describe('NewAbcFlow — new mode', () => {
     await act(async () => {});
 
     // advance to step 2
-    await act(async () => { fireEvent.press(getByText('Dalej')); });
+    await act(async () => {
+      fireEvent.press(getByText('Dalej'));
+    });
 
-    await act(async () => { fireEvent.press(getByText('Zapisz')); });
+    await act(async () => {
+      fireEvent.press(getByText('Zapisz'));
+    });
 
     expect(repo.updateEntry).toHaveBeenLastCalledWith(
-      mockDb, 'new-id',
+      mockDb,
+      'new-id',
       expect.objectContaining({ isComplete: true, currentStep: 2 })
     );
   });

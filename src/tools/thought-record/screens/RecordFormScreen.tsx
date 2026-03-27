@@ -1,8 +1,13 @@
 // src/tools/thought-record/screens/RecordFormScreen.tsx
 import React, { useRef, useCallback, useState } from 'react';
 import {
-  ActivityIndicator, Alert, ScrollView, StyleSheet,
-  Text, TouchableOpacity, View,
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
@@ -13,7 +18,9 @@ import { useThoughtRecord } from '../hooks/useThoughtRecords';
 import { pl } from '../i18n/pl';
 import type { Emotion } from '../types';
 
-interface Props { id: string; }
+interface Props {
+  id: string;
+}
 
 export function RecordFormScreen({ id }: Props): React.JSX.Element {
   const db = useSQLiteContext();
@@ -66,12 +73,11 @@ export function RecordFormScreen({ id }: Props): React.JSX.Element {
     );
   }
 
-  const emotionsBefore = record.emotions.filter(e => e.intensityBefore !== undefined);
-  const emotionsAfter = record.emotions.filter(e => e.intensityAfter !== undefined);
+  const emotionsBefore = record.emotions.filter((e) => e.intensityBefore !== undefined);
+  const emotionsAfter = record.emotions.filter((e) => e.intensityAfter !== undefined);
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.scroll}>
-
       {/* Formularz — ref do capture PNG */}
       <View ref={formRef} style={styles.form} collapsable={false}>
         <Text style={styles.formTitle}>{pl.form.title}</Text>
@@ -82,14 +88,17 @@ export function RecordFormScreen({ id }: Props): React.JSX.Element {
         </FormSection>
 
         <FormSection label={pl.form.sections.emotionsBefore}>
-          {emotionsBefore.length === 0
-            ? <Text style={styles.fieldText}>—</Text>
-            : emotionsBefore.map(em => (
+          {emotionsBefore.length === 0 ? (
+            <Text style={styles.fieldText}>—</Text>
+          ) : (
+            emotionsBefore.map((em) => (
               <Text key={em.name} style={styles.fieldText}>
-                {em.name}{'  '}{em.intensityBefore}%
+                {em.name}
+                {'  '}
+                {em.intensityBefore}%
               </Text>
             ))
-          }
+          )}
         </FormSection>
 
         {/* 3-column row */}
@@ -113,14 +122,17 @@ export function RecordFormScreen({ id }: Props): React.JSX.Element {
         </FormSection>
 
         <FormSection label={pl.form.sections.emotionsAfter} last>
-          {emotionsAfter.length === 0
-            ? <Text style={styles.fieldText}>—</Text>
-            : emotionsAfter.map(em => (
+          {emotionsAfter.length === 0 ? (
+            <Text style={styles.fieldText}>—</Text>
+          ) : (
+            emotionsAfter.map((em) => (
               <Text key={em.name} style={styles.fieldText}>
-                {em.name}{'  '}{em.intensityAfter}%
+                {em.name}
+                {'  '}
+                {em.intensityAfter}%
               </Text>
             ))
-          }
+          )}
         </FormSection>
       </View>
 
@@ -132,10 +144,11 @@ export function RecordFormScreen({ id }: Props): React.JSX.Element {
           activeOpacity={0.8}
           disabled={isExporting}
         >
-          {isExporting
-            ? <ActivityIndicator color={colors.accent} size="small" />
-            : <Text style={styles.exportBtnText}>{pl.form.export.pdf}</Text>
-          }
+          {isExporting ? (
+            <ActivityIndicator color={colors.accent} size="small" />
+          ) : (
+            <Text style={styles.exportBtnText}>{pl.form.export.pdf}</Text>
+          )}
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.exportBtn, isExporting && styles.exportBtnDisabled]}
@@ -143,18 +156,26 @@ export function RecordFormScreen({ id }: Props): React.JSX.Element {
           activeOpacity={0.8}
           disabled={isExporting}
         >
-          {isExporting
-            ? <ActivityIndicator color={colors.accent} size="small" />
-            : <Text style={styles.exportBtnText}>{pl.form.export.png}</Text>
-          }
+          {isExporting ? (
+            <ActivityIndicator color={colors.accent} size="small" />
+          ) : (
+            <Text style={styles.exportBtnText}>{pl.form.export.png}</Text>
+          )}
         </TouchableOpacity>
       </View>
-
     </ScrollView>
   );
 }
 
-function FormSection({ label, children, last }: { label: string; children: React.ReactNode; last?: boolean }) {
+function FormSection({
+  label,
+  children,
+  last,
+}: {
+  label: string;
+  children: React.ReactNode;
+  last?: boolean;
+}) {
   return (
     <View style={[styles.section, last && styles.sectionLast]}>
       <Text style={styles.sectionLabel}>{label}</Text>
@@ -173,15 +194,17 @@ function buildHtml(record: {
 }): string {
   const accent = colors.accent;
 
-  const emotionsBefore = record.emotions
-    .filter(e => e.intensityBefore !== undefined)
-    .map(e => `${escapeHtml(e.name)} ${e.intensityBefore}%`)
-    .join('<br>') || '—';
+  const emotionsBefore =
+    record.emotions
+      .filter((e) => e.intensityBefore !== undefined)
+      .map((e) => `${escapeHtml(e.name)} ${e.intensityBefore}%`)
+      .join('<br>') || '—';
 
-  const emotionsAfter = record.emotions
-    .filter(e => e.intensityAfter !== undefined)
-    .map(e => `${escapeHtml(e.name)} ${e.intensityAfter}%`)
-    .join('<br>') || '—';
+  const emotionsAfter =
+    record.emotions
+      .filter((e) => e.intensityAfter !== undefined)
+      .map((e) => `${escapeHtml(e.name)} ${e.intensityAfter}%`)
+      .join('<br>') || '—';
 
   return `<!DOCTYPE html>
 <html lang="pl">
@@ -257,13 +280,35 @@ const styles = StyleSheet.create({
   missing: { color: colors.textMuted, fontStyle: 'italic' },
   scroll: { padding: 16, paddingBottom: 40 },
 
-  form: { backgroundColor: colors.surface, borderRadius: 12, overflow: 'hidden', borderWidth: 1, borderColor: colors.border },
-  formTitle: { fontSize: 14, color: colors.text, fontWeight: '600', letterSpacing: 1.5, textTransform: 'uppercase', textAlign: 'center', padding: 16, paddingBottom: 12 },
+  form: {
+    backgroundColor: colors.surface,
+    borderRadius: 12,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  formTitle: {
+    fontSize: 14,
+    color: colors.text,
+    fontWeight: '600',
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+    textAlign: 'center',
+    padding: 16,
+    paddingBottom: 12,
+  },
   accentLine: { height: 1, backgroundColor: colors.accent, marginHorizontal: 0, marginBottom: 0 },
 
   section: { padding: 14, borderBottomWidth: 1, borderBottomColor: colors.border },
   sectionLast: { borderBottomWidth: 0 },
-  sectionLabel: { fontSize: 9, color: colors.accent, textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 6, fontWeight: '600' },
+  sectionLabel: {
+    fontSize: 9,
+    color: colors.accent,
+    textTransform: 'uppercase',
+    letterSpacing: 1.5,
+    marginBottom: 6,
+    fontWeight: '600',
+  },
   fieldText: { fontSize: 13, color: colors.text, lineHeight: 20 },
 
   threeCol: { flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: colors.border },
@@ -271,13 +316,25 @@ const styles = StyleSheet.create({
   colLeft: { borderRightWidth: 1, borderRightColor: colors.border },
   colMid: { borderRightWidth: 1, borderRightColor: colors.border },
   colRight: {},
-  colLabel: { fontSize: 9, color: colors.accent, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6, fontWeight: '600' },
+  colLabel: {
+    fontSize: 9,
+    color: colors.accent,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    marginBottom: 6,
+    fontWeight: '600',
+  },
   colText: { fontSize: 12, color: colors.text, lineHeight: 18 },
 
   exportRow: { flexDirection: 'row', gap: 10, marginTop: 20 },
   exportBtn: {
-    flex: 1, paddingVertical: 13, borderRadius: 12, alignItems: 'center',
-    borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface,
+    flex: 1,
+    paddingVertical: 13,
+    borderRadius: 12,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
   },
   exportBtnDisabled: { opacity: 0.5 },
   exportBtnText: { fontSize: 14, color: colors.textMuted },

@@ -11,4 +11,19 @@ module.exports = {
   },
   testMatch: ['**/__tests__/**/*.test.[jt]s?(x)'],
   testPathIgnorePatterns: ['/node_modules/', '<rootDir>/.worktrees/'],
+  collectCoverage: true,
+  coverageReporters: ['text-summary', 'lcov'],
+  coveragePathIgnorePatterns: [
+    '/node_modules/',
+    '/__mocks__/',
+    '<rootDir>/.worktrees/',
+  ],
+  coverageThreshold: {
+    global: {
+      statements: 65,
+      branches: 55,
+      functions: 58,
+      lines: 68,
+    },
+  },
 };

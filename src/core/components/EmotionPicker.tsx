@@ -4,26 +4,26 @@ import { colors } from '../theme';
 import type { Emotion } from '../types';
 
 export const PREDEFINED_EMOTIONS = [
-  { key: 'anxiety',        label: 'Niepokój',       negative: true },
-  { key: 'fear',           label: 'Lęk',            negative: true },
-  { key: 'sadness',        label: 'Smutek',         negative: true },
-  { key: 'anger',          label: 'Złość',          negative: true },
-  { key: 'guilt',          label: 'Poczucie winy',  negative: true },
-  { key: 'shame',          label: 'Wstyd',          negative: true },
-  { key: 'frustration',    label: 'Frustracja',     negative: true },
-  { key: 'helplessness',   label: 'Bezradność',     negative: true },
-  { key: 'loneliness',     label: 'Samotność',      negative: true },
-  { key: 'disappointment', label: 'Rozczarowanie',  negative: true },
-  { key: 'jealousy',       label: 'Zazdrość',       negative: true },
-  { key: 'disgust',        label: 'Obrzydzenie',    negative: true },
-  { key: 'joy',            label: 'Radość',         negative: false },
-  { key: 'relief',         label: 'Ulga',           negative: false },
-  { key: 'pride',          label: 'Duma',           negative: false },
-  { key: 'gratitude',      label: 'Wdzięczność',    negative: false },
-  { key: 'hope',           label: 'Nadzieja',       negative: false },
-  { key: 'excitement',     label: 'Ekscytacja',     negative: false },
-  { key: 'calm',           label: 'Spokój',         negative: false },
-  { key: 'satisfaction',   label: 'Satysfakcja',    negative: false },
+  { key: 'anxiety', label: 'Niepokój', negative: true },
+  { key: 'fear', label: 'Lęk', negative: true },
+  { key: 'sadness', label: 'Smutek', negative: true },
+  { key: 'anger', label: 'Złość', negative: true },
+  { key: 'guilt', label: 'Poczucie winy', negative: true },
+  { key: 'shame', label: 'Wstyd', negative: true },
+  { key: 'frustration', label: 'Frustracja', negative: true },
+  { key: 'helplessness', label: 'Bezradność', negative: true },
+  { key: 'loneliness', label: 'Samotność', negative: true },
+  { key: 'disappointment', label: 'Rozczarowanie', negative: true },
+  { key: 'jealousy', label: 'Zazdrość', negative: true },
+  { key: 'disgust', label: 'Obrzydzenie', negative: true },
+  { key: 'joy', label: 'Radość', negative: false },
+  { key: 'relief', label: 'Ulga', negative: false },
+  { key: 'pride', label: 'Duma', negative: false },
+  { key: 'gratitude', label: 'Wdzięczność', negative: false },
+  { key: 'hope', label: 'Nadzieja', negative: false },
+  { key: 'excitement', label: 'Ekscytacja', negative: false },
+  { key: 'calm', label: 'Spokój', negative: false },
+  { key: 'satisfaction', label: 'Satysfakcja', negative: false },
 ] as const;
 
 interface Props {
@@ -32,11 +32,11 @@ interface Props {
 }
 
 export function EmotionPicker({ selected, onChange }: Props) {
-  const selectedNames = new Set(selected.map(e => e.name));
+  const selectedNames = new Set(selected.map((e) => e.name));
 
   function toggle(label: string) {
     if (selectedNames.has(label)) {
-      onChange(selected.filter(e => e.name !== label));
+      onChange(selected.filter((e) => e.name !== label));
     } else {
       onChange([...selected, { name: label, intensityBefore: 50 }]);
     }
@@ -44,7 +44,7 @@ export function EmotionPicker({ selected, onChange }: Props) {
 
   return (
     <View style={styles.grid}>
-      {PREDEFINED_EMOTIONS.map(em => {
+      {PREDEFINED_EMOTIONS.map((em) => {
         const isSelected = selectedNames.has(em.label);
         return (
           <TouchableOpacity
@@ -53,9 +53,7 @@ export function EmotionPicker({ selected, onChange }: Props) {
             onPress={() => toggle(em.label)}
             activeOpacity={0.7}
           >
-            <Text style={[styles.chipText, isSelected && styles.chipTextSelected]}>
-              {em.label}
-            </Text>
+            <Text style={[styles.chipText, isSelected && styles.chipTextSelected]}>{em.label}</Text>
           </TouchableOpacity>
         );
       })}

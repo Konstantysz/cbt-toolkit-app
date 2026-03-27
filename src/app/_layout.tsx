@@ -18,7 +18,14 @@ async function onInit(db: import('expo-sqlite').SQLiteDatabase) {
 
 function DbLoading() {
   return (
-    <View style={{ flex: 1, backgroundColor: colors.bg, alignItems: 'center', justifyContent: 'center' }}>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: colors.bg,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
       <ActivityIndicator color={colors.accent} />
     </View>
   );
@@ -35,36 +42,40 @@ export default function RootLayout(): React.JSX.Element {
 
   return (
     <SafeAreaProvider>
-    <Suspense fallback={<DbLoading />}>
-      <SQLiteProvider databaseName="cbt-toolkit.db" onInit={onInit}>
-        <Tabs
-          screenOptions={{
-            headerShown: false,
-            tabBarStyle: { backgroundColor: colors.surface, borderTopColor: colors.border },
-            tabBarActiveTintColor: colors.accent,
-            tabBarInactiveTintColor: colors.textDim,
-          }}
-        >
-          <Tabs.Screen
-            name="index"
-            options={{
-              title: pl.nav.home,
-              tabBarIcon: ({ color, size }) => <Ionicons name="grid-outline" size={size} color={color} />,
+      <Suspense fallback={<DbLoading />}>
+        <SQLiteProvider databaseName="cbt-toolkit.db" onInit={onInit}>
+          <Tabs
+            screenOptions={{
+              headerShown: false,
+              tabBarStyle: { backgroundColor: colors.surface, borderTopColor: colors.border },
+              tabBarActiveTintColor: colors.accent,
+              tabBarInactiveTintColor: colors.textDim,
             }}
-          />
-          <Tabs.Screen
-            name="settings"
-            options={{
-              title: pl.nav.settings,
-              tabBarIcon: ({ color, size }) => <Ionicons name="settings-outline" size={size} color={color} />,
-            }}
-          />
-          <Tabs.Screen name="(tools)/thought-record" options={{ href: null }} />
-          <Tabs.Screen name="(tools)/behavioral-experiment" options={{ href: null }} />
-          <Tabs.Screen name="(tools)/abc-model" options={{ href: null }} />
-        </Tabs>
-      </SQLiteProvider>
-    </Suspense>
+          >
+            <Tabs.Screen
+              name="index"
+              options={{
+                title: pl.nav.home,
+                tabBarIcon: ({ color, size }) => (
+                  <Ionicons name="grid-outline" size={size} color={color} />
+                ),
+              }}
+            />
+            <Tabs.Screen
+              name="settings"
+              options={{
+                title: pl.nav.settings,
+                tabBarIcon: ({ color, size }) => (
+                  <Ionicons name="settings-outline" size={size} color={color} />
+                ),
+              }}
+            />
+            <Tabs.Screen name="(tools)/thought-record" options={{ href: null }} />
+            <Tabs.Screen name="(tools)/behavioral-experiment" options={{ href: null }} />
+            <Tabs.Screen name="(tools)/abc-model" options={{ href: null }} />
+          </Tabs>
+        </SQLiteProvider>
+      </Suspense>
     </SafeAreaProvider>
   );
 }

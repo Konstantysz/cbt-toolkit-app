@@ -1,11 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router, useFocusEffect } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
@@ -25,7 +19,11 @@ export function AbcListScreen(): React.JSX.Element {
   const { entries, loading, refresh } = useAbcEntries(db);
   const [query, setQuery] = useState('');
 
-  useFocusEffect(useCallback(() => { refresh(); }, [refresh]));
+  useFocusEffect(
+    useCallback(() => {
+      refresh();
+    }, [refresh])
+  );
 
   useEffect(() => {
     if (entries.length > 0) return;
@@ -45,33 +43,54 @@ export function AbcListScreen(): React.JSX.Element {
   const filtered = useMemo(() => {
     if (!query) return entries;
     const q = query.toLowerCase();
-    return entries.filter(e => e.situation.toLowerCase().includes(q));
+    return entries.filter((e) => e.situation.toLowerCase().includes(q));
   }, [entries, query]);
 
-  const formatDate = useCallback((iso: string) =>
-    format(parseISO(iso), 'd MMM yyyy · HH:mm', { locale: dateFnsPl }), []);
+  const formatDate = useCallback(
+    (iso: string) => format(parseISO(iso), 'd MMM yyyy · HH:mm', { locale: dateFnsPl }),
+    []
+  );
 
-  const renderItem = useCallback(({ item }: { item: AbcEntry }) => (
-    <TouchableOpacity
-      style={styles.card}
-      onPress={() => router.push(`/(tools)/abc-model/${item.id}`)}
-      activeOpacity={0.8}
-    >
-      <View style={styles.cardTop}>
-        <Text style={styles.date}>{formatDate(item.createdAt)}</Text>
-        {item.isExample
-          ? <View style={[styles.badge, styles.badgeExample]}><Text style={[styles.badgeText, { color: colors.inProgress }]}>{pl.onboarding.badge}</Text></View>
-          : item.isComplete
-            ? <View style={[styles.badge, styles.badgeComplete]}><Text style={[styles.badgeText, { color: colors.success }]}>{pl.detail.complete}</Text></View>
-            : <View style={[styles.badge, styles.badgeInProgress]}><Text style={[styles.badgeText, { color: colors.inProgress }]}>{pl.detail.inProgress}</Text></View>
-        }
-      </View>
-      {item.situation
-        ? <Text style={styles.preview} numberOfLines={2}>{item.situation}</Text>
-        : <Text style={[styles.preview, styles.previewEmpty]}>Brak opisu sytuacji</Text>
-      }
-    </TouchableOpacity>
-  ), [formatDate]);
+  const renderItem = useCallback(
+    ({ item }: { item: AbcEntry }) => (
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() => router.push(`/(tools)/abc-model/${item.id}`)}
+        activeOpacity={0.8}
+      >
+        <View style={styles.cardTop}>
+          <Text style={styles.date}>{formatDate(item.createdAt)}</Text>
+          {item.isExample ? (
+            <View style={[styles.badge, styles.badgeExample]}>
+              <Text style={[styles.badgeText, { color: colors.inProgress }]}>
+                {pl.onboarding.badge}
+              </Text>
+            </View>
+          ) : item.isComplete ? (
+            <View style={[styles.badge, styles.badgeComplete]}>
+              <Text style={[styles.badgeText, { color: colors.success }]}>
+                {pl.detail.complete}
+              </Text>
+            </View>
+          ) : (
+            <View style={[styles.badge, styles.badgeInProgress]}>
+              <Text style={[styles.badgeText, { color: colors.inProgress }]}>
+                {pl.detail.inProgress}
+              </Text>
+            </View>
+          )}
+        </View>
+        {item.situation ? (
+          <Text style={styles.preview} numberOfLines={2}>
+            {item.situation}
+          </Text>
+        ) : (
+          <Text style={[styles.preview, styles.previewEmpty]}>Brak opisu sytuacji</Text>
+        )}
+      </TouchableOpacity>
+    ),
+    [formatDate]
+  );
 
   if (loading) return <View style={styles.container} />;
 
@@ -80,26 +99,23 @@ export function AbcListScreen(): React.JSX.Element {
 
   return (
     <View style={styles.container}>
-      <SearchBar
-        value={query}
-        onChangeText={setQuery}
-        placeholder={pl.list.searchPlaceholder}
-      />
+      <SearchBar value={query} onChangeText={setQuery} placeholder={pl.list.searchPlaceholder} />
       {showEmpty ? (
         <View style={styles.empty}>
           <Text style={styles.emptyIcon}>🧠</Text>
-          {showNoResults
-            ? <Text style={styles.emptyText}>{pl.list.noResults(query)}</Text>
-            : <>
-                <Text style={styles.emptyText}>{pl.list.empty}</Text>
-                <Text style={styles.emptySub}>{pl.list.emptySub}</Text>
-              </>
-          }
+          {showNoResults ? (
+            <Text style={styles.emptyText}>{pl.list.noResults(query)}</Text>
+          ) : (
+            <>
+              <Text style={styles.emptyText}>{pl.list.empty}</Text>
+              <Text style={styles.emptySub}>{pl.list.emptySub}</Text>
+            </>
+          )}
         </View>
       ) : (
         <FlatList
           data={filtered}
-          keyExtractor={item => item.id}
+          keyExtractor={(item) => item.id}
           renderItem={renderItem}
           contentContainerStyle={styles.list}
         />
@@ -126,13 +142,35 @@ const styles = StyleSheet.create({
     padding: 15,
     marginBottom: 10,
   },
-  cardTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
+  cardTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
   date: { fontSize: 11, color: colors.textMuted, letterSpacing: 0.5 },
-  badge: { paddingHorizontal: 7, paddingVertical: 3, borderRadius: 4, overflow: 'hidden', justifyContent: 'center', alignItems: 'center' },
-  badgeText: { fontSize: 10, letterSpacing: 0.8, textTransform: 'uppercase', includeFontPadding: false, lineHeight: 12 },
+  badge: {
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    borderRadius: 4,
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  badgeText: {
+    fontSize: 10,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+    includeFontPadding: false,
+    lineHeight: 12,
+  },
   badgeComplete: { backgroundColor: 'rgba(122,158,126,0.12)' },
   badgeInProgress: { backgroundColor: 'rgba(184,151,74,0.1)' },
-  badgeExample: { backgroundColor: 'rgba(184,151,74,0.12)', borderWidth: 1, borderColor: 'rgba(184,151,74,0.25)' },
+  badgeExample: {
+    backgroundColor: 'rgba(184,151,74,0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(184,151,74,0.25)',
+  },
   preview: { fontSize: 14, color: colors.text, lineHeight: 21 },
   previewEmpty: { color: colors.textDim, fontStyle: 'italic' },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 8, padding: 32 },
@@ -140,12 +178,19 @@ const styles = StyleSheet.create({
   emptyText: { fontSize: 18, color: colors.textMuted, fontStyle: 'italic' },
   emptySub: { fontSize: 13, color: colors.textDim, textAlign: 'center' },
   fab: {
-    position: 'absolute', bottom: 20, right: 20,
-    width: 52, height: 52, borderRadius: 16,
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    width: 52,
+    height: 52,
+    borderRadius: 16,
     backgroundColor: colors.accent,
-    alignItems: 'center', justifyContent: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
     elevation: 6,
-    shadowColor: colors.accent, shadowOpacity: 0.4, shadowRadius: 12,
+    shadowColor: colors.accent,
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
     shadowOffset: { width: 0, height: 4 },
   },
   fabText: { fontSize: 28, color: colors.bg, lineHeight: 32, fontWeight: '300' },

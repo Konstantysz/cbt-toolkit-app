@@ -35,7 +35,9 @@ test('sets loading=false after refresh completes', async () => {
   (repo.getExperiments as jest.Mock).mockResolvedValue([makeExperiment('1')]);
   const { result } = renderHook(() => useBehavioralExperiments(mockDb));
 
-  await act(async () => { await result.current.refresh(); });
+  await act(async () => {
+    await result.current.refresh();
+  });
 
   expect(result.current.loading).toBe(false);
   expect(result.current.experiments).toHaveLength(1);
@@ -46,19 +48,30 @@ test('keeps loading=false during refresh when experiments already present', asyn
 
   (repo.getExperiments as jest.Mock)
     .mockResolvedValueOnce([makeExperiment('1')])
-    .mockImplementationOnce(() => new Promise(r => { resolveRefresh = r; }));
+    .mockImplementationOnce(
+      () =>
+        new Promise((r) => {
+          resolveRefresh = r;
+        })
+    );
 
   const { result } = renderHook(() => useBehavioralExperiments(mockDb));
 
-  await act(async () => { await result.current.refresh(); });
+  await act(async () => {
+    await result.current.refresh();
+  });
   expect(result.current.experiments).toHaveLength(1);
   expect(result.current.loading).toBe(false);
 
   // Start slow second refresh — loading should stay false
-  act(() => { void result.current.refresh(); });
+  act(() => {
+    void result.current.refresh();
+  });
   expect(result.current.loading).toBe(false);
 
   // Resolve and verify still false
-  await act(async () => { resolveRefresh([makeExperiment('2')]); });
+  await act(async () => {
+    resolveRefresh([makeExperiment('2')]);
+  });
   expect(result.current.loading).toBe(false);
 });

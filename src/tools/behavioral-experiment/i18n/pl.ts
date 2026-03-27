@@ -56,7 +56,8 @@ export const pl = {
   step8: {
     title: 'Czego nauczył cię ten eksperyment?',
     hint: 'Opisz wnioski. Co to mówi o twoim pierwotnym przekonaniu?',
-    placeholder: 'Np. Moje przekonanie było błędne. Odmowa nie skończyła się żadnymi negatywnymi konsekwencjami...',
+    placeholder:
+      'Np. Moje przekonanie było błędne. Odmowa nie skończyła się żadnymi negatywnymi konsekwencjami...',
   },
   detail: {
     belief: 'Weryfikowana myśl',

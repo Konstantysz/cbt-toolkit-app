@@ -84,10 +84,15 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
         <View style={styles.metaRow}>
           <View style={styles.metaLeft}>
             <Text style={styles.headerDate}>{formattedDate}</Text>
-            {record.isComplete
-              ? <View style={[styles.badge, styles.badgeComplete]}><Text style={[styles.badgeText, { color: colors.success }]}>Kompletny</Text></View>
-              : <View style={[styles.badge, styles.badgeInProgress]}><Text style={[styles.badgeText, { color: colors.inProgress }]}>W toku</Text></View>
-            }
+            {record.isComplete ? (
+              <View style={[styles.badge, styles.badgeComplete]}>
+                <Text style={[styles.badgeText, { color: colors.success }]}>Kompletny</Text>
+              </View>
+            ) : (
+              <View style={[styles.badge, styles.badgeInProgress]}>
+                <Text style={[styles.badgeText, { color: colors.inProgress }]}>W toku</Text>
+              </View>
+            )}
           </View>
           <View style={styles.metaActions}>
             <TouchableOpacity
@@ -96,7 +101,12 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
               accessibilityLabel="Porównaj zapisy"
             >
               <View style={iconRow}>
-                <Ionicons name="layers-outline" size={14} color={colors.accent} accessible={false} />
+                <Ionicons
+                  name="layers-outline"
+                  size={14}
+                  color={colors.accent}
+                  accessible={false}
+                />
                 <Text style={styles.actionBtnText}>{pl.compare.btnLabel}</Text>
               </View>
             </TouchableOpacity>
@@ -106,7 +116,12 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
               accessibilityLabel="Formularz papierowy"
             >
               <View style={iconRow}>
-                <Ionicons name="document-outline" size={14} color={colors.accent} accessible={false} />
+                <Ionicons
+                  name="document-outline"
+                  size={14}
+                  color={colors.accent}
+                  accessible={false}
+                />
                 <Text style={styles.actionBtnText}>{pl.form.btn}</Text>
               </View>
             </TouchableOpacity>
@@ -120,9 +135,7 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
           {record.emotions.length === 0 ? (
             <Text style={styles.emptyField}>—</Text>
           ) : (
-            record.emotions.map(em => (
-              <EmotionRow key={em.name} emotion={em} />
-            ))
+            record.emotions.map((em) => <EmotionRow key={em.name} emotion={em} />)
           )}
         </View>
         <View style={styles.divider} />
@@ -181,7 +194,15 @@ function EmotionRow({ emotion }: { emotion: Emotion }) {
   );
 }
 
-function IntensityBar({ label, value, accent }: { label: string; value: number; accent?: boolean }) {
+function IntensityBar({
+  label,
+  value,
+  accent,
+}: {
+  label: string;
+  value: number;
+  accent?: boolean;
+}) {
   return (
     <View style={styles.ibarRow}>
       <Text style={styles.ibarLabel}>{label}</Text>
@@ -189,7 +210,10 @@ function IntensityBar({ label, value, accent }: { label: string; value: number; 
         <View
           style={[
             styles.ibarFill,
-            { width: `${value}%` as `${number}%`, backgroundColor: accent ? colors.accent : 'rgba(196,149,106,0.35)' },
+            {
+              width: `${value}%` as `${number}%`,
+              backgroundColor: accent ? colors.accent : 'rgba(196,149,106,0.35)',
+            },
           ]}
         />
       </View>
@@ -202,44 +226,98 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.bg },
   centered: { flex: 1, backgroundColor: colors.bg, alignItems: 'center', justifyContent: 'center' },
   scroll: { padding: 20 },
-  metaRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20, gap: 12 },
+  metaRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 20,
+    gap: 12,
+  },
   metaLeft: { flexDirection: 'column', gap: 5 },
   metaActions: { flexDirection: 'row', gap: 6, flexWrap: 'wrap', justifyContent: 'flex-end' },
   actionBtn: {
-    borderWidth: 1, borderColor: colors.border, borderRadius: 9,
-    paddingVertical: 6, paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 9,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
   },
   actionBtnText: { fontSize: 10, color: colors.textMuted, letterSpacing: 0.06 },
   headerDate: { fontSize: 12, color: colors.textMuted, letterSpacing: 0.5 },
-  badge: { paddingHorizontal: 7, paddingVertical: 3, borderRadius: 4, overflow: 'hidden', justifyContent: 'center', alignItems: 'center' },
-  badgeText: { fontSize: 10, letterSpacing: 0.8, textTransform: 'uppercase', includeFontPadding: false, lineHeight: 12 },
+  badge: {
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    borderRadius: 4,
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  badgeText: {
+    fontSize: 10,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+    includeFontPadding: false,
+    lineHeight: 12,
+  },
   badgeComplete: { backgroundColor: 'rgba(122,158,126,0.12)' },
   badgeInProgress: { backgroundColor: 'rgba(184,151,74,0.1)' },
   section: { marginBottom: 20 },
-  stepNum: { fontSize: 10, color: colors.textDim, letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 3 },
+  stepNum: {
+    fontSize: 10,
+    color: colors.textDim,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+    marginBottom: 3,
+  },
   stepTitle: { fontSize: 17, color: colors.accent, fontWeight: '500', marginBottom: 8 },
   bodyText: { fontSize: 14, color: colors.text, lineHeight: 23 },
   emptyField: { color: colors.textDim, fontStyle: 'italic' },
   divider: { height: 1, backgroundColor: colors.border, marginBottom: 20 },
-  emotionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 },
+  emotionRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 14,
+  },
   emotionNameRow: { flexDirection: 'row', alignItems: 'center', gap: 6, minWidth: 90 },
   emotionName: { fontSize: 13, color: colors.text },
   emotionDrop: { fontSize: 12, color: colors.success, fontWeight: '700' },
   intensityBars: { flex: 1 },
-  ibarRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4, justifyContent: 'flex-end' },
+  ibarRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 4,
+    justifyContent: 'flex-end',
+  },
   ibarLabel: { fontSize: 10, color: colors.textDim, width: 28, textAlign: 'right' },
-  ibarTrack: { width: 120, height: 6, backgroundColor: colors.border, borderRadius: 3, overflow: 'hidden' },
+  ibarTrack: {
+    width: 120,
+    height: 6,
+    backgroundColor: colors.border,
+    borderRadius: 3,
+    overflow: 'hidden',
+  },
   ibarFill: { height: '100%', borderRadius: 3 },
   ibarNum: { fontSize: 10, color: colors.textMuted },
   actionRow: { flexDirection: 'row', gap: 10, marginTop: 32 },
   editBtn: {
-    flex: 1, paddingVertical: 13, borderRadius: 12, alignItems: 'center',
-    borderWidth: 1, borderColor: colors.border,
+    flex: 1,
+    paddingVertical: 13,
+    borderRadius: 12,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   editBtnText: { fontSize: 14, color: colors.textMuted },
   deleteBtn: {
-    flex: 1, paddingVertical: 13, borderRadius: 12, alignItems: 'center',
-    backgroundColor: colors.dangerDim, borderWidth: 1, borderColor: 'rgba(196,96,90,0.22)',
+    flex: 1,
+    paddingVertical: 13,
+    borderRadius: 12,
+    alignItems: 'center',
+    backgroundColor: colors.dangerDim,
+    borderWidth: 1,
+    borderColor: 'rgba(196,96,90,0.22)',
   },
   deleteBtnText: { color: colors.danger, fontSize: 14 },
   errorText: { fontSize: 15, color: colors.textMuted },

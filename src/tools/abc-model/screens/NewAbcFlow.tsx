@@ -41,8 +41,12 @@ export function NewAbcFlow({ existingId }: Props): React.JSX.Element {
   const [step, setStep] = useState(1);
   const [saving, setSaving] = useState(false);
   const [state, setState] = useState<FlowState>({
-    entryId: null, situation: '', thoughts: '',
-    behaviors: '', emotions: '', physicalSymptoms: '',
+    entryId: null,
+    situation: '',
+    thoughts: '',
+    behaviors: '',
+    emotions: '',
+    physicalSymptoms: '',
   });
 
   const initialized = useRef(false);
@@ -66,13 +70,13 @@ export function NewAbcFlow({ existingId }: Props): React.JSX.Element {
         }
       } else {
         const entry: AbcEntry = await repo.createEntry(db);
-        setState(prev => ({ ...prev, entryId: entry.id }));
+        setState((prev) => ({ ...prev, entryId: entry.id }));
       }
     })();
   }, [db, existingId]);
 
   const update = useCallback((field: keyof Omit<FlowState, 'entryId'>, value: string) => {
-    setState(prev => ({ ...prev, [field]: value }));
+    setState((prev) => ({ ...prev, [field]: value }));
   }, []);
 
   const handleNext = useCallback(async () => {
@@ -121,7 +125,10 @@ export function NewAbcFlow({ existingId }: Props): React.JSX.Element {
   }
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
       <StepProgress currentStep={step} totalSteps={TOTAL_STEPS} />
       <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
         {step === 1 ? (
@@ -171,7 +178,7 @@ function Step1({
       <TextInput
         style={styles.input}
         value={state.situation}
-        onChangeText={v => update('situation', v)}
+        onChangeText={(v) => update('situation', v)}
         placeholder={pl.step1.situationPlaceholder}
         placeholderTextColor={colors.textDim}
         multiline
@@ -181,13 +188,17 @@ function Step1({
       <TextInput
         style={styles.input}
         value={state.thoughts}
-        onChangeText={v => update('thoughts', v)}
+        onChangeText={(v) => update('thoughts', v)}
         placeholder={pl.step1.thoughtsPlaceholder}
         placeholderTextColor={colors.textDim}
         multiline
         textAlignVertical="top"
       />
-      <StepHelper hint={pl.helper.step1Hint} toggleLabel={pl.helper.toggle} exampleLabel={pl.helper.exampleLabel} />
+      <StepHelper
+        hint={pl.helper.step1Hint}
+        toggleLabel={pl.helper.toggle}
+        exampleLabel={pl.helper.exampleLabel}
+      />
     </View>
   );
 }
@@ -205,7 +216,7 @@ function Step2({
       <TextInput
         style={styles.input}
         value={state.behaviors}
-        onChangeText={v => update('behaviors', v)}
+        onChangeText={(v) => update('behaviors', v)}
         placeholder={pl.step2.behaviorsPlaceholder}
         placeholderTextColor={colors.textDim}
         multiline
@@ -215,7 +226,7 @@ function Step2({
       <TextInput
         style={styles.input}
         value={state.emotions}
-        onChangeText={v => update('emotions', v)}
+        onChangeText={(v) => update('emotions', v)}
         placeholder={pl.step2.emotionsPlaceholder}
         placeholderTextColor={colors.textDim}
         multiline
@@ -225,13 +236,17 @@ function Step2({
       <TextInput
         style={styles.input}
         value={state.physicalSymptoms}
-        onChangeText={v => update('physicalSymptoms', v)}
+        onChangeText={(v) => update('physicalSymptoms', v)}
         placeholder={pl.step2.physicalPlaceholder}
         placeholderTextColor={colors.textDim}
         multiline
         textAlignVertical="top"
       />
-      <StepHelper hint={pl.helper.step2Hint} toggleLabel={pl.helper.toggle} exampleLabel={pl.helper.exampleLabel} />
+      <StepHelper
+        hint={pl.helper.step2Hint}
+        toggleLabel={pl.helper.toggle}
+        exampleLabel={pl.helper.exampleLabel}
+      />
     </View>
   );
 }
@@ -243,14 +258,21 @@ const styles = StyleSheet.create({
   fieldTitle: { fontSize: 17, color: colors.accent, fontWeight: '500', marginBottom: 10 },
   input: {
     backgroundColor: colors.surface,
-    borderWidth: 1, borderColor: colors.border, borderRadius: 12,
-    padding: 15, fontSize: 15, color: colors.text,
-    lineHeight: 24, minHeight: 80,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 12,
+    padding: 15,
+    fontSize: 15,
+    color: colors.text,
+    lineHeight: 24,
+    minHeight: 80,
   },
   footer: { padding: 16, paddingBottom: Platform.OS === 'ios' ? 32 : 16 },
   btn: {
-    backgroundColor: colors.accent, borderRadius: 14,
-    paddingVertical: 15, alignItems: 'center',
+    backgroundColor: colors.accent,
+    borderRadius: 14,
+    paddingVertical: 15,
+    alignItems: 'center',
   },
   btnDisabled: { opacity: 0.5 },
   btnText: { fontSize: 15, fontWeight: '600', color: colors.bg, letterSpacing: 0.02 },

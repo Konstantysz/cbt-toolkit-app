@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **CI/CD quality gates**
+  - CI now triggers on `push` to `main` in addition to PRs
+  - Jest coverage thresholds enforced: statements 65%, branches 55%, functions 58%, lines 68%
+  - Coverage report uploaded as CI artifact (14-day retention)
+  - Prettier added — `format:check` gate in CI, `format` script for local use
+  - CI split into 4 parallel jobs: Lint & Format, Typecheck, Tests & Coverage, Expo Export
+- **Pre-commit hook** (husky + lint-staged) — auto-runs `prettier --write` + `eslint --fix` on staged `src/**/*.{ts,tsx}` before every commit
+
 ---
 
 ## [v0.4.0]
