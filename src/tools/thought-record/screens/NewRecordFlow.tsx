@@ -46,8 +46,20 @@ function todayIso() {
 }
 
 const stepStyles = StyleSheet.create({
-  prompt: { fontSize: 15, color: colors.textMuted, lineHeight: 22, marginBottom: 12, fontStyle: 'italic' },
-  fieldLabel: { fontSize: 11, color: colors.textMuted, letterSpacing: 1.2, textTransform: 'uppercase', marginBottom: 8 },
+  prompt: {
+    fontSize: 15,
+    color: colors.textMuted,
+    lineHeight: 22,
+    marginBottom: 12,
+    fontStyle: 'italic',
+  },
+  fieldLabel: {
+    fontSize: 11,
+    color: colors.textMuted,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+    marginBottom: 8,
+  },
   errorText: { fontSize: 13, color: colors.danger, fontStyle: 'italic', marginBottom: 12 },
   dateRow: {
     flexDirection: 'row',
@@ -90,15 +102,12 @@ function Step1Situation({
       <TextStep
         prompt={pl.step1.prompt}
         value={state.situation}
-        onChange={v => update('situation', v)}
+        onChange={(v) => update('situation', v)}
         placeholder="Np. Kłótnia z partnerem o obowiązki domowe..."
         minHeight={150}
       />
       <StepHelper hint={pl.helper.hints.step1} />
-      <TouchableOpacity
-        style={stepStyles.dateRow}
-        onPress={() => setShowPicker(true)}
-      >
+      <TouchableOpacity style={stepStyles.dateRow} onPress={() => setShowPicker(true)}>
         <Text style={stepStyles.dateLabel}>{pl.step1.dateLabel}</Text>
         <Text style={stepStyles.dateValue}>{dateLabel}</Text>
       </TouchableOpacity>
@@ -134,22 +143,20 @@ function Step2Emotions({
       )}
       <EmotionPicker
         selected={state.emotions}
-        onChange={emotions => update('emotions', emotions)}
+        onChange={(emotions) => update('emotions', emotions)}
       />
       {state.emotions.length > 0 && (
         <View style={{ marginTop: 16 }}>
           <Text style={stepStyles.fieldLabel}>{pl.step2.intensityLabel}</Text>
-          {state.emotions.map(em => (
+          {state.emotions.map((em) => (
             <IntensitySlider
               key={em.name}
               label={em.name}
               value={em.intensityBefore}
-              onChange={v =>
+              onChange={(v) =>
                 update(
                   'emotions',
-                  state.emotions.map(e =>
-                    e.name === em.name ? { ...e, intensityBefore: v } : e
-                  )
+                  state.emotions.map((e) => (e.name === em.name ? { ...e, intensityBefore: v } : e))
                 )
               }
             />
@@ -170,17 +177,15 @@ function Step7Outcome({
   return (
     <View>
       <Text style={stepStyles.prompt}>{pl.step7.prompt}</Text>
-      {state.emotions.map(em => (
+      {state.emotions.map((em) => (
         <IntensitySlider
           key={em.name}
           label={em.name}
           value={em.intensityAfter ?? em.intensityBefore}
-          onChange={v =>
+          onChange={(v) =>
             update(
               'emotions',
-              state.emotions.map(e =>
-                e.name === em.name ? { ...e, intensityAfter: v } : e
-              )
+              state.emotions.map((e) => (e.name === em.name ? { ...e, intensityAfter: v } : e))
             )
           }
         />
@@ -190,7 +195,7 @@ function Step7Outcome({
         <TextInput
           style={[stepStyles.input, { minHeight: 90 }]}
           value={state.outcome}
-          onChangeText={v => update('outcome', v)}
+          onChangeText={(v) => update('outcome', v)}
           placeholder="Dodatkowe przemyślenia..."
           placeholderTextColor={colors.textDim}
           multiline
@@ -205,57 +210,65 @@ function renderStep(
   step: number,
   state: FlowState,
   update: <K extends keyof FlowState>(key: K, value: FlowState[K]) => void,
-  emotionsError: boolean,
+  emotionsError: boolean
 ): React.ReactNode {
   switch (step) {
-    case 1: return <Step1Situation state={state} update={update} />;
-    case 2: return <Step2Emotions state={state} update={update} error={emotionsError} />;
-    case 3: return (
-      <View>
-        <TextStep
-          prompt={pl.step3.prompt}
-          value={state.automaticThoughts}
-          onChange={v => update('automaticThoughts', v)}
-          placeholder="Np. Zaraz coś złego się stanie..."
-        />
-        <StepHelper hint={pl.helper.hints.step3} />
-      </View>
-    );
-    case 4: return (
-      <View>
-        <TextStep
-          prompt={pl.step4.prompt}
-          value={state.evidenceFor}
-          onChange={v => update('evidenceFor', v)}
-          placeholder="Np. Ostatnio popełniłem błąd..."
-        />
-        <StepHelper hint={pl.helper.hints.step4} />
-      </View>
-    );
-    case 5: return (
-      <View>
-        <TextStep
-          prompt={pl.step5.prompt}
-          value={state.evidenceAgainst}
-          onChange={v => update('evidenceAgainst', v)}
-          placeholder="Np. Przez ostatni rok radziłem sobie dobrze..."
-        />
-        <StepHelper hint={pl.helper.hints.step5} />
-      </View>
-    );
-    case 6: return (
-      <View>
-        <TextStep
-          prompt={pl.step6.prompt}
-          value={state.alternativeThought}
-          onChange={v => update('alternativeThought', v)}
-          placeholder="Np. Chociaż czuję niepokój, mam wiele dowodów..."
-        />
-        <StepHelper hint={pl.helper.hints.step6} />
-      </View>
-    );
-    case 7: return <Step7Outcome state={state} update={update} />;
-    default: return null;
+    case 1:
+      return <Step1Situation state={state} update={update} />;
+    case 2:
+      return <Step2Emotions state={state} update={update} error={emotionsError} />;
+    case 3:
+      return (
+        <View>
+          <TextStep
+            prompt={pl.step3.prompt}
+            value={state.automaticThoughts}
+            onChange={(v) => update('automaticThoughts', v)}
+            placeholder="Np. Zaraz coś złego się stanie..."
+          />
+          <StepHelper hint={pl.helper.hints.step3} />
+        </View>
+      );
+    case 4:
+      return (
+        <View>
+          <TextStep
+            prompt={pl.step4.prompt}
+            value={state.evidenceFor}
+            onChange={(v) => update('evidenceFor', v)}
+            placeholder="Np. Ostatnio popełniłem błąd..."
+          />
+          <StepHelper hint={pl.helper.hints.step4} />
+        </View>
+      );
+    case 5:
+      return (
+        <View>
+          <TextStep
+            prompt={pl.step5.prompt}
+            value={state.evidenceAgainst}
+            onChange={(v) => update('evidenceAgainst', v)}
+            placeholder="Np. Przez ostatni rok radziłem sobie dobrze..."
+          />
+          <StepHelper hint={pl.helper.hints.step5} />
+        </View>
+      );
+    case 6:
+      return (
+        <View>
+          <TextStep
+            prompt={pl.step6.prompt}
+            value={state.alternativeThought}
+            onChange={(v) => update('alternativeThought', v)}
+            placeholder="Np. Chociaż czuję niepokój, mam wiele dowodów..."
+          />
+          <StepHelper hint={pl.helper.hints.step6} />
+        </View>
+      );
+    case 7:
+      return <Step7Outcome state={state} update={update} />;
+    default:
+      return null;
   }
 }
 
@@ -285,33 +298,36 @@ export function NewRecordFlow({ existingId }: NewRecordFlowProps): React.JSX.Ele
   // Create the DB record on mount (new record only)
   useEffect(() => {
     if (existingId) return;
-    repo.createRecord(db).then(record => {
-      setState(s => ({ ...s, recordId: record.id }));
+    repo.createRecord(db).then((record) => {
+      setState((s) => ({ ...s, recordId: record.id }));
     });
   }, [db, existingId]);
 
   // Load existing record when editing
   useEffect(() => {
     if (!existingId) return;
-    repo.getRecordById(db, existingId).then(record => {
-      if (!record) return;
-      setState(prev => ({
-        ...prev,
-        recordId: existingId,
-        situation: record.situation,
-        situationDate: record.situationDate ?? todayIso(),
-        emotions: record.emotions,
-        automaticThoughts: record.automaticThoughts,
-        evidenceFor: record.evidenceFor,
-        evidenceAgainst: record.evidenceAgainst,
-        alternativeThought: record.alternativeThought,
-        outcome: record.outcome ?? '',
-      }));
-    }).finally(() => setEditLoading(false));
+    repo
+      .getRecordById(db, existingId)
+      .then((record) => {
+        if (!record) return;
+        setState((prev) => ({
+          ...prev,
+          recordId: existingId,
+          situation: record.situation,
+          situationDate: record.situationDate ?? todayIso(),
+          emotions: record.emotions,
+          automaticThoughts: record.automaticThoughts,
+          evidenceFor: record.evidenceFor,
+          evidenceAgainst: record.evidenceAgainst,
+          alternativeThought: record.alternativeThought,
+          outcome: record.outcome ?? '',
+        }));
+      })
+      .finally(() => setEditLoading(false));
   }, [existingId, db]);
 
   const update = useCallback(<K extends keyof FlowState>(key: K, value: FlowState[K]) => {
-    setState(s => ({ ...s, [key]: value }));
+    setState((s) => ({ ...s, [key]: value }));
   }, []);
 
   async function persistCurrentStep(step: number) {
@@ -354,7 +370,7 @@ export function NewRecordFlow({ existingId }: NewRecordFlowProps): React.JSX.Ele
     }
 
     await persistCurrentStep(currentStep + 1);
-    setCurrentStep(s => s + 1);
+    setCurrentStep((s) => s + 1);
     scrollRef.current?.scrollTo({ y: 0, animated: false });
   }
 
@@ -364,7 +380,7 @@ export function NewRecordFlow({ existingId }: NewRecordFlowProps): React.JSX.Ele
       return;
     }
     await persistCurrentStep(currentStep - 1);
-    setCurrentStep(s => s - 1);
+    setCurrentStep((s) => s - 1);
     scrollRef.current?.scrollTo({ y: 0, animated: false });
   }
 

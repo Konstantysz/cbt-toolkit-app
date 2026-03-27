@@ -32,7 +32,9 @@ test('sets loading=false after refresh completes', async () => {
   (repo.getRecords as jest.Mock).mockResolvedValue([makeRecord('1')]);
   const { result } = renderHook(() => useThoughtRecords(mockDb));
 
-  await act(async () => { await result.current.refresh(); });
+  await act(async () => {
+    await result.current.refresh();
+  });
 
   expect(result.current.loading).toBe(false);
   expect(result.current.records).toHaveLength(1);
@@ -41,21 +43,30 @@ test('sets loading=false after refresh completes', async () => {
 test('keeps loading=false during refresh when records already present', async () => {
   let resolveRefresh!: (data: any[]) => void;
 
-  (repo.getRecords as jest.Mock)
-    .mockResolvedValueOnce([makeRecord('1')])
-    .mockImplementationOnce(() => new Promise(r => { resolveRefresh = r; }));
+  (repo.getRecords as jest.Mock).mockResolvedValueOnce([makeRecord('1')]).mockImplementationOnce(
+    () =>
+      new Promise((r) => {
+        resolveRefresh = r;
+      })
+  );
 
   const { result } = renderHook(() => useThoughtRecords(mockDb));
 
-  await act(async () => { await result.current.refresh(); });
+  await act(async () => {
+    await result.current.refresh();
+  });
   expect(result.current.records).toHaveLength(1);
   expect(result.current.loading).toBe(false);
 
   // Start slow second refresh — loading should stay false
-  act(() => { void result.current.refresh(); });
+  act(() => {
+    void result.current.refresh();
+  });
   expect(result.current.loading).toBe(false);
 
   // Resolve and verify still false
-  await act(async () => { resolveRefresh([makeRecord('2')]); });
+  await act(async () => {
+    resolveRefresh([makeRecord('2')]);
+  });
   expect(result.current.loading).toBe(false);
 });

@@ -29,7 +29,13 @@ export function TextStep({ prompt, value, onChange, placeholder, minHeight = 130
 }
 
 const styles = StyleSheet.create({
-  prompt: { fontSize: 15, color: colors.textMuted, lineHeight: 22, marginBottom: 16, fontStyle: 'italic' },
+  prompt: {
+    fontSize: 15,
+    color: colors.textMuted,
+    lineHeight: 22,
+    marginBottom: 16,
+    fontStyle: 'italic',
+  },
   input: {
     backgroundColor: colors.surface,
     borderWidth: 1,

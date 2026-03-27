@@ -21,17 +21,15 @@ export function useBehavioralExperiments(db: SQLite.SQLiteDatabase | null) {
   return { experiments, loading, refresh };
 }
 
-export function useBehavioralExperiment(
-  db: SQLite.SQLiteDatabase | null,
-  id: string
-) {
+export function useBehavioralExperiment(db: SQLite.SQLiteDatabase | null, id: string) {
   const [experiment, setExperiment] = useState<BehavioralExperiment | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!db) return;
     setLoading(true);
-    repo.getExperimentById(db, id)
+    repo
+      .getExperimentById(db, id)
       .then(setExperiment)
       .finally(() => setLoading(false));
   }, [db, id]);

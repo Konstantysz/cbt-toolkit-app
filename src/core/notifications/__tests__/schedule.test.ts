@@ -8,8 +8,10 @@ import * as Notifications from 'expo-notifications';
 import { scheduleReminder, cancelReminder } from '../schedule';
 
 (Notifications.scheduleNotificationAsync as jest.Mock) = mockScheduleNotificationAsync;
-(Notifications.cancelAllScheduledNotificationsAsync as jest.Mock) = mockCancelAllScheduledNotificationsAsync;
-(Notifications.getAllScheduledNotificationsAsync as jest.Mock) = mockGetAllScheduledNotificationsAsync;
+(Notifications.cancelAllScheduledNotificationsAsync as jest.Mock) =
+  mockCancelAllScheduledNotificationsAsync;
+(Notifications.getAllScheduledNotificationsAsync as jest.Mock) =
+  mockGetAllScheduledNotificationsAsync;
 (Notifications.SchedulableTriggerInputTypes as any) = { DAILY: 'daily' };
 
 beforeEach(() => jest.clearAllMocks());

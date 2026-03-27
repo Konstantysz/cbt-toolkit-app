@@ -20,8 +20,10 @@ export const pl = {
   helper: {
     toggle: 'Wskazówka',
     exampleLabel: 'Wyjaśnienie',
-    step1Hint: 'A to zdarzenie aktywujące — sytuacja, która wywołała reakcję. B to twoje przekonania i myśli automatyczne dotyczące tej sytuacji.',
-    step2Hint: 'Emocje, zachowanie i objawy fizyczne wzajemnie na siebie wpływają — zmiana jednego może złagodzić pozostałe.',
+    step1Hint:
+      'A to zdarzenie aktywujące — sytuacja, która wywołała reakcję. B to twoje przekonania i myśli automatyczne dotyczące tej sytuacji.',
+    step2Hint:
+      'Emocje, zachowanie i objawy fizyczne wzajemnie na siebie wpływają — zmiana jednego może złagodzić pozostałe.',
   },
   list: {
     title: 'Model ABC',

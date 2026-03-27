@@ -26,7 +26,7 @@ export function StepHelper({
       )}
       <TouchableOpacity
         style={[styles.toggle, open && styles.toggleActive]}
-        onPress={() => setOpen(o => !o)}
+        onPress={() => setOpen((o) => !o)}
         activeOpacity={0.7}
       >
         <Text style={styles.toggleText}>{toggleLabel}</Text>
@@ -74,6 +74,12 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 4,
   },
-  label: { fontSize: 9, color: colors.textDim, letterSpacing: 0.14, textTransform: 'uppercase', marginBottom: 6 },
+  label: {
+    fontSize: 9,
+    color: colors.textDim,
+    letterSpacing: 0.14,
+    textTransform: 'uppercase',
+    marginBottom: 6,
+  },
   hint: { fontSize: 15, color: colors.textMuted, lineHeight: 22, fontStyle: 'italic' },
 });

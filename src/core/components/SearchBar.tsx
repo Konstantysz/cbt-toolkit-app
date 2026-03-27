@@ -15,7 +15,9 @@ export function SearchBar({
 }: SearchBarProps): React.JSX.Element {
   return (
     <View style={styles.wrap}>
-      <Text style={styles.icon} accessibilityElementsHidden>⌕</Text>
+      <Text style={styles.icon} accessibilityElementsHidden>
+        ⌕
+      </Text>
       <TextInput
         style={styles.input}
         value={value}

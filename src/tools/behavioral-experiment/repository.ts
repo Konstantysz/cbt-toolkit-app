@@ -51,10 +51,7 @@ export async function createExperiment(db: SQLite.SQLiteDatabase): Promise<Behav
     `INSERT INTO tool_entries (id, tool_id, created_at, updated_at) VALUES (?, 'behavioral-experiment', ?, ?)`,
     [id, now, now]
   );
-  await db.runAsync(
-    `INSERT INTO behavioral_experiments (id) VALUES (?)`,
-    [id]
-  );
+  await db.runAsync(`INSERT INTO behavioral_experiments (id) VALUES (?)`, [id]);
   return (await getExperimentById(db, id))!;
 }
 
@@ -80,18 +77,31 @@ export async function getExperimentById(
 export async function updateExperiment(
   db: SQLite.SQLiteDatabase,
   id: string,
-  updates: Partial<Omit<BehavioralExperiment, 'id' | 'createdAt' | 'updatedAt'>> & { isComplete?: boolean; currentStep?: number }
+  updates: Partial<Omit<BehavioralExperiment, 'id' | 'createdAt' | 'updatedAt'>> & {
+    isComplete?: boolean;
+    currentStep?: number;
+  }
 ): Promise<void> {
   const now = new Date().toISOString();
 
   const planFields = [
-    'belief', 'beliefStrengthBefore', 'plan', 'predictedOutcome', 'potentialProblems', 'problemStrategies',
+    'belief',
+    'beliefStrengthBefore',
+    'plan',
+    'predictedOutcome',
+    'potentialProblems',
+    'problemStrategies',
   ] as const;
   const resultFields = [
-    'executionDate', 'actualOutcome', 'confirmationPercent', 'beliefStrengthAfter', 'conclusion', 'status',
+    'executionDate',
+    'actualOutcome',
+    'confirmationPercent',
+    'beliefStrengthAfter',
+    'conclusion',
+    'status',
   ] as const;
 
-  const hasBEUpdate = [...planFields, ...resultFields].some(k => updates[k] !== undefined);
+  const hasBEUpdate = [...planFields, ...resultFields].some((k) => updates[k] !== undefined);
   if (hasBEUpdate) {
     // Use flag+value pairs for nullable fields so callers can explicitly set them to NULL
     const edSet = 'executionDate' in updates;
@@ -100,7 +110,8 @@ export async function updateExperiment(
     const bsaSet = 'beliefStrengthAfter' in updates;
     const clSet = 'conclusion' in updates;
 
-    await db.runAsync(`
+    await db.runAsync(
+      `
       UPDATE behavioral_experiments SET
         status                 = COALESCE(?, status),
         belief                 = COALESCE(?, belief),
@@ -115,36 +126,46 @@ export async function updateExperiment(
         belief_strength_after  = CASE WHEN ? = 1 THEN ? ELSE belief_strength_after END,
         conclusion             = CASE WHEN ? = 1 THEN ? ELSE conclusion END
       WHERE id = ?
-    `, [
-      updates.status ?? null,
-      updates.belief ?? null,
-      updates.beliefStrengthBefore ?? null,
-      updates.plan ?? null,
-      updates.predictedOutcome ?? null,
-      updates.potentialProblems ?? null,
-      updates.problemStrategies ?? null,
-      edSet ? 1 : 0,  edSet  ? (updates.executionDate     ?? null) : null,
-      aoSet ? 1 : 0,  aoSet  ? (updates.actualOutcome     ?? null) : null,
-      cpSet ? 1 : 0,  cpSet  ? (updates.confirmationPercent ?? null) : null,
-      bsaSet ? 1 : 0, bsaSet ? (updates.beliefStrengthAfter ?? null) : null,
-      clSet ? 1 : 0,  clSet  ? (updates.conclusion         ?? null) : null,
-      id,
-    ]);
+    `,
+      [
+        updates.status ?? null,
+        updates.belief ?? null,
+        updates.beliefStrengthBefore ?? null,
+        updates.plan ?? null,
+        updates.predictedOutcome ?? null,
+        updates.potentialProblems ?? null,
+        updates.problemStrategies ?? null,
+        edSet ? 1 : 0,
+        edSet ? (updates.executionDate ?? null) : null,
+        aoSet ? 1 : 0,
+        aoSet ? (updates.actualOutcome ?? null) : null,
+        cpSet ? 1 : 0,
+        cpSet ? (updates.confirmationPercent ?? null) : null,
+        bsaSet ? 1 : 0,
+        bsaSet ? (updates.beliefStrengthAfter ?? null) : null,
+        clSet ? 1 : 0,
+        clSet ? (updates.conclusion ?? null) : null,
+        id,
+      ]
+    );
   }
 
   if (updates.isComplete !== undefined || updates.currentStep !== undefined) {
-    await db.runAsync(`
+    await db.runAsync(
+      `
       UPDATE tool_entries SET
         is_complete  = COALESCE(?, is_complete),
         current_step = COALESCE(?, current_step),
         updated_at   = ?
       WHERE id = ?
-    `, [
-      updates.isComplete !== undefined ? (updates.isComplete ? 1 : 0) : null,
-      updates.currentStep ?? null,
-      now,
-      id,
-    ]);
+    `,
+      [
+        updates.isComplete !== undefined ? (updates.isComplete ? 1 : 0) : null,
+        updates.currentStep ?? null,
+        now,
+        id,
+      ]
+    );
   }
 }
 

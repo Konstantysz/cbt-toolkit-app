@@ -75,7 +75,11 @@ describe('NewExperimentFlow phase=plan', () => {
     expect(repo.updateExperiment).toHaveBeenCalledWith(
       expect.anything(),
       'exp-1',
-      expect.objectContaining({ belief: 'Moje przekonanie', beliefStrengthBefore: 50, currentStep: 1 })
+      expect.objectContaining({
+        belief: 'Moje przekonanie',
+        beliefStrengthBefore: 50,
+        currentStep: 1,
+      })
     );
   });
 
