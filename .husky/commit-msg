@@ -1,0 +1,11 @@
+#!/bin/bash
+# Enforces single-line commit messages (no body, no blank lines)
+
+msg_file="$1"
+lines=$(grep -c '' "$msg_file" 2>/dev/null || echo 0)
+
+if [ "$lines" -gt 1 ]; then
+  echo "ERROR: Commit message must be a single line (no body, no blank lines)."
+  echo "Got $lines lines. Fix and try again."
+  exit 1
+fi
