@@ -1,7 +1,7 @@
 # CBT Toolkit — Code Repository
 
-## Vault location
-The Obsidian brain vault is at `../cbt-toolkit-brain/`.
+## Brain location
+The project brain is at `~/brains/cbt-toolkit-app/`.
 Read its CLAUDE.md for full project context, product specs, and architectural decisions.
 This should be available via --add-dir. If not, ask the user to restart with:
   cbt-dev
@@ -13,18 +13,18 @@ This should be available via --add-dir. If not, ask the user to restart with:
 - State management: zustand
 - Database: expo-sqlite
 - All code identifiers: English
-- All user-facing strings: Polish (source of truth: vault's 03_Design/Copy.md)
+- All user-facing strings: Polish (source of truth: brain's Design/Copy.md)
 
 ## Architecture
-Modular plugin system — see vault's 02_Engineering/Architecture.md
+Modular plugin system — see brain's Engineering/Architecture.md
 - `src/core/` — shared infrastructure (DB, theme, components)
 - `src/tools/<tool-id>/` — self-contained CBT tool modules
 - `src/app/(tools)/<tool-id>/` — Expo Router routes per tool
 - Adding a new tool must NOT require changes to existing tools
 
 ## Planning artifacts
-- Implementation plans live in **`../cbt-toolkit-brain/02_Engineering/Plans/superpowers/plans/`**
-- Design specs live in **`../cbt-toolkit-brain/02_Engineering/Plans/superpowers/specs/`**
+- Implementation plans live in **`~/brains/cbt-toolkit-app/Engineering/Plans/superpowers/plans/`**
+- Design specs live in **`~/brains/cbt-toolkit-app/Engineering/Plans/superpowers/specs/`**
 - `docs/superpowers/` in this repo is gitignored — do NOT commit plans/specs here
 
 ## Git conventions
@@ -37,6 +37,9 @@ Modular plugin system — see vault's 02_Engineering/Architecture.md
 - Tags / GitHub Releases are cut from `main` only
 
 ## Key commands
-- `/resume` — load session context from vault
-- `/wrap-up` — save session state to vault
+- `/resume-braintree` — load session context from brain
+- `/wrap-up-braintree` — save session state to brain
 - `/new-tool <id>` — scaffold a new CBT tool module
+- `/spec <id>` — create or update a tool specification
+- `/adr` — create an Architecture Decision Record
+- `/copy` — review and update Polish UI strings
