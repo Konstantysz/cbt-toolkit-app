@@ -10,6 +10,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   lint:
     name: Lint & Format
@@ -77,3 +81,24 @@ jobs:
         run: npx expo install --check
       - name: Export (bundle check)
         run: npx expo export --platform android
+
+  coverage-comment:
+    name: Coverage Delta Comment
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Coverage report
+        uses: ArtiomTr/jest-coverage-report-action@v2
+        with:
+          test-script: npm test -- --ci --forceExit
+          annotations: failed-tests

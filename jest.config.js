@@ -12,7 +12,7 @@ module.exports = {
   testMatch: ['**/__tests__/**/*.test.[jt]s?(x)'],
   testPathIgnorePatterns: ['/node_modules/', '<rootDir>/.worktrees/'],
   collectCoverage: true,
-  coverageReporters: ['text-summary', 'lcov'],
+  coverageReporters: ['text-summary', 'lcov', 'json-summary'],
   coveragePathIgnorePatterns: [
     '/node_modules/',
     '/__mocks__/',
