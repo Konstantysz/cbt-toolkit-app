@@ -9,21 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
+---
 
-- **ABC Model detail screen** — SVG graph now renders correctly in production APK builds
-  - Root cause: `react-native-svg` `Defs`/`Marker` with `url(#id)` references fail in release builds
-  - Fix: replaced marker-based arrowheads with inline `<Path>` elements computed from line angles
-- **Thought Record form screen** — header no longer shows raw route path `[id]/form`
-  - Root cause: `Stack.Screen` for `[id]/form` was missing from `thought-record/_layout.tsx`
-  - Fix: added explicit screen registration with title `Formularz Zapisu Myśli`
-
-### Changed
-
-- **Brain migrated to [BrainTree](https://github.com/brain-tree-dev/brain-tree-os)** — project knowledge base moved from Obsidian vault to `~/brains/cbt-toolkit-app/`
-  - `/resume` and `/wrap-up` commands removed — replaced by `/resume-braintree` and `/wrap-up-braintree`
-  - `.claude/commands/` updated with new brain paths (`adr`, `copy`, `spec`, `new-tool`)
-  - `CLAUDE.md` updated to reflect new brain location and commands
+## [v0.4.1] - 2026-03-28
 
 ### Added
 
@@ -34,6 +22,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Prettier added — `format:check` gate in CI, `format` script for local use
   - CI split into 4 parallel jobs: Lint & Format, Typecheck, Tests & Coverage, Expo Export
 - **Pre-commit hook** (husky + lint-staged) — auto-runs `prettier --write` + `eslint --fix` on staged `src/**/*.{ts,tsx}` before every commit
+
+### Changed
+
+- **Brain migrated to [BrainTree](https://github.com/brain-tree-dev/brain-tree-os)** — project knowledge base moved from Obsidian vault to `~/brains/cbt-toolkit-app/`
+  - `/resume` and `/wrap-up` commands removed — replaced by `/resume-braintree` and `/wrap-up-braintree`
+  - `.claude/commands/` updated with new brain paths (`adr`, `copy`, `spec`, `new-tool`)
+  - `CLAUDE.md` updated to reflect new brain location and commands
+
+### Fixed
+
+- **ABC Model detail screen** — SVG graph now renders correctly in production APK builds
+  - Root cause: `react-native-svg` `Defs`/`Marker` with `url(#id)` references fail in release builds
+  - Fix: replaced marker-based arrowheads with inline `<Path>` elements computed from line angles
+- **Thought Record form screen** — header no longer shows raw route path `[id]/form`
+  - Root cause: `Stack.Screen` for `[id]/form` was missing from `thought-record/_layout.tsx`
+  - Fix: added explicit screen registration with title `Formularz Zapisu Myśli`
 
 ---
 
@@ -184,7 +188,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Dark theme** — warm dark palette with amber accent
 - **Jest test infrastructure** — jest-expo + @testing-library/react-native
 
-[Unreleased]: https://github.com/Konstantysz/cbt-toolkit-app/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/Konstantysz/cbt-toolkit-app/compare/v0.4.1...HEAD
+[v0.4.1]: https://github.com/Konstantysz/cbt-toolkit-app/compare/v0.4.0...v0.4.1
 [v0.4.0]: https://github.com/Konstantysz/cbt-toolkit-app/compare/v0.3.0...v0.4.0
 [v0.3.0]: https://github.com/Konstantysz/cbt-toolkit-app/compare/v0.2.0...v0.3.0
 [v0.2.0]: https://github.com/Konstantysz/cbt-toolkit-app/compare/v0.1.1...v0.2.0
