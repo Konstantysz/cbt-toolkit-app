@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **ABC Model detail screen** — SVG graph now renders correctly in production APK builds
+  - Root cause: `react-native-svg` `Defs`/`Marker` with `url(#id)` references fail in release builds
+  - Fix: replaced marker-based arrowheads with inline `<Path>` elements computed from line angles
+- **Thought Record form screen** — header no longer shows raw route path `[id]/form`
+  - Root cause: `Stack.Screen` for `[id]/form` was missing from `thought-record/_layout.tsx`
+  - Fix: added explicit screen registration with title `Formularz Zapisu Myśli`
+
 ### Changed
 
 - **Brain migrated to [BrainTree](https://github.com/brain-tree-dev/brain-tree-os)** — project knowledge base moved from Obsidian vault to `~/brains/cbt-toolkit-app/`
