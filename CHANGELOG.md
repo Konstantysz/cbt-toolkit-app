@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **CI: Preview APK on push to `develop`** — `preview-apk` workflow builds a release APK via Gradle and uploads it as a 30-day GitHub Actions artifact
+- **CI: Coverage delta comment on PRs** — `ArtiomTr/jest-coverage-report-action` posts a coverage table with delta on every pull request
+- **CI: Automated release APK on tag** — `release` workflow triggers on `vX.Y.Z` tags, builds APK and uploads it to the GitHub Release
+
+### Changed
+
+- Jest coverage reporters extended with `json` and `json-summary` (required by the coverage comment action)
+- `collectCoverage` moved from `jest.config.js` to CI test scripts — local `npm test` no longer pays instrumentation overhead by default
+
 ---
 
 ## [v0.4.1] - 2026-03-28
