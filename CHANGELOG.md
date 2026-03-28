@@ -9,7 +9,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **ABC Model detail screen** — SVG graph now renders correctly in production APK builds
+  - Root cause: `react-native-svg` `Defs`/`Marker` with `url(#id)` references fail in release builds
+  - Fix: replaced marker-based arrowheads with inline `<Path>` elements computed from line angles
+- **Thought Record form screen** — header no longer shows raw route path `[id]/form`
+  - Root cause: `Stack.Screen` for `[id]/form` was missing from `thought-record/_layout.tsx`
+  - Fix: added explicit screen registration with title `Formularz Zapisu Myśli`
+
+### Changed
+
+- **Brain migrated to [BrainTree](https://github.com/brain-tree-dev/brain-tree-os)** — project knowledge base moved from Obsidian vault to `~/brains/cbt-toolkit-app/`
+  - `/resume` and `/wrap-up` commands removed — replaced by `/resume-braintree` and `/wrap-up-braintree`
+  - `.claude/commands/` updated with new brain paths (`adr`, `copy`, `spec`, `new-tool`)
+  - `CLAUDE.md` updated to reflect new brain location and commands
+
 ### Added
+
 - **CI/CD quality gates**
   - CI now triggers on `push` to `main` in addition to PRs
   - Jest coverage thresholds enforced: statements 65%, branches 55%, functions 58%, lines 68%
@@ -23,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [v0.4.0]
 
 ### Added
+
 - **ABC Model tool** — third CBT module, fully self-contained
   - 2-step form: activating event (A), belief (B), consequences (C1 emotional / C2 behavioral)
   - ABCGraph — SVG visualization of A → B → C1/C2 relationships with curved arrows
@@ -44,6 +62,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **CI**: `npx expo install --check` step added to catch incompatible dependency bumps on PRs
 
 ### Fixed
+
 - `package.json` dependency specs corrected — reverted incompatible bumps to Expo SDK 55 compatible versions
 - `.npmrc` added with `legacy-peer-deps=true` — clean installs after `node_modules` wipe now work
 - `thought-record` icon `brain` → `journal-outline` (invalid Ionicons name caused black screen on home)
@@ -57,6 +76,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [v0.3.0]
 
 ### Added
+
 - **Settings screen** — platform features accessible from the bottom tab bar
   - Notification reminder — daily push notification with configurable time
   - Font size selector — Small / Medium / Large, applied app-wide via `scaledFont()`
@@ -84,12 +104,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **ESLint** — `eslint-config-expo` (flat config), 0 errors, 0 warnings
 
 ### Changed
+
 - `android.package` corrected: `com.anonymous.cbttoolkitapp` → `com.cbttoolkit.app`
 - StepHelper redesigned as pill with chevron ▾/▴ indicator; hint panel renders above toggle
 - Edit and Delete buttons unified to bottom action row in both detail screens (thought-record + behavioral-experiment)
 - List screens: spinner only shown when list is empty (not on every refresh)
 
 ### Fixed
+
 - N+1 database inserts during import wrapped in single `withTransactionAsync` transaction
 - iOS time picker (`display="spinner"`) no longer calls notification API on every wheel tick — commits only on "Gotowe"
 - Notification sync on boot: removed stale `scheduled.length === 0` guard; always reschedules when enabled
@@ -104,6 +126,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [v0.2.0]
 
 ### Added
+
 - **Emotion comparison** — side-by-side before/after view across 4 pages (RecordDetailScreen → Compare)
 - **Edit mode** — re-open any completed record in the 7-step flow and update it
 - **Search & filter** — real-time search across situation text and emotion names in the record list
@@ -113,6 +136,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Example badge** — seed records are marked with a distinct "Przykład" badge
 
 ### Changed
+
 - Dark theme applied to all Stack navigator headers
 - Home screen redesigned: app title, section label, improved tool cards with accent bar
 - Safe area handling added (camera island / notch support via SafeAreaProvider)
@@ -120,6 +144,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Emotion bars enhanced: 6px height, 120px track, intensity indicator
 
 ### Fixed
+
 - `crypto.getRandomValues()` error on Android — replaced `uuid` with `expo-crypto`
 - Routing warning for `[id]` — corrected to `[id]/index` in Stack layout
 - `(tools)/thought-record` appearing as a third tab — hidden via `href: null`
@@ -130,6 +155,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [v0.1.1]
 
 ### Changed
+
 - Moved `Emotion` type from `tools/thought-record/types` to `core/types` — shared infrastructure cleanup
 
 ---
@@ -137,6 +163,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [v0.1.0]
 
 ### Added
+
 - **Thought Record tool** — first CBT module, fully self-contained
 - **7-step guided flow** (NewRecordFlow):
   1. Situation + date
