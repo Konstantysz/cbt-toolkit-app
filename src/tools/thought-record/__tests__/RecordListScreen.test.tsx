@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react-native';
+import { render, screen, fireEvent, act } from '@testing-library/react-native';
 import { RecordListScreen } from '../screens/RecordListScreen';
 
 jest.mock('expo-sqlite', () => ({ useSQLiteContext: () => ({}) }));
@@ -59,6 +59,23 @@ describe('RecordListScreen', () => {
     render(<RecordListScreen />);
     fireEvent.press(screen.getByText('+'));
     expect(router.push).toHaveBeenCalledWith('/(tools)/thought-record/new');
+  });
+
+  it('runs seed when getItem returns null (first launch)', async () => {
+    const AsyncStorage = require('@react-native-async-storage/async-storage');
+    (AsyncStorage.getItem as jest.Mock).mockResolvedValueOnce(null);
+    const { insertSeedRecord } = require('../repository');
+    (hooks.useThoughtRecords as jest.Mock).mockReturnValue({
+      records: [],
+      loading: false,
+      refresh: mockRefresh,
+    });
+
+    render(<RecordListScreen />);
+    await act(async () => {});
+
+    expect(insertSeedRecord).toHaveBeenCalled();
+    expect(AsyncStorage.setItem).toHaveBeenCalledWith('thought-record:onboarding-seeded', '1');
   });
 
   it('navigates to record detail on card press', () => {
