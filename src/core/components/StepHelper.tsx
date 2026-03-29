@@ -25,7 +25,7 @@ function useStyles() {
       backgroundColor: colors.accentDim,
       borderColor: colors.accentBorder,
     },
-    toggleActive: { backgroundColor: 'rgba(196,149,106,0.22)' },
+    toggleActive: { backgroundColor: colors.accentBorder },
     toggleText: { fontSize: 11, letterSpacing: 0.3, includeFontPadding: false, color: colors.accent },
     panel: {
       borderWidth: 1,

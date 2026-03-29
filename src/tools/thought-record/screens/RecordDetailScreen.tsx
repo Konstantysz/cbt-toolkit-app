@@ -63,8 +63,8 @@ function useStyles() {
       includeFontPadding: false,
       lineHeight: 12,
     },
-    badgeComplete: { backgroundColor: 'rgba(122,158,126,0.12)' },
-    badgeInProgress: { backgroundColor: 'rgba(184,151,74,0.1)' },
+    badgeComplete: { backgroundColor: colors.successDim },
+    badgeInProgress: { backgroundColor: colors.inProgressDim },
     badgeTextComplete: { fontSize: 10, letterSpacing: 0.8, textTransform: 'uppercase', includeFontPadding: false, lineHeight: 12, color: colors.success },
     badgeTextInProgress: { fontSize: 10, letterSpacing: 0.8, textTransform: 'uppercase', includeFontPadding: false, lineHeight: 12, color: colors.inProgress },
     section: { marginBottom: 20 },
@@ -97,7 +97,7 @@ function useStyles() {
       alignItems: 'center',
       backgroundColor: colors.dangerDim,
       borderWidth: 1,
-      borderColor: 'rgba(196,96,90,0.22)',
+      borderColor: colors.dangerBorder,
     },
     deleteBtnText: { fontSize: 14, color: colors.danger },
     errorText: { fontSize: 15, color: colors.textMuted },
@@ -163,7 +163,7 @@ function IntensityBar({
             styles.ibarFill,
             {
               width: `${value}%` as `${number}%`,
-              backgroundColor: accent ? colors.accent : 'rgba(196,149,106,0.35)',
+              backgroundColor: accent ? colors.accent : colors.accentSubtle,
             },
           ]}
         />

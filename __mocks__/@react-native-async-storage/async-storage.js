@@ -1,10 +1,2 @@
-/* eslint-disable */
-module.exports = {
-  getItem: jest.fn().mockResolvedValue(null),
-  setItem: jest.fn().mockResolvedValue(undefined),
-  removeItem: jest.fn().mockResolvedValue(undefined),
-  clear: jest.fn().mockResolvedValue(undefined),
-  getAllKeys: jest.fn().mockResolvedValue([]),
-  multiGet: jest.fn().mockResolvedValue([]),
-  multiSet: jest.fn().mockResolvedValue(undefined),
-};
+const mock = require('@react-native-async-storage/async-storage/jest/async-storage-mock');
+module.exports = mock;
