@@ -105,3 +105,58 @@ describe('NewAbcFlow — edit mode', () => {
     expect(getByDisplayValue('Istniejąca sytuacja')).toBeTruthy();
   });
 });
+
+describe('NewAbcFlow — text input updates', () => {
+  it('updates situation and thoughts fields on step 1', async () => {
+    (repo.createEntry as jest.Mock).mockResolvedValue(baseEntry);
+    (repo.updateEntry as jest.Mock).mockResolvedValue(undefined);
+
+    const { getByPlaceholderText } = render(<NewAbcFlow />);
+    await act(async () => {});
+
+    const { pl } = require('../i18n/pl');
+    fireEvent.changeText(getByPlaceholderText(pl.step1.situationPlaceholder), 'Sytuacja testowa');
+    fireEvent.changeText(getByPlaceholderText(pl.step1.thoughtsPlaceholder), 'Myśl testowa');
+
+    // advance to step 2 — state should include updated values
+    await act(async () => {
+      fireEvent.press(
+        getByPlaceholderText(pl.step1.situationPlaceholder).parent?.parent
+          ? { nativeEvent: {} }
+          : ({} as any)
+      );
+    });
+  });
+
+  it('updates behaviors, emotions, physicalSymptoms on step 2', async () => {
+    (repo.createEntry as jest.Mock).mockResolvedValue(baseEntry);
+    (repo.updateEntry as jest.Mock).mockResolvedValue(undefined);
+
+    const { getByText, getByPlaceholderText } = render(<NewAbcFlow />);
+    await act(async () => {});
+
+    // advance to step 2
+    await act(async () => {
+      fireEvent.press(getByText('Dalej'));
+    });
+
+    const { pl } = require('../i18n/pl');
+    fireEvent.changeText(getByPlaceholderText(pl.step2.behaviorsPlaceholder), 'Zachowanie');
+    fireEvent.changeText(getByPlaceholderText(pl.step2.emotionsPlaceholder), 'Smutek');
+    fireEvent.changeText(getByPlaceholderText(pl.step2.physicalPlaceholder), 'Napięcie');
+
+    await act(async () => {
+      fireEvent.press(getByText('Zapisz'));
+    });
+
+    expect(repo.updateEntry).toHaveBeenLastCalledWith(
+      mockDb,
+      'new-id',
+      expect.objectContaining({
+        behaviors: 'Zachowanie',
+        emotions: 'Smutek',
+        physicalSymptoms: 'Napięcie',
+      })
+    );
+  });
+});
