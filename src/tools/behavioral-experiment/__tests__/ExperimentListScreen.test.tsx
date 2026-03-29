@@ -193,6 +193,37 @@ describe('ExperimentListScreen', () => {
     expect(router.push).toHaveBeenCalledWith('/(tools)/behavioral-experiment/new');
   });
 
+  it('shows no-results message when search query matches nothing', () => {
+    (hooks.useBehavioralExperiments as jest.Mock).mockReturnValue({
+      experiments: [
+        {
+          id: 'e1',
+          status: 'planned',
+          belief: 'Nikt mnie nie lubi',
+          beliefStrengthBefore: 70,
+          beliefStrengthAfter: null,
+          alternativeBelief: '',
+          plan: '',
+          predictedOutcome: '',
+          executionDate: null,
+          executionNotes: null,
+          actualOutcome: null,
+          conclusion: null,
+          isExample: false,
+          createdAt: '2026-03-21T10:00:00.000Z',
+          updatedAt: '2026-03-21T10:00:00.000Z',
+        },
+      ],
+      loading: false,
+      refresh: mockRefresh,
+    });
+
+    render(<ExperimentListScreen />);
+    const searchInput = screen.getByPlaceholderText(/szukaj/i);
+    fireEvent.changeText(searchInput, 'xyzabc');
+    expect(screen.getByText(/Brak wyników dla/)).toBeTruthy();
+  });
+
   it('navigates to experiment detail on card press', () => {
     const { router } = require('expo-router');
     (hooks.useBehavioralExperiments as jest.Mock).mockReturnValue({
