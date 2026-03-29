@@ -1,6 +1,10 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react-native';
+import { render, screen, fireEvent } from '@testing-library/react-native';
 import { ExperimentListScreen } from '../screens/ExperimentListScreen';
+
+jest.mock('../repository', () => ({
+  insertSeedExperiment: jest.fn().mockResolvedValue(undefined),
+}));
 
 // Mock expo-sqlite
 jest.mock('expo-sqlite', () => ({
@@ -125,5 +129,98 @@ describe('ExperimentListScreen', () => {
 
     expect(screen.getByText('Zaplanowany')).toBeTruthy();
     expect(screen.getByText('Ukończony')).toBeTruthy();
+  });
+
+  it('filters experiments by search query', () => {
+    (hooks.useBehavioralExperiments as jest.Mock).mockReturnValue({
+      experiments: [
+        {
+          id: 'e1',
+          status: 'planned',
+          belief: 'Nikt mnie nie lubi',
+          beliefStrengthBefore: 70,
+          beliefStrengthAfter: null,
+          alternativeBelief: '',
+          plan: '',
+          predictedOutcome: '',
+          executionDate: null,
+          executionNotes: null,
+          actualOutcome: null,
+          conclusion: null,
+          isExample: false,
+          createdAt: '2026-03-21T10:00:00.000Z',
+          updatedAt: '2026-03-21T10:00:00.000Z',
+        },
+        {
+          id: 'e2',
+          status: 'planned',
+          belief: 'Zawsze ponoszę porażkę',
+          beliefStrengthBefore: 80,
+          beliefStrengthAfter: null,
+          alternativeBelief: '',
+          plan: '',
+          predictedOutcome: '',
+          executionDate: null,
+          executionNotes: null,
+          actualOutcome: null,
+          conclusion: null,
+          isExample: false,
+          createdAt: '2026-03-20T10:00:00.000Z',
+          updatedAt: '2026-03-20T10:00:00.000Z',
+        },
+      ],
+      loading: false,
+      refresh: mockRefresh,
+    });
+
+    render(<ExperimentListScreen />);
+    const searchInput = screen.getByPlaceholderText(/szukaj/i);
+    fireEvent.changeText(searchInput, 'nikt');
+    expect(screen.getByText('Nikt mnie nie lubi')).toBeTruthy();
+    expect(screen.queryByText('Zawsze ponoszę porażkę')).toBeNull();
+  });
+
+  it('navigates to new experiment on FAB press', () => {
+    const { router } = require('expo-router');
+    (hooks.useBehavioralExperiments as jest.Mock).mockReturnValue({
+      experiments: [],
+      loading: false,
+      refresh: mockRefresh,
+    });
+
+    render(<ExperimentListScreen />);
+    fireEvent.press(screen.getByText('+'));
+    expect(router.push).toHaveBeenCalledWith('/(tools)/behavioral-experiment/new');
+  });
+
+  it('navigates to experiment detail on card press', () => {
+    const { router } = require('expo-router');
+    (hooks.useBehavioralExperiments as jest.Mock).mockReturnValue({
+      experiments: [
+        {
+          id: 'exp-nav',
+          status: 'planned',
+          belief: 'Test belief',
+          beliefStrengthBefore: 50,
+          beliefStrengthAfter: null,
+          alternativeBelief: '',
+          plan: '',
+          predictedOutcome: '',
+          executionDate: null,
+          executionNotes: null,
+          actualOutcome: null,
+          conclusion: null,
+          isExample: false,
+          createdAt: '2026-03-21T10:00:00.000Z',
+          updatedAt: '2026-03-21T10:00:00.000Z',
+        },
+      ],
+      loading: false,
+      refresh: mockRefresh,
+    });
+
+    render(<ExperimentListScreen />);
+    fireEvent.press(screen.getByText('Test belief'));
+    expect(router.push).toHaveBeenCalledWith('/(tools)/behavioral-experiment/exp-nav');
   });
 });
