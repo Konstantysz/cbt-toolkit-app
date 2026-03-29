@@ -10,12 +10,13 @@ module.exports = {
     '^@expo/vector-icons/(.*)$': '<rootDir>/__mocks__/@expo/vector-icons.js',
   },
   testMatch: ['**/__tests__/**/*.test.[jt]s?(x)'],
-  testPathIgnorePatterns: ['/node_modules/', '<rootDir>/.worktrees/'],
+  testPathIgnorePatterns: ['/node_modules/', '<rootDir>/.worktrees/', '<rootDir>/.claude/'],
   coverageReporters: ['text-summary', 'lcov', 'json-summary', 'json'],
   coveragePathIgnorePatterns: [
     '/node_modules/',
     '/__mocks__/',
     '<rootDir>/.worktrees/',
+    '<rootDir>/.claude/',
   ],
   coverageThreshold: {
     global: {

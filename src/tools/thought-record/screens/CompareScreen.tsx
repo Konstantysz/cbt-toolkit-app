@@ -8,7 +8,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useSQLiteContext } from 'expo-sqlite';
-import { colors } from '../../../core/theme';
+import { useColors } from '../../../core/theme/useColors';
 import { useThoughtRecord } from '../hooks/useThoughtRecords';
 import { pl } from '../i18n/pl';
 import type { Emotion } from '../../../core/types';
@@ -21,10 +21,82 @@ const PAGE_LABELS = [pl.compare.page1, pl.compare.page2, pl.compare.page3, pl.co
 
 const TOTAL_PAGES = 4;
 
+function useStyles() {
+  const colors = useColors();
+  return StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.bg, paddingHorizontal: 16, paddingBottom: 12 },
+    centered: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: colors.bg,
+    },
+    errorText: { fontSize: 15, color: colors.textMuted },
+    topBar: { alignItems: 'center', paddingVertical: 14, gap: 6 },
+    dots: { flexDirection: 'row', gap: 7 },
+    dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: colors.border },
+    dotActive: { width: 18, borderRadius: 3, backgroundColor: colors.accent },
+    pageLabel: {
+      fontSize: 10,
+      color: colors.textMuted,
+      letterSpacing: 1.2,
+      textTransform: 'uppercase',
+    },
+    cols: { flex: 1, flexDirection: 'row', gap: 10 },
+    col: {
+      flex: 1,
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 13,
+    },
+    colContent: { padding: 13, gap: 8 },
+    colTitle: { fontSize: 14, color: colors.accent, fontWeight: '500', marginBottom: 6 },
+    colTitleSuccess: { fontSize: 14, color: colors.success, fontWeight: '500', marginBottom: 6 },
+    colTitleDanger: { fontSize: 14, color: colors.danger, fontWeight: '500', marginBottom: 6 },
+    colText: { fontSize: 12, color: colors.text, lineHeight: 19 },
+    subDivider: { height: 1, backgroundColor: colors.border, marginVertical: 10 },
+    navRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingTop: 10,
+    },
+    arrowBtn: {
+      width: 40,
+      height: 40,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 10,
+    },
+    arrowBtnDisabled: { opacity: 0.25 },
+    arrowText: { fontSize: 20, color: colors.textMuted },
+    pageNum: { fontSize: 11, color: colors.textDim, letterSpacing: 0.1 },
+    compactEmRow: { marginBottom: 10 },
+    compactEmName: { fontSize: 11, color: colors.text, marginBottom: 3 },
+    compactBars: { gap: 3 },
+    compactBarRow: { flexDirection: 'row', alignItems: 'center', gap: 5 },
+    compactBarLabel: { fontSize: 8, color: colors.textDim, width: 24, textAlign: 'right' },
+    compactTrack: {
+      width: 72,
+      height: 5,
+      backgroundColor: colors.border,
+      borderRadius: 3,
+      overflow: 'hidden',
+    },
+    compactFill: { height: '100%', borderRadius: 3 },
+    compactBarNum: { fontSize: 9, color: colors.textMuted },
+  });
+}
+
 export function CompareScreen({ id }: CompareScreenProps): React.JSX.Element {
   const db = useSQLiteContext();
   const { record, loading } = useThoughtRecord(db, id);
   const [page, setPage] = useState(0);
+  const styles = useStyles();
+  const colors = useColors();
 
   if (loading) {
     return (
@@ -86,6 +158,7 @@ export function CompareScreen({ id }: CompareScreenProps): React.JSX.Element {
 type RecordType = NonNullable<ReturnType<typeof useThoughtRecord>['record']>;
 
 function ColPanel({ title, children }: { title: string; children: React.ReactNode }) {
+  const styles = useStyles();
   return (
     <ScrollView style={styles.col} contentContainerStyle={styles.colContent}>
       <Text style={styles.colTitle}>{title}</Text>
@@ -95,10 +168,13 @@ function ColPanel({ title, children }: { title: string; children: React.ReactNod
 }
 
 function ColText({ text }: { text: string }) {
+  const styles = useStyles();
   return <Text style={styles.colText}>{text || '—'}</Text>;
 }
 
 function CompactEmotionBars({ emotions }: { emotions: Emotion[] }) {
+  const colors = useColors();
+  const styles = useStyles();
   return (
     <>
       {emotions.map((em) => (
@@ -148,6 +224,7 @@ function CompactEmotionBars({ emotions }: { emotions: Emotion[] }) {
 }
 
 function LeftColumn({ page, record }: { page: number; record: RecordType }) {
+  const styles = useStyles();
   switch (page) {
     case 0:
       return (
@@ -170,10 +247,10 @@ function LeftColumn({ page, record }: { page: number; record: RecordType }) {
     case 3:
       return (
         <ColPanel title="">
-          <Text style={[styles.colTitle, { color: colors.success }]}>Argumenty za</Text>
+          <Text style={styles.colTitleSuccess}>Argumenty za</Text>
           <ColText text={record.evidenceFor} />
           <View style={styles.subDivider} />
-          <Text style={[styles.colTitle, { color: colors.danger }]}>Argumenty przeciw</Text>
+          <Text style={styles.colTitleDanger}>Argumenty przeciw</Text>
           <ColText text={record.evidenceAgainst} />
         </ColPanel>
       );
@@ -183,6 +260,7 @@ function LeftColumn({ page, record }: { page: number; record: RecordType }) {
 }
 
 function RightColumn({ page, record }: { page: number; record: RecordType }) {
+  const styles = useStyles();
   switch (page) {
     case 0:
       return (
@@ -199,10 +277,10 @@ function RightColumn({ page, record }: { page: number; record: RecordType }) {
     case 2:
       return (
         <ColPanel title="">
-          <Text style={[styles.colTitle, { color: colors.success }]}>Argumenty za</Text>
+          <Text style={styles.colTitleSuccess}>Argumenty za</Text>
           <ColText text={record.evidenceFor} />
           <View style={styles.subDivider} />
-          <Text style={[styles.colTitle, { color: colors.danger }]}>Argumenty przeciw</Text>
+          <Text style={styles.colTitleDanger}>Argumenty przeciw</Text>
           <ColText text={record.evidenceAgainst} />
         </ColPanel>
       );
@@ -216,63 +294,3 @@ function RightColumn({ page, record }: { page: number; record: RecordType }) {
       return null;
   }
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.bg, paddingHorizontal: 16, paddingBottom: 12 },
-  centered: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.bg },
-  errorText: { fontSize: 15, color: colors.textMuted },
-  topBar: { alignItems: 'center', paddingVertical: 14, gap: 6 },
-  dots: { flexDirection: 'row', gap: 7 },
-  dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: colors.border },
-  dotActive: { width: 18, borderRadius: 3, backgroundColor: colors.accent },
-  pageLabel: {
-    fontSize: 10,
-    color: colors.textMuted,
-    letterSpacing: 1.2,
-    textTransform: 'uppercase',
-  },
-  cols: { flex: 1, flexDirection: 'row', gap: 10 },
-  col: {
-    flex: 1,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 13,
-  },
-  colContent: { padding: 13, gap: 8 },
-  colTitle: { fontSize: 14, color: colors.accent, fontWeight: '500', marginBottom: 6 },
-  colText: { fontSize: 12, color: colors.text, lineHeight: 19 },
-  subDivider: { height: 1, backgroundColor: colors.border, marginVertical: 10 },
-  navRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingTop: 10,
-  },
-  arrowBtn: {
-    width: 40,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 10,
-  },
-  arrowBtnDisabled: { opacity: 0.25 },
-  arrowText: { fontSize: 20, color: colors.textMuted },
-  pageNum: { fontSize: 11, color: colors.textDim, letterSpacing: 0.1 },
-  compactEmRow: { marginBottom: 10 },
-  compactEmName: { fontSize: 11, color: colors.text, marginBottom: 3 },
-  compactBars: { gap: 3 },
-  compactBarRow: { flexDirection: 'row', alignItems: 'center', gap: 5 },
-  compactBarLabel: { fontSize: 8, color: colors.textDim, width: 24, textAlign: 'right' },
-  compactTrack: {
-    width: 72,
-    height: 5,
-    backgroundColor: colors.border,
-    borderRadius: 3,
-    overflow: 'hidden',
-  },
-  compactFill: { height: '100%', borderRadius: 3 },
-  compactBarNum: { fontSize: 9, color: colors.textMuted },
-});

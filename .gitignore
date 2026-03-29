@@ -53,3 +53,13 @@ docs/superpowers/
 
 # IDE
 .idea/
+
+# Test coverage output
+coverage/
+
+# Temp/generated files
+transform_theme*.js
+code_review_comments.md
+chatgpt_analysis.md
+claude_analysis.md
+deepseek_analysis.md

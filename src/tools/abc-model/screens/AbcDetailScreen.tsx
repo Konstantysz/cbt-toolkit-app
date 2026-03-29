@@ -12,7 +12,8 @@ import { router } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { format, parseISO } from 'date-fns';
 import { pl as dateFnsPl } from 'date-fns/locale';
-import { colors, iconRow } from '../../../core/theme';
+import { useColors } from '../../../core/theme/useColors';
+import { iconRow } from '../../../core/theme';
 import { AbcGraph } from '../components/AbcGraph';
 import { useAbcEntry } from '../hooks/useAbcEntries';
 import * as repo from '../repository';
@@ -23,9 +24,86 @@ interface Props {
   id: string;
 }
 
+function useStyles() {
+  const colors = useColors();
+  return StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.bg },
+    centered: {
+      flex: 1,
+      backgroundColor: colors.bg,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    scroll: { padding: 20 },
+    metaRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 20 },
+    date: { fontSize: 12, color: colors.textMuted, letterSpacing: 0.5, flex: 1 },
+    badge: {
+      paddingHorizontal: 7,
+      paddingVertical: 3,
+      borderRadius: 4,
+      overflow: 'hidden',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    badgeText: {
+      fontSize: 10,
+      letterSpacing: 0.8,
+      textTransform: 'uppercase',
+      includeFontPadding: false,
+      lineHeight: 12,
+    },
+    badgeComplete: { backgroundColor: 'rgba(122,158,126,0.12)' },
+    badgeCompleteText: { color: colors.success },
+    badgeInProgress: { backgroundColor: 'rgba(184,151,74,0.1)' },
+    badgeInProgressText: { color: colors.inProgress },
+    graphCard: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 16,
+      padding: 12,
+      marginBottom: 24,
+    },
+    section: { marginBottom: 16 },
+    sectionLabel: {
+      fontSize: 10,
+      color: colors.textDim,
+      letterSpacing: 1.2,
+      textTransform: 'uppercase',
+      marginBottom: 5,
+    },
+    sectionBody: { fontSize: 14, color: colors.text, lineHeight: 22 },
+    emptyField: { color: colors.textDim, fontStyle: 'italic' },
+    divider: { height: 1, backgroundColor: colors.border, marginBottom: 16 },
+    actionRow: { flexDirection: 'row', gap: 10, padding: 16, paddingBottom: 28 },
+    editBtn: {
+      flex: 1,
+      paddingVertical: 13,
+      borderRadius: 12,
+      alignItems: 'center',
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    editBtnText: { fontSize: 14, color: colors.textMuted },
+    deleteBtn: {
+      flex: 1,
+      paddingVertical: 13,
+      borderRadius: 12,
+      alignItems: 'center',
+      backgroundColor: colors.dangerDim,
+      borderWidth: 1,
+      borderColor: 'rgba(196,96,90,0.22)',
+    },
+    deleteBtnText: { color: colors.danger, fontSize: 14 },
+    errorText: { fontSize: 15, color: colors.textMuted },
+    accentColor: { color: colors.accent },
+  });
+}
+
 export function AbcDetailScreen({ id }: Props): React.JSX.Element {
   const db = useSQLiteContext();
   const { entry, loading } = useAbcEntry(db, id);
+  const styles = useStyles();
 
   const confirmDelete = useCallback(() => {
     Alert.alert(pl.detail.deleteConfirmTitle, pl.detail.deleteConfirmMsg, [
@@ -48,7 +126,7 @@ export function AbcDetailScreen({ id }: Props): React.JSX.Element {
   if (loading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator color={colors.accent} />
+        <ActivityIndicator color={styles.accentColor.color} />
       </View>
     );
   }
@@ -81,13 +159,11 @@ export function AbcDetailScreen({ id }: Props): React.JSX.Element {
           <Text style={styles.date}>{formattedDate}</Text>
           {entry.isComplete ? (
             <View style={[styles.badge, styles.badgeComplete]}>
-              <Text style={[styles.badgeText, { color: colors.success }]}>
-                {pl.detail.complete}
-              </Text>
+              <Text style={[styles.badgeText, styles.badgeCompleteText]}>{pl.detail.complete}</Text>
             </View>
           ) : (
             <View style={[styles.badge, styles.badgeInProgress]}>
-              <Text style={[styles.badgeText, { color: colors.inProgress }]}>
+              <Text style={[styles.badgeText, styles.badgeInProgressText]}>
                 {pl.detail.inProgress}
               </Text>
             </View>
@@ -128,7 +204,12 @@ export function AbcDetailScreen({ id }: Props): React.JSX.Element {
           accessibilityLabel="Edytuj wpis"
         >
           <View style={iconRow}>
-            <Ionicons name="create-outline" size={14} color={colors.accent} accessible={false} />
+            <Ionicons
+              name="create-outline"
+              size={14}
+              color={styles.accentColor.color}
+              accessible={false}
+            />
             <Text style={styles.editBtnText}>{pl.detail.editBtn}</Text>
           </View>
         </TouchableOpacity>
@@ -139,68 +220,3 @@ export function AbcDetailScreen({ id }: Props): React.JSX.Element {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.bg },
-  centered: { flex: 1, backgroundColor: colors.bg, alignItems: 'center', justifyContent: 'center' },
-  scroll: { padding: 20 },
-  metaRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 20 },
-  date: { fontSize: 12, color: colors.textMuted, letterSpacing: 0.5, flex: 1 },
-  badge: {
-    paddingHorizontal: 7,
-    paddingVertical: 3,
-    borderRadius: 4,
-    overflow: 'hidden',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  badgeText: {
-    fontSize: 10,
-    letterSpacing: 0.8,
-    textTransform: 'uppercase',
-    includeFontPadding: false,
-    lineHeight: 12,
-  },
-  badgeComplete: { backgroundColor: 'rgba(122,158,126,0.12)' },
-  badgeInProgress: { backgroundColor: 'rgba(184,151,74,0.1)' },
-  graphCard: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 16,
-    padding: 12,
-    marginBottom: 24,
-  },
-  section: { marginBottom: 16 },
-  sectionLabel: {
-    fontSize: 10,
-    color: colors.textDim,
-    letterSpacing: 1.2,
-    textTransform: 'uppercase',
-    marginBottom: 5,
-  },
-  sectionBody: { fontSize: 14, color: colors.text, lineHeight: 22 },
-  emptyField: { color: colors.textDim, fontStyle: 'italic' },
-  divider: { height: 1, backgroundColor: colors.border, marginBottom: 16 },
-  actionRow: { flexDirection: 'row', gap: 10, padding: 16, paddingBottom: 28 },
-  editBtn: {
-    flex: 1,
-    paddingVertical: 13,
-    borderRadius: 12,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  editBtnText: { fontSize: 14, color: colors.textMuted },
-  deleteBtn: {
-    flex: 1,
-    paddingVertical: 13,
-    borderRadius: 12,
-    alignItems: 'center',
-    backgroundColor: colors.dangerDim,
-    borderWidth: 1,
-    borderColor: 'rgba(196,96,90,0.22)',
-  },
-  deleteBtnText: { color: colors.danger, fontSize: 14 },
-  errorText: { fontSize: 15, color: colors.textMuted },
-});

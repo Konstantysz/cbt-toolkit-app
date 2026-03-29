@@ -12,8 +12,12 @@ export const colors = {
   textDim: '#4A453E',
   danger: '#C4605A',
   dangerDim: 'rgba(196,96,90,0.12)',
+  dangerBorder: 'rgba(196,96,90,0.22)',
   success: '#7A9E7E',
+  successDim: 'rgba(122,158,126,0.12)',
   inProgress: '#B8974A',
+  inProgressDim: 'rgba(184,151,74,0.10)',
+  accentSubtle: 'rgba(196,149,106,0.35)',
 } as const;
 
 export const highContrastColors = {
@@ -30,8 +34,12 @@ export const highContrastColors = {
   textDim: '#6B6560',
   danger: '#E8706A',
   dangerDim: 'rgba(232,112,106,0.20)',
+  dangerBorder: 'rgba(232,112,106,0.35)',
   success: '#8BBF90',
+  successDim: 'rgba(139,191,144,0.18)',
   inProgress: '#D4AF6A',
+  inProgressDim: 'rgba(212,175,106,0.15)',
+  accentSubtle: 'rgba(196,149,106,0.50)',
 } as const;
 
 export const spacing = {
@@ -54,3 +62,12 @@ export const iconRow = {
   alignItems: 'center' as const,
   gap: 6,
 };
+
+export const typography = {
+  xs: 12,
+  sm: 14,
+  md: 16,
+  lg: 18,
+  xl: 22,
+  xxl: 28,
+} as const;

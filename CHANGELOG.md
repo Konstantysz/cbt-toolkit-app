@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Accessibility: `useColors()` propagated to tool screens and shared components** — high contrast mode now applies to CBT tool UIs (partial: list, flow, and shared component screens; detail screens follow-up in a separate PR)
+- **Theme tokens: `typography` scale added** — `fontSize` magic numbers replaced with `typography.xs/sm/md/lg/xl/xxl` tokens across tool screens
+- **Jest: `AsyncStorage` global mock** — tests no longer fail when components import `useColors`
+- **Jest: `.claude/` worktree directory excluded** from test discovery and coverage
+
 - **ABC Model data loss on export/import** — `exportData()` now includes `abc_entries`; import handles `abcEntries` as optional for backward compatibility with older export files
 - **SQLite foreign key constraints inactive** — `PRAGMA foreign_keys = ON` added to DB init; `ON DELETE CASCADE` now works as intended
 
