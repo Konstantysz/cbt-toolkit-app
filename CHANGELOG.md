@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **ABC Model data loss on export/import** — `exportData()` now includes `abc_entries`; import handles `abcEntries` as optional for backward compatibility with older export files
+- **SQLite foreign key constraints inactive** — `PRAGMA foreign_keys = ON` added to DB init; `ON DELETE CASCADE` now works as intended
+
 ### Added
 
 - **CI: Preview APK on push to `develop`** — `preview-apk` workflow builds a release APK via Gradle and uploads it as a 30-day GitHub Actions artifact
