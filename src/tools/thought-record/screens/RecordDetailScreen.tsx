@@ -83,7 +83,7 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
       <ScrollView contentContainerStyle={styles.scroll}>
         <View style={styles.metaRow}>
           <View style={styles.metaLeft}>
-            <Text style={styles.headerDate}>{formattedDate}</Text>
+            <Text style={[styles.headerDate, { color: colors.textMuted }]}>{formattedDate}</Text>
             {record.isComplete ? (
               <View style={[styles.badge, styles.badgeComplete]}>
                 <Text style={[styles.badgeText, { color: colors.success }]}>Kompletny</Text>
@@ -96,7 +96,7 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
           </View>
           <View style={styles.metaActions}>
             <TouchableOpacity
-              style={styles.actionBtn}
+              style={[styles.actionBtn, { borderColor: colors.border }]}
               onPress={() => router.push(`/(tools)/thought-record/${id}/compare`)}
               accessibilityLabel="Porównaj zapisy"
             >
@@ -107,11 +107,11 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
                   color={colors.accent}
                   accessible={false}
                 />
-                <Text style={styles.actionBtnText}>{pl.compare.btnLabel}</Text>
+                <Text style={[styles.actionBtnText, { color: colors.textMuted }]}>{pl.compare.btnLabel}</Text>
               </View>
             </TouchableOpacity>
             <TouchableOpacity
-              style={styles.actionBtn}
+              style={[styles.actionBtn, { borderColor: colors.border }]}
               onPress={() => router.push(`/(tools)/thought-record/${id}/form`)}
               accessibilityLabel="Formularz papierowy"
             >
@@ -122,7 +122,7 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
                   color={colors.accent}
                   accessible={false}
                 />
-                <Text style={styles.actionBtnText}>{pl.form.btn}</Text>
+                <Text style={[styles.actionBtnText, { color: colors.textMuted }]}>{pl.form.btn}</Text>
               </View>
             </TouchableOpacity>
           </View>
@@ -130,27 +130,27 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
 
         {/* Emotions (step 02) */}
         <View style={styles.section}>
-          <Text style={styles.stepNum}>Krok 02</Text>
-          <Text style={styles.stepTitle}>Emocje</Text>
+          <Text style={[styles.stepNum, { color: colors.textDim }]}>Krok 02</Text>
+          <Text style={[styles.stepTitle, { color: colors.accent }]}>Emocje</Text>
           {record.emotions.length === 0 ? (
-            <Text style={styles.emptyField}>—</Text>
+            <Text style={[styles.emptyField, { color: colors.textDim }]}>—</Text>
           ) : (
             record.emotions.map((em) => <EmotionRow key={em.name} emotion={em} />)
           )}
         </View>
-        <View style={styles.divider} />
+        <View style={[styles.divider, { backgroundColor: colors.border }]} />
 
         {/* Text sections */}
         {sections.map((sec, i) => (
           <React.Fragment key={sec.step}>
             <View style={styles.section}>
-              <Text style={styles.stepNum}>Krok {sec.step}</Text>
-              <Text style={styles.stepTitle}>{sec.title}</Text>
-              <Text style={[styles.bodyText, !sec.text && styles.emptyField]}>
+              <Text style={[styles.stepNum, { color: colors.textDim }]}>Krok {sec.step}</Text>
+              <Text style={[styles.stepTitle, { color: colors.accent }]}>{sec.title}</Text>
+              <Text style={[styles.bodyText, { color: colors.text }, !sec.text && { color: colors.textDim, fontStyle: 'italic' }]}>
                 {sec.text || '—'}
               </Text>
             </View>
-            {i < sections.length - 1 && <View style={styles.divider} />}
+            {i < sections.length - 1 && <View style={[styles.divider, { backgroundColor: colors.border }]} />}
           </React.Fragment>
         ))}
 
@@ -163,11 +163,11 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
           >
             <View style={iconRow}>
               <Ionicons name="create-outline" size={14} color={colors.accent} accessible={false} />
-              <Text style={styles.editBtnText}>{pl.edit.title}</Text>
+              <Text style={[styles.editBtnText, { color: colors.textMuted }]}>{pl.edit.title}</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.deleteBtn} onPress={confirmDelete} activeOpacity={0.8}>
-            <Text style={styles.deleteBtnText}>Usuń wpis</Text>
+          <TouchableOpacity style={[styles.deleteBtn, { backgroundColor: colors.dangerDim }]} onPress={confirmDelete} activeOpacity={0.8}>
+            <Text style={[styles.deleteBtnText, { color: colors.danger }]}>Usuń wpis</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -183,8 +183,8 @@ function EmotionRow({ emotion }: { emotion: Emotion }) {
   return (
     <View style={styles.emotionRow}>
       <View style={styles.emotionNameRow}>
-        <Text style={styles.emotionName}>{emotion.name}</Text>
-        {improved && <Text style={styles.emotionDrop}>↓</Text>}
+        <Text style={[styles.emotionName, { color: colors.text }]}>{emotion.name}</Text>
+        {improved && <Text style={[styles.emotionDrop, { color: colors.success }]}>↓</Text>}
       </View>
       <View style={styles.intensityBars}>
         <IntensityBar label="przed" value={before} />
@@ -205,8 +205,8 @@ function IntensityBar({
 }) {
   return (
     <View style={styles.ibarRow}>
-      <Text style={styles.ibarLabel}>{label}</Text>
-      <View style={styles.ibarTrack}>
+      <Text style={[styles.ibarLabel, { color: colors.textDim }]}>{label}</Text>
+      <View style={[styles.ibarTrack, { backgroundColor: colors.border }]}>
         <View
           style={[
             styles.ibarFill,
@@ -217,7 +217,7 @@ function IntensityBar({
           ]}
         />
       </View>
-      <Text style={styles.ibarNum}>{value}%</Text>
+      <Text style={[styles.ibarNum, { color: colors.textMuted }]}>{value}%</Text>
     </View>
   );
 }
@@ -242,8 +242,8 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 10,
   },
-  actionBtnText: { fontSize: 10, color: colors.textMuted, letterSpacing: 0.06 },
-  headerDate: { fontSize: 12, color: colors.textMuted, letterSpacing: 0.5 },
+  actionBtnText: { fontSize: 10, letterSpacing: 0.06 },
+  headerDate: { fontSize: 12, letterSpacing: 0.5 },
   badge: {
     paddingHorizontal: 7,
     paddingVertical: 3,
@@ -269,10 +269,10 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     marginBottom: 3,
   },
-  stepTitle: { fontSize: 17, color: colors.accent, fontWeight: '500', marginBottom: 8 },
-  bodyText: { fontSize: 14, color: colors.text, lineHeight: 23 },
-  emptyField: { color: colors.textDim, fontStyle: 'italic' },
-  divider: { height: 1, backgroundColor: colors.border, marginBottom: 20 },
+  stepTitle: { fontSize: 17, fontWeight: '500', marginBottom: 8 },
+  bodyText: { fontSize: 14, lineHeight: 23 },
+  emptyField: { fontStyle: 'italic' },
+  divider: { height: 1, marginBottom: 20 },
   emotionRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -280,8 +280,8 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   emotionNameRow: { flexDirection: 'row', alignItems: 'center', gap: 6, minWidth: 90 },
-  emotionName: { fontSize: 13, color: colors.text },
-  emotionDrop: { fontSize: 12, color: colors.success, fontWeight: '700' },
+  emotionName: { fontSize: 13 },
+  emotionDrop: { fontSize: 12, fontWeight: '700' },
   intensityBars: { flex: 1 },
   ibarRow: {
     flexDirection: 'row',
@@ -290,7 +290,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     justifyContent: 'flex-end',
   },
-  ibarLabel: { fontSize: 10, color: colors.textDim, width: 28, textAlign: 'right' },
+  ibarLabel: { fontSize: 10, width: 28, textAlign: 'right' },
   ibarTrack: {
     width: 120,
     height: 6,
@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   ibarFill: { height: '100%', borderRadius: 3 },
-  ibarNum: { fontSize: 10, color: colors.textMuted },
+  ibarNum: { fontSize: 10 },
   actionRow: { flexDirection: 'row', gap: 10, marginTop: 32 },
   editBtn: {
     flex: 1,
@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
   },
-  editBtnText: { fontSize: 14, color: colors.textMuted },
+  editBtnText: { fontSize: 14 },
   deleteBtn: {
     flex: 1,
     paddingVertical: 13,
@@ -319,6 +319,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(196,96,90,0.22)',
   },
-  deleteBtnText: { color: colors.danger, fontSize: 14 },
-  errorText: { fontSize: 15, color: colors.textMuted },
+  deleteBtnText: { fontSize: 14 },
+  errorText: { fontSize: 15 },
 });

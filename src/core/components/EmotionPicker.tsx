@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useColors } from '../theme/useColors';
 import { colors } from '../theme';
 import type { Emotion } from '../types';
 
@@ -32,6 +33,7 @@ interface Props {
 }
 
 export function EmotionPicker({ selected, onChange }: Props) {
+  const colors = useColors();
   const selectedNames = new Set(selected.map((e) => e.name));
 
   function toggle(label: string) {
@@ -49,11 +51,15 @@ export function EmotionPicker({ selected, onChange }: Props) {
         return (
           <TouchableOpacity
             key={em.key}
-            style={[styles.chip, isSelected && styles.chipSelected]}
+            style={[
+              styles.chip,
+              { borderColor: colors.border, backgroundColor: colors.surface },
+              isSelected && { backgroundColor: colors.accentDim, borderColor: colors.accent },
+            ]}
             onPress={() => toggle(em.label)}
             activeOpacity={0.7}
           >
-            <Text style={[styles.chipText, isSelected && styles.chipTextSelected]}>{em.label}</Text>
+            <Text style={[styles.chipText, { color: colors.textMuted }, isSelected && { color: colors.accent }]}>{em.label}</Text>
           </TouchableOpacity>
         );
       })}

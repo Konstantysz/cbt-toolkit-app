@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, TextInput, Text, StyleSheet } from 'react-native';
-import { colors } from '../theme';
+import { useColors } from '../theme/useColors';
+import { spacing, radius, typography } from '../theme';
 
 interface SearchBarProps {
   value: string;
@@ -13,13 +14,14 @@ export function SearchBar({
   onChangeText,
   placeholder = 'Szukaj...',
 }: SearchBarProps): React.JSX.Element {
+  const colors = useColors();
   return (
     <View style={styles.wrap}>
-      <Text style={styles.icon} accessibilityElementsHidden>
+      <Text style={[styles.icon, { color: colors.textDim }]} accessibilityElementsHidden>
         ⌕
       </Text>
       <TextInput
-        style={styles.input}
+        style={[styles.input, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.text }]}
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
@@ -35,27 +37,23 @@ export function SearchBar({
 const styles = StyleSheet.create({
   wrap: {
     position: 'relative',
-    marginHorizontal: 16,
-    marginTop: 12,
-    marginBottom: 4,
+    marginHorizontal: spacing.md,
+    marginTop: spacing.md - 4,
+    marginBottom: spacing.xs,
   },
   icon: {
     position: 'absolute',
     left: 14,
     top: 11,
-    fontSize: 14,
-    color: colors.textDim,
+    fontSize: typography.sm,
     zIndex: 1,
   },
   input: {
-    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 12,
+    borderRadius: radius.md,
     paddingVertical: 11,
     paddingHorizontal: 14,
     paddingLeft: 36,
-    fontSize: 13,
-    color: colors.text,
+    fontSize: typography.sm,
   },
 });

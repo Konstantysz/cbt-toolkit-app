@@ -16,6 +16,7 @@ import { useSQLiteContext } from 'expo-sqlite';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { format, parseISO } from 'date-fns';
 import { pl as dateFnsPl } from 'date-fns/locale';
+import { useColors } from '../../../core/theme/useColors';
 import { colors, iconRow } from '../../../core/theme';
 import { StepProgress } from '../../../core/components/StepProgress';
 import { TextStep } from '../components/TextStep';
@@ -280,6 +281,7 @@ export function NewRecordFlow({ existingId }: NewRecordFlowProps): React.JSX.Ele
   const db = useSQLiteContext();
   const [currentStep, setCurrentStep] = useState(1);
   const [editLoading, setEditLoading] = useState(existingId !== undefined);
+  const colors = useColors();
   const [state, setState] = useState<FlowState>({
     recordId: existingId ?? null,
     situation: '',

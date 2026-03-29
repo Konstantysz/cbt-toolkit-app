@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { colors } from '../theme';
+import { useColors } from '../theme/useColors';
+import { spacing } from '../theme';
 
 interface Props {
   totalSteps: number;
@@ -8,6 +9,7 @@ interface Props {
 }
 
 export function StepProgress({ totalSteps, currentStep }: Props) {
+  const colors = useColors();
   return (
     <View style={styles.row}>
       {Array.from({ length: totalSteps }, (_, i) => {
@@ -22,6 +24,6 @@ export function StepProgress({ totalSteps, currentStep }: Props) {
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', gap: 5, paddingHorizontal: 20, paddingVertical: 12 },
+  row: { flexDirection: 'row', gap: 5, paddingHorizontal: spacing.lg - 4, paddingVertical: spacing.md - 4 },
   seg: { flex: 1, height: 3, borderRadius: 2 },
 });

@@ -5,6 +5,7 @@ import { router, useFocusEffect } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { format, parseISO } from 'date-fns';
 import { pl as dateFnsPl } from 'date-fns/locale';
+import { useColors } from '../../../core/theme/useColors';
 import { colors } from '../../../core/theme';
 import { SearchBar } from '../../../core/components/SearchBar';
 import { useAbcEntries } from '../hooks/useAbcEntries';
@@ -17,6 +18,7 @@ const ONBOARDING_KEY = 'abc-model:onboarding-seeded';
 export function AbcListScreen(): React.JSX.Element {
   const db = useSQLiteContext();
   const { entries, loading, refresh } = useAbcEntries(db);
+  const colors = useColors();
   const [query, setQuery] = useState('');
 
   useFocusEffect(

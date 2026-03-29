@@ -15,6 +15,7 @@ import { useSQLiteContext } from 'expo-sqlite';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { format, parseISO } from 'date-fns';
 import { pl as dateFnsPl } from 'date-fns/locale';
+import { useColors } from '../../../core/theme/useColors';
 import { colors } from '../../../core/theme';
 import { StepProgress } from '../../../core/components/StepProgress';
 import { StepHelper } from '../../../core/components/StepHelper';
@@ -56,6 +57,7 @@ export function NewExperimentFlow({ phase, experimentId }: Props): React.JSX.Ele
   const db = useSQLiteContext();
   const [expId, setExpId] = useState<string | null>(experimentId ?? null);
   const [loading, setLoading] = useState(phase === 'result');
+  const colors = useColors();
   const [currentStep, setCurrentStep] = useState(1);
 
   const [planState, setPlanState] = useState<PlanState>({

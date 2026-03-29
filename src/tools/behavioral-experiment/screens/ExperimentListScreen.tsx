@@ -4,6 +4,7 @@ import { router, useFocusEffect } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { format, parseISO } from 'date-fns';
 import { pl as dateFnsPl } from 'date-fns/locale';
+import { useColors } from '../../../core/theme/useColors';
 import { colors } from '../../../core/theme';
 import { SearchBar } from '../../../core/components/SearchBar';
 import { useBehavioralExperiments } from '../hooks/useBehavioralExperiments';
@@ -14,6 +15,7 @@ import type { BehavioralExperiment } from '../types';
 export function ExperimentListScreen(): React.JSX.Element {
   const db = useSQLiteContext();
   const { experiments, loading, refresh } = useBehavioralExperiments(db);
+  const colors = useColors();
   const [query, setQuery] = useState('');
 
   useFocusEffect(

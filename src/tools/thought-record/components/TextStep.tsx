@@ -1,7 +1,8 @@
 // src/tools/thought-record/components/TextStep.tsx
 import React from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
-import { colors } from '../../../core/theme';
+import { useColors } from '../../../core/theme/useColors';
+import { radius, typography } from '../../../core/theme';
 
 interface Props {
   prompt: string;
@@ -12,11 +13,12 @@ interface Props {
 }
 
 export function TextStep({ prompt, value, onChange, placeholder, minHeight = 130 }: Props) {
+  const colors = useColors();
   return (
     <View>
-      <Text style={styles.prompt}>{prompt}</Text>
+      <Text style={[styles.prompt, { color: colors.textMuted }]}>{prompt}</Text>
       <TextInput
-        style={[styles.input, { minHeight }]}
+        style={[styles.input, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.text }, { minHeight }]}
         value={value}
         onChangeText={onChange}
         placeholder={placeholder ?? ''}
@@ -29,21 +31,6 @@ export function TextStep({ prompt, value, onChange, placeholder, minHeight = 130
 }
 
 const styles = StyleSheet.create({
-  prompt: {
-    fontSize: 15,
-    color: colors.textMuted,
-    lineHeight: 22,
-    marginBottom: 16,
-    fontStyle: 'italic',
-  },
-  input: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 12,
-    padding: 15,
-    fontSize: 15,
-    color: colors.text,
-    lineHeight: 24,
-  },
+  prompt: { fontSize: typography.md - 1, lineHeight: 22, marginBottom: typography.md, fontStyle: 'italic' },
+  input: { borderWidth: 1, borderRadius: radius.md, padding: 15, fontSize: typography.md - 1, lineHeight: 24 },
 });

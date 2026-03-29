@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
+import { useColors } from '../../../core/theme/useColors';
 import { colors, iconRow } from '../../../core/theme';
 import { StepProgress } from '../../../core/components/StepProgress';
 import { StepHelper } from '../../../core/components/StepHelper';
@@ -40,6 +41,7 @@ export function NewAbcFlow({ existingId }: Props): React.JSX.Element {
   const db = useSQLiteContext();
   const [step, setStep] = useState(1);
   const [saving, setSaving] = useState(false);
+  const colors = useColors();
   const [state, setState] = useState<FlowState>({
     entryId: null,
     situation: '',

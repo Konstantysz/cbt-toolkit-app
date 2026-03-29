@@ -1,21 +1,26 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Slider from '@react-native-community/slider';
-import { colors } from '../theme';
+import { useColors } from '../theme/useColors';
+import { spacing, radius, typography } from '../theme';
 
 interface Props {
-  value: number; // 0–100
+  value: number; // 0-100
   onChange: (v: number) => void;
   label?: string;
   readOnly?: boolean;
 }
 
 export function IntensitySlider({ value, onChange, label, readOnly }: Props) {
+  const colors = useColors();
   return (
-    <View style={styles.container} pointerEvents={readOnly ? 'none' : 'auto'}>
+    <View
+      style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.border }]}
+      pointerEvents={readOnly ? 'none' : 'auto'}
+    >
       <View style={styles.header}>
-        {label ? <Text style={styles.label}>{label}</Text> : <View />}
-        <Text style={styles.value}>{value}%</Text>
+        {label ? <Text style={[styles.label, { color: colors.text }]}>{label}</Text> : <View />}
+        <Text style={[styles.value, { color: colors.accent }]}>{value}%</Text>
       </View>
       <Slider
         testID="intensity-slider"
@@ -35,12 +40,10 @@ export function IntensitySlider({ value, onChange, label, readOnly }: Props) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: colors.surface,
-    borderRadius: 12,
+    borderRadius: radius.md,
     borderWidth: 1,
-    borderColor: colors.border,
     padding: 14,
-    marginBottom: 8,
+    marginBottom: spacing.sm,
   },
   header: {
     flexDirection: 'row',
@@ -49,14 +52,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   label: {
-    fontSize: 14,
-    color: colors.text,
+    fontSize: typography.sm,
     fontWeight: '500',
   },
   value: {
-    fontSize: 18,
+    fontSize: typography.lg,
     fontWeight: '700',
-    color: colors.accent,
     fontVariant: ['tabular-nums'],
   },
   slider: { width: '100%', height: 30 },
