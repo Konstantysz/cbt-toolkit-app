@@ -5,6 +5,7 @@ jest.mock('expo-router', () => ({
 jest.mock('../repository');
 
 import React from 'react';
+import { Alert } from 'react-native';
 import { render, fireEvent, act } from '@testing-library/react-native';
 import * as SQLite from 'expo-sqlite';
 import * as repo from '../repository';
@@ -103,6 +104,50 @@ describe('NewAbcFlow — edit mode', () => {
     await act(async () => {});
 
     expect(getByDisplayValue('Istniejąca sytuacja')).toBeTruthy();
+  });
+});
+
+describe('NewAbcFlow — error handling', () => {
+  it('shows alert when handleNext throws', async () => {
+    jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+    (repo.createEntry as jest.Mock).mockResolvedValue(baseEntry);
+    (repo.updateEntry as jest.Mock).mockRejectedValueOnce(new Error('DB error'));
+
+    const { getByText } = render(<NewAbcFlow />);
+    await act(async () => {});
+
+    await act(async () => {
+      fireEvent.press(getByText('Dalej'));
+    });
+
+    expect(Alert.alert).toHaveBeenCalledWith(
+      'Błąd',
+      'Nie udało się zapisać danych. Spróbuj ponownie.'
+    );
+  });
+
+  it('shows alert when handleSave throws', async () => {
+    jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+    (repo.createEntry as jest.Mock).mockResolvedValue(baseEntry);
+    (repo.updateEntry as jest.Mock)
+      .mockResolvedValueOnce(undefined)
+      .mockRejectedValueOnce(new Error('DB error'));
+
+    const { getByText } = render(<NewAbcFlow />);
+    await act(async () => {});
+
+    await act(async () => {
+      fireEvent.press(getByText('Dalej'));
+    });
+
+    await act(async () => {
+      fireEvent.press(getByText('Zapisz'));
+    });
+
+    expect(Alert.alert).toHaveBeenCalledWith(
+      'Błąd',
+      'Nie udało się zapisać wpisu. Spróbuj ponownie.'
+    );
   });
 });
 
