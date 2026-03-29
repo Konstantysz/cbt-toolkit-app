@@ -1,5 +1,6 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react-native';
+import { Alert } from 'react-native';
+import { render, screen, fireEvent, act } from '@testing-library/react-native';
 import { RecordDetailScreen } from '../screens/RecordDetailScreen';
 
 jest.mock('expo-sqlite', () => ({ useSQLiteContext: () => ({}) }));
@@ -54,6 +55,79 @@ describe('RecordDetailScreen', () => {
     render(<RecordDetailScreen id="rec-1" />);
     expect(screen.getByText('Lęk')).toBeTruthy();
     expect(screen.getByText('Spotkanie z szefem')).toBeTruthy();
+  });
+
+  it('action buttons navigate and confirm delete', () => {
+    const { router } = require('expo-router');
+    jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+    const record = {
+      id: 'rec-1',
+      situation: 'Test',
+      situationDate: '2026-01-01',
+      automaticThoughts: '',
+      evidenceFor: '',
+      evidenceAgainst: '',
+      alternativeThought: '',
+      outcome: null,
+      emotions: [],
+      isComplete: true,
+      isExample: false,
+      currentStep: 7,
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: '2026-01-01T00:00:00.000Z',
+    };
+    (hooks.useThoughtRecord as jest.Mock).mockReturnValue({ record, loading: false });
+    render(<RecordDetailScreen id="rec-1" />);
+
+    fireEvent.press(screen.getByText('Porównaj'));
+    expect(router.push).toHaveBeenCalledWith('/(tools)/thought-record/rec-1/compare');
+
+    fireEvent.press(screen.getByText('Formularz'));
+    expect(router.push).toHaveBeenCalledWith('/(tools)/thought-record/rec-1/form');
+
+    fireEvent.press(screen.getByText('Edytuj zapis'));
+    expect(router.push).toHaveBeenCalledWith('/(tools)/thought-record/rec-1/edit');
+
+    fireEvent.press(screen.getByText('Usuń wpis'));
+    expect(Alert.alert).toHaveBeenCalledWith('Usuń wpis', expect.any(String), expect.any(Array));
+  });
+
+  it('executes delete when user confirms', async () => {
+    const { router } = require('expo-router');
+    const { deleteRecord } = require('../repository');
+    (deleteRecord as jest.Mock).mockResolvedValue(undefined);
+    let capturedButtons: { onPress?: () => void }[] = [];
+    jest.spyOn(Alert, 'alert').mockImplementation((_t, _m, btns) => {
+      capturedButtons = (btns as { onPress?: () => void }[]) ?? [];
+    });
+    const record = {
+      id: 'rec-del',
+      situation: 'Test',
+      situationDate: '2026-01-01',
+      automaticThoughts: '',
+      evidenceFor: '',
+      evidenceAgainst: '',
+      alternativeThought: '',
+      outcome: null,
+      emotions: [],
+      isComplete: true,
+      isExample: false,
+      currentStep: 7,
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: '2026-01-01T00:00:00.000Z',
+    };
+    (hooks.useThoughtRecord as jest.Mock).mockReturnValue({ record, loading: false });
+    render(<RecordDetailScreen id="rec-del" />);
+
+    fireEvent.press(screen.getByText('Usuń wpis'));
+    // call the destructive button's onPress
+    const destructiveBtn = capturedButtons.find((b) => b.onPress);
+    await act(async () => {
+      await destructiveBtn?.onPress?.();
+    });
+
+    expect(deleteRecord).toHaveBeenCalledWith(expect.anything(), 'rec-del');
+    expect(router.back).toHaveBeenCalled();
   });
 
   it('renders incomplete record with in-progress badge', () => {
