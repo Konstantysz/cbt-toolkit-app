@@ -71,6 +71,14 @@ test('keeps loading=false during refresh when records already present', async ()
   expect(result.current.loading).toBe(false);
 });
 
+test('refresh does not fetch when db is null', async () => {
+  const { result } = renderHook(() => useThoughtRecords(null));
+  await act(async () => {
+    await result.current.refresh();
+  });
+  expect(repo.getRecords).not.toHaveBeenCalled();
+});
+
 describe('useThoughtRecord', () => {
   test('loads a single record by id on mount', async () => {
     (repo.getRecordById as jest.Mock).mockResolvedValue(makeRecord('rec-1'));

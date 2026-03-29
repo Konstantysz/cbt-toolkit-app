@@ -79,6 +79,14 @@ test('keeps loading=false during refresh when experiments already present', asyn
   expect(result.current.loading).toBe(false);
 });
 
+test('refresh does not fetch when db is null', async () => {
+  const { result } = renderHook(() => useBehavioralExperiments(null));
+  await act(async () => {
+    await result.current.refresh();
+  });
+  expect(repo.getExperiments).not.toHaveBeenCalled();
+});
+
 describe('useBehavioralExperiment', () => {
   test('loads a single experiment by id on mount', async () => {
     (repo.getExperimentById as jest.Mock).mockResolvedValue(makeExperiment('exp-1'));
