@@ -1,3 +1,4 @@
+/* eslint-disable */
 module.exports = {
   getItem: jest.fn().mockResolvedValue(null),
   setItem: jest.fn().mockResolvedValue(undefined),

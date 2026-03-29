@@ -16,7 +16,6 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { format, parseISO } from 'date-fns';
 import { pl as dateFnsPl } from 'date-fns/locale';
 import { useColors } from '../../../core/theme/useColors';
-import { colors } from '../../../core/theme';
 import { StepProgress } from '../../../core/components/StepProgress';
 import { StepHelper } from '../../../core/components/StepHelper';
 import { IntensitySlider } from '../../../core/components/IntensitySlider';
@@ -46,6 +45,8 @@ interface ResultState {
   conclusion: string;
 }
 
+type Styles = ReturnType<typeof useStyles>;
+
 const PLAN_STEPS = 5;
 const RESULT_STEPS = 3;
 
@@ -53,11 +54,87 @@ function todayIso() {
   return new Date().toISOString().split('T')[0];
 }
 
+function useStyles() {
+  const colors = useColors();
+  return StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.bg },
+    centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+    scrollContent: { padding: 20, paddingBottom: 40 },
+    stepTitle: {
+      fontSize: 20,
+      fontWeight: '700',
+      color: colors.text,
+      marginBottom: 12,
+      lineHeight: 28,
+    },
+    fieldLabel: {
+      fontSize: 12,
+      color: colors.textMuted,
+      textTransform: 'uppercase',
+      letterSpacing: 0.6,
+      marginBottom: 6,
+    },
+    input: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 12,
+      padding: 15,
+      fontSize: 15,
+      color: colors.text,
+      lineHeight: 24,
+      minHeight: 100,
+    },
+    inputTop: { marginTop: 12 },
+    datePicker: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 12,
+      padding: 14,
+      marginBottom: 4,
+    },
+    datePickerText: { fontSize: 15, color: colors.text },
+    navRow: {
+      flexDirection: 'row',
+      gap: 10,
+      paddingHorizontal: 20,
+      paddingVertical: 16,
+      borderTopWidth: 1,
+      borderTopColor: colors.border,
+      backgroundColor: colors.bg,
+    },
+    btnBack: {
+      flex: 1,
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 12,
+      paddingVertical: 14,
+      alignItems: 'center',
+    },
+    btnBackText: { fontSize: 15, color: colors.textMuted, fontWeight: '500' },
+    btnNext: {
+      flex: 2,
+      backgroundColor: colors.accent,
+      borderRadius: 12,
+      paddingVertical: 14,
+      alignItems: 'center',
+    },
+    btnFinish: { backgroundColor: colors.success },
+    btnDisabled: { backgroundColor: colors.border },
+    btnNextText: { fontSize: 15, color: colors.bg, fontWeight: '600' },
+    btnDisabledText: { color: colors.textDim },
+    placeholderColor: { color: colors.textDim },
+    accentColor: { color: colors.accent },
+  });
+}
+
 export function NewExperimentFlow({ phase, experimentId }: Props): React.JSX.Element {
   const db = useSQLiteContext();
   const [expId, setExpId] = useState<string | null>(experimentId ?? null);
   const [loading, setLoading] = useState(phase === 'result');
-  const colors = useColors();
+  const styles = useStyles();
   const [currentStep, setCurrentStep] = useState(1);
 
   const [planState, setPlanState] = useState<PlanState>({
@@ -191,7 +268,7 @@ export function NewExperimentFlow({ phase, experimentId }: Props): React.JSX.Ele
   if (loading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator color={colors.accent} />
+        <ActivityIndicator color={styles.accentColor.color} />
       </View>
     );
   }
@@ -207,8 +284,8 @@ export function NewExperimentFlow({ phase, experimentId }: Props): React.JSX.Ele
       <StepProgress totalSteps={totalSteps} currentStep={currentStep} />
 
       <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
-        {phase === 'plan' && renderPlanStep(currentStep, planState, updatePlan)}
-        {phase === 'result' && renderResultStep(currentStep, resultState, updateResult)}
+        {phase === 'plan' && renderPlanStep(currentStep, planState, updatePlan, styles)}
+        {phase === 'result' && renderResultStep(currentStep, resultState, updateResult, styles)}
       </ScrollView>
 
       <View style={styles.navRow}>
@@ -238,7 +315,8 @@ export function NewExperimentFlow({ phase, experimentId }: Props): React.JSX.Ele
 function renderPlanStep(
   step: number,
   state: PlanState,
-  update: <K extends keyof PlanState>(key: K, value: PlanState[K]) => void
+  update: <K extends keyof PlanState>(key: K, value: PlanState[K]) => void,
+  styles: Styles
 ): React.ReactNode {
   if (step === 1)
     return (
@@ -249,7 +327,7 @@ function renderPlanStep(
           value={state.belief}
           onChangeText={(v) => update('belief', v)}
           placeholder={pl.step1.placeholder}
-          placeholderTextColor={colors.textDim}
+          placeholderTextColor={styles.placeholderColor.color}
           multiline
           textAlignVertical="top"
         />
@@ -270,7 +348,7 @@ function renderPlanStep(
           value={state.plan}
           onChangeText={(v) => update('plan', v)}
           placeholder={pl.step2.placeholder}
-          placeholderTextColor={colors.textDim}
+          placeholderTextColor={styles.placeholderColor.color}
           multiline
           textAlignVertical="top"
         />
@@ -286,7 +364,7 @@ function renderPlanStep(
           value={state.predictedOutcome}
           onChangeText={(v) => update('predictedOutcome', v)}
           placeholder={pl.step3.placeholder}
-          placeholderTextColor={colors.textDim}
+          placeholderTextColor={styles.placeholderColor.color}
           multiline
           textAlignVertical="top"
         />
@@ -302,7 +380,7 @@ function renderPlanStep(
           value={state.potentialProblems}
           onChangeText={(v) => update('potentialProblems', v)}
           placeholder={pl.step4.placeholder}
-          placeholderTextColor={colors.textDim}
+          placeholderTextColor={styles.placeholderColor.color}
           multiline
           textAlignVertical="top"
         />
@@ -317,7 +395,7 @@ function renderPlanStep(
         value={state.problemStrategies}
         onChangeText={(v) => update('problemStrategies', v)}
         placeholder={pl.step5.placeholder}
-        placeholderTextColor={colors.textDim}
+        placeholderTextColor={styles.placeholderColor.color}
         multiline
         textAlignVertical="top"
       />
@@ -329,7 +407,8 @@ function renderPlanStep(
 function renderResultStep(
   step: number,
   state: ResultState,
-  update: <K extends keyof ResultState>(key: K, value: ResultState[K]) => void
+  update: <K extends keyof ResultState>(key: K, value: ResultState[K]) => void,
+  styles: Styles
 ): React.ReactNode {
   if (step === 1) {
     const dateObj = parseISO(state.executionDate);
@@ -363,7 +442,7 @@ function renderResultStep(
           value={state.actualOutcome}
           onChangeText={(v) => update('actualOutcome', v)}
           placeholder={pl.step6.placeholder}
-          placeholderTextColor={colors.textDim}
+          placeholderTextColor={styles.placeholderColor.color}
           multiline
           textAlignVertical="top"
         />
@@ -396,7 +475,7 @@ function renderResultStep(
         value={state.conclusion}
         onChangeText={(v) => update('conclusion', v)}
         placeholder={pl.step8.placeholder}
-        placeholderTextColor={colors.textDim}
+        placeholderTextColor={styles.placeholderColor.color}
         multiline
         textAlignVertical="top"
       />
@@ -404,74 +483,3 @@ function renderResultStep(
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.bg },
-  centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  scrollContent: { padding: 20, paddingBottom: 40 },
-  stepTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: 12,
-    lineHeight: 28,
-  },
-  fieldLabel: {
-    fontSize: 12,
-    color: colors.textMuted,
-    textTransform: 'uppercase',
-    letterSpacing: 0.6,
-    marginBottom: 6,
-  },
-  input: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 12,
-    padding: 15,
-    fontSize: 15,
-    color: colors.text,
-    lineHeight: 24,
-    minHeight: 100,
-  },
-  inputTop: { marginTop: 12 },
-  datePicker: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 12,
-    padding: 14,
-    marginBottom: 4,
-  },
-  datePickerText: { fontSize: 15, color: colors.text },
-  navRow: {
-    flexDirection: 'row',
-    gap: 10,
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
-    backgroundColor: colors.bg,
-  },
-  btnBack: {
-    flex: 1,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 12,
-    paddingVertical: 14,
-    alignItems: 'center',
-  },
-  btnBackText: { fontSize: 15, color: colors.textMuted, fontWeight: '500' },
-  btnNext: {
-    flex: 2,
-    backgroundColor: colors.accent,
-    borderRadius: 12,
-    paddingVertical: 14,
-    alignItems: 'center',
-  },
-  btnFinish: { backgroundColor: colors.success },
-  btnDisabled: { backgroundColor: colors.border },
-  btnNextText: { fontSize: 15, color: colors.bg, fontWeight: '600' },
-  btnDisabledText: { color: colors.textDim },
-});

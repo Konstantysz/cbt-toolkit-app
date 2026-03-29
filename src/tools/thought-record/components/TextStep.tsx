@@ -12,13 +12,22 @@ interface Props {
   minHeight?: number;
 }
 
+function useStyles() {
+  const colors = useColors();
+  return StyleSheet.create({
+    prompt: { fontSize: typography.md - 1, lineHeight: 22, marginBottom: typography.md, fontStyle: 'italic', color: colors.textMuted },
+    input: { borderWidth: 1, borderRadius: radius.md, padding: 15, fontSize: typography.md - 1, lineHeight: 24, backgroundColor: colors.surface, borderColor: colors.border, color: colors.text },
+  });
+}
+
 export function TextStep({ prompt, value, onChange, placeholder, minHeight = 130 }: Props) {
+  const styles = useStyles();
   const colors = useColors();
   return (
     <View>
-      <Text style={[styles.prompt, { color: colors.textMuted }]}>{prompt}</Text>
+      <Text style={styles.prompt}>{prompt}</Text>
       <TextInput
-        style={[styles.input, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.text }, { minHeight }]}
+        style={[styles.input, { minHeight }]}
         value={value}
         onChangeText={onChange}
         placeholder={placeholder ?? ''}
@@ -29,8 +38,3 @@ export function TextStep({ prompt, value, onChange, placeholder, minHeight = 130
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  prompt: { fontSize: typography.md - 1, lineHeight: 22, marginBottom: typography.md, fontStyle: 'italic' },
-  input: { borderWidth: 1, borderRadius: radius.md, padding: 15, fontSize: typography.md - 1, lineHeight: 24 },
-});

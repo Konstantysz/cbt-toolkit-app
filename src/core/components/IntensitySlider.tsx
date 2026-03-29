@@ -11,16 +11,46 @@ interface Props {
   readOnly?: boolean;
 }
 
+function useStyles() {
+  const colors = useColors();
+  return StyleSheet.create({
+    container: {
+      borderRadius: radius.md,
+      borderWidth: 1,
+      padding: 14,
+      marginBottom: spacing.sm,
+      backgroundColor: colors.surface,
+      borderColor: colors.border,
+    },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 10,
+    },
+    label: {
+      fontSize: typography.sm,
+      fontWeight: '500',
+      color: colors.text,
+    },
+    value: {
+      fontSize: typography.lg,
+      fontWeight: '700',
+      fontVariant: ['tabular-nums'],
+      color: colors.accent,
+    },
+    slider: { width: '100%', height: 30 },
+  });
+}
+
 export function IntensitySlider({ value, onChange, label, readOnly }: Props) {
+  const styles = useStyles();
   const colors = useColors();
   return (
-    <View
-      style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.border }]}
-      pointerEvents={readOnly ? 'none' : 'auto'}
-    >
+    <View style={styles.container} pointerEvents={readOnly ? 'none' : 'auto'}>
       <View style={styles.header}>
-        {label ? <Text style={[styles.label, { color: colors.text }]}>{label}</Text> : <View />}
-        <Text style={[styles.value, { color: colors.accent }]}>{value}%</Text>
+        {label ? <Text style={styles.label}>{label}</Text> : <View />}
+        <Text style={styles.value}>{value}%</Text>
       </View>
       <Slider
         testID="intensity-slider"
@@ -37,28 +67,3 @@ export function IntensitySlider({ value, onChange, label, readOnly }: Props) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    borderRadius: radius.md,
-    borderWidth: 1,
-    padding: 14,
-    marginBottom: spacing.sm,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  label: {
-    fontSize: typography.sm,
-    fontWeight: '500',
-  },
-  value: {
-    fontSize: typography.lg,
-    fontWeight: '700',
-    fontVariant: ['tabular-nums'],
-  },
-  slider: { width: '100%', height: 30 },
-});
