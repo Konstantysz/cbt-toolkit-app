@@ -205,9 +205,21 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
       {/* Plan section */}
       <Text style={styles.sectionHeader}>{pl.detail.planSection}</Text>
       <DetailRow label={pl.detail.plan} value={experiment.plan || '—'} styles={styles} />
-      <DetailRow label={pl.detail.predictedOutcome} value={experiment.predictedOutcome || '—'} styles={styles} />
-      <DetailRow label={pl.detail.potentialProblems} value={experiment.potentialProblems || '—'} styles={styles} />
-      <DetailRow label={pl.detail.problemStrategies} value={experiment.problemStrategies || '—'} styles={styles} />
+      <DetailRow
+        label={pl.detail.predictedOutcome}
+        value={experiment.predictedOutcome || '—'}
+        styles={styles}
+      />
+      <DetailRow
+        label={pl.detail.potentialProblems}
+        value={experiment.potentialProblems || '—'}
+        styles={styles}
+      />
+      <DetailRow
+        label={pl.detail.problemStrategies}
+        value={experiment.problemStrategies || '—'}
+        styles={styles}
+      />
 
       {/* Add result button */}
       {experiment.status === 'planned' && (
@@ -233,7 +245,11 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
               styles={styles}
             />
           )}
-          <DetailRow label={pl.detail.actualOutcome} value={experiment.actualOutcome || '—'} styles={styles} />
+          <DetailRow
+            label={pl.detail.actualOutcome}
+            value={experiment.actualOutcome || '—'}
+            styles={styles}
+          />
           {experiment.confirmationPercent != null && (
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>{pl.detail.confirmationPercent}</Text>
@@ -248,7 +264,11 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
               <Text style={styles.percentNum}>{experiment.confirmationPercent}%</Text>
             </View>
           )}
-          <DetailRow label={pl.detail.conclusion} value={experiment.conclusion || '—'} styles={styles} />
+          <DetailRow
+            label={pl.detail.conclusion}
+            value={experiment.conclusion || '—'}
+            styles={styles}
+          />
         </>
       )}
 
@@ -261,7 +281,12 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
           accessibilityLabel="Edytuj eksperyment"
         >
           <View style={iconRow}>
-            <Ionicons name="create-outline" size={14} color={styles.accentColor.color} accessible={false} />
+            <Ionicons
+              name="create-outline"
+              size={14}
+              color={styles.accentColor.color}
+              accessible={false}
+            />
             <Text style={styles.editBtnText}>{pl.detail.edit}</Text>
           </View>
         </TouchableOpacity>
@@ -273,7 +298,15 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
   );
 }
 
-function DetailRow({ label, value, styles }: { label: string; value: string; styles: ReturnType<typeof useStyles> }) {
+function DetailRow({
+  label,
+  value,
+  styles,
+}: {
+  label: string;
+  value: string;
+  styles: ReturnType<typeof useStyles>;
+}) {
   return (
     <View style={styles.detailRow}>
       <Text style={styles.detailLabel}>{label}</Text>

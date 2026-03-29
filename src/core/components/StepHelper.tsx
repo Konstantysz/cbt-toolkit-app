@@ -26,7 +26,12 @@ function useStyles() {
       borderColor: colors.accentBorder,
     },
     toggleActive: { backgroundColor: colors.accentBorder },
-    toggleText: { fontSize: 11, letterSpacing: 0.3, includeFontPadding: false, color: colors.accent },
+    toggleText: {
+      fontSize: 11,
+      letterSpacing: 0.3,
+      includeFontPadding: false,
+      color: colors.accent,
+    },
     panel: {
       borderWidth: 1,
       borderRadius: 10,
@@ -36,7 +41,13 @@ function useStyles() {
       backgroundColor: colors.surface,
       borderColor: colors.border,
     },
-    label: { fontSize: 9, letterSpacing: 0.14, textTransform: 'uppercase', marginBottom: 6, color: colors.textDim },
+    label: {
+      fontSize: 9,
+      letterSpacing: 0.14,
+      textTransform: 'uppercase',
+      marginBottom: 6,
+      color: colors.textDim,
+    },
     hint: { fontSize: 15, lineHeight: 22, fontStyle: 'italic', color: colors.textMuted },
   });
 }

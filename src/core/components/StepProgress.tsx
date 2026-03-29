@@ -2,7 +2,6 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useColors } from '../theme/useColors';
 
-
 interface Props {
   totalSteps: number;
   currentStep: number; // 1-based

@@ -25,7 +25,12 @@ function useStyles() {
   const colors = useColors();
   return StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.bg, paddingHorizontal: 16, paddingBottom: 12 },
-    centered: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.bg },
+    centered: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: colors.bg,
+    },
     errorText: { fontSize: 15, color: colors.textMuted },
     topBar: { alignItems: 'center', paddingVertical: 14, gap: 6 },
     dots: { flexDirection: 'row', gap: 7 },

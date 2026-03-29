@@ -134,15 +134,11 @@ export function AbcListScreen(): React.JSX.Element {
           <Text style={styles.date}>{formatDate(item.createdAt)}</Text>
           {item.isExample ? (
             <View style={[styles.badge, styles.badgeExample]}>
-              <Text style={[styles.badgeText, styles.badgeExampleText]}>
-                {pl.onboarding.badge}
-              </Text>
+              <Text style={[styles.badgeText, styles.badgeExampleText]}>{pl.onboarding.badge}</Text>
             </View>
           ) : item.isComplete ? (
             <View style={[styles.badge, styles.badgeComplete]}>
-              <Text style={[styles.badgeText, styles.badgeCompleteText]}>
-                {pl.detail.complete}
-              </Text>
+              <Text style={[styles.badgeText, styles.badgeCompleteText]}>{pl.detail.complete}</Text>
             </View>
           ) : (
             <View style={[styles.badge, styles.badgeInProgress]}>

@@ -94,7 +94,12 @@ function useStyles() {
   const colors = useColors();
   return StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.bg },
-    centered: { flex: 1, backgroundColor: colors.bg, alignItems: 'center', justifyContent: 'center' },
+    centered: {
+      flex: 1,
+      backgroundColor: colors.bg,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
     scroll: { flex: 1 },
     scrollContent: { padding: 20, paddingTop: 4 },
     nav: {

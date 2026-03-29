@@ -40,7 +40,12 @@ interface Props {
 function useStyles() {
   const colors = useColors();
   return StyleSheet.create({
-    centered: { flex: 1, backgroundColor: colors.bg, alignItems: 'center', justifyContent: 'center' },
+    centered: {
+      flex: 1,
+      backgroundColor: colors.bg,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
     scroll: { padding: 20 },
     footer: { padding: 16, paddingBottom: Platform.OS === 'ios' ? 32 : 16 },
     btn: {
@@ -61,7 +66,13 @@ function useStepStyles() {
   return StyleSheet.create({
     stepBody: { flex: 1 },
     fieldTitle: { fontSize: 17, color: colors.accent, fontWeight: '500', marginBottom: 10 },
-    fieldTitleSpaced: { fontSize: 17, color: colors.accent, fontWeight: '500', marginBottom: 10, marginTop: 20 },
+    fieldTitleSpaced: {
+      fontSize: 17,
+      color: colors.accent,
+      fontWeight: '500',
+      marginBottom: 10,
+      marginTop: 20,
+    },
     input: {
       backgroundColor: colors.surface,
       borderWidth: 1,
@@ -189,7 +200,12 @@ export function NewAbcFlow({ existingId }: Props): React.JSX.Element {
           >
             <View style={iconRow}>
               <Text style={styles.btnText}>{pl.flow.next}</Text>
-              <Ionicons name="arrow-forward" size={15} color={styles.bgColor.color} accessible={false} />
+              <Ionicons
+                name="arrow-forward"
+                size={15}
+                color={styles.bgColor.color}
+                accessible={false}
+              />
             </View>
           </TouchableOpacity>
         ) : (

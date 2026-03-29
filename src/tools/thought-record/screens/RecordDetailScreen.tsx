@@ -28,7 +28,12 @@ function useStyles() {
   const colors = useColors();
   return StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.bg },
-    centered: { flex: 1, backgroundColor: colors.bg, alignItems: 'center', justifyContent: 'center' },
+    centered: {
+      flex: 1,
+      backgroundColor: colors.bg,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
     scroll: { padding: 20 },
     metaRow: {
       flexDirection: 'row',
@@ -65,8 +70,22 @@ function useStyles() {
     },
     badgeComplete: { backgroundColor: colors.successDim },
     badgeInProgress: { backgroundColor: colors.inProgressDim },
-    badgeTextComplete: { fontSize: 10, letterSpacing: 0.8, textTransform: 'uppercase', includeFontPadding: false, lineHeight: 12, color: colors.success },
-    badgeTextInProgress: { fontSize: 10, letterSpacing: 0.8, textTransform: 'uppercase', includeFontPadding: false, lineHeight: 12, color: colors.inProgress },
+    badgeTextComplete: {
+      fontSize: 10,
+      letterSpacing: 0.8,
+      textTransform: 'uppercase',
+      includeFontPadding: false,
+      lineHeight: 12,
+      color: colors.success,
+    },
+    badgeTextInProgress: {
+      fontSize: 10,
+      letterSpacing: 0.8,
+      textTransform: 'uppercase',
+      includeFontPadding: false,
+      lineHeight: 12,
+      color: colors.inProgress,
+    },
     section: { marginBottom: 20 },
     stepNum: {
       fontSize: 10,

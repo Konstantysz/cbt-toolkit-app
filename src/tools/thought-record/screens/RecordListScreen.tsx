@@ -56,8 +56,22 @@ function useStyles() {
       borderWidth: 1,
       borderColor: 'rgba(184,151,74,0.25)',
     },
-    badgeTextComplete: { fontSize: 10, letterSpacing: 0.8, textTransform: 'uppercase', includeFontPadding: false, lineHeight: 12, color: colors.success },
-    badgeTextInProgress: { fontSize: 10, letterSpacing: 0.8, textTransform: 'uppercase', includeFontPadding: false, lineHeight: 12, color: colors.inProgress },
+    badgeTextComplete: {
+      fontSize: 10,
+      letterSpacing: 0.8,
+      textTransform: 'uppercase',
+      includeFontPadding: false,
+      lineHeight: 12,
+      color: colors.success,
+    },
+    badgeTextInProgress: {
+      fontSize: 10,
+      letterSpacing: 0.8,
+      textTransform: 'uppercase',
+      includeFontPadding: false,
+      lineHeight: 12,
+      color: colors.inProgress,
+    },
     situation: { fontSize: 14, color: colors.text, lineHeight: 21, marginBottom: 10 },
     situationEmpty: { color: colors.textDim, fontStyle: 'italic' },
     tags: { flexDirection: 'row', flexWrap: 'wrap', gap: 5 },
@@ -153,9 +167,7 @@ export function RecordListScreen(): React.JSX.Element {
             <Text style={styles.date}>{formatDate(item.createdAt)}</Text>
             {item.isExample ? (
               <View style={[styles.badge, styles.badgeExample]}>
-                <Text style={styles.badgeTextInProgress}>
-                  {pl.onboarding.badge}
-                </Text>
+                <Text style={styles.badgeTextInProgress}>{pl.onboarding.badge}</Text>
               </View>
             ) : item.isComplete ? (
               <View style={[styles.badge, styles.badgeComplete]}>

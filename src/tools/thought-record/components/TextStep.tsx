@@ -15,8 +15,23 @@ interface Props {
 function useStyles() {
   const colors = useColors();
   return StyleSheet.create({
-    prompt: { fontSize: typography.md - 1, lineHeight: 22, marginBottom: typography.md, fontStyle: 'italic', color: colors.textMuted },
-    input: { borderWidth: 1, borderRadius: radius.md, padding: 15, fontSize: typography.md - 1, lineHeight: 24, backgroundColor: colors.surface, borderColor: colors.border, color: colors.text },
+    prompt: {
+      fontSize: typography.md - 1,
+      lineHeight: 22,
+      marginBottom: typography.md,
+      fontStyle: 'italic',
+      color: colors.textMuted,
+    },
+    input: {
+      borderWidth: 1,
+      borderRadius: radius.md,
+      padding: 15,
+      fontSize: typography.md - 1,
+      lineHeight: 24,
+      backgroundColor: colors.surface,
+      borderColor: colors.border,
+      color: colors.text,
+    },
   });
 }
 

@@ -141,9 +141,7 @@ export function ExperimentListScreen(): React.JSX.Element {
               </View>
             ) : (
               <View style={[styles.badge, styles.badgePlanned]}>
-                <Text style={[styles.badgeText, styles.badgePlannedText]}>
-                  {pl.status.planned}
-                </Text>
+                <Text style={[styles.badgeText, styles.badgePlannedText]}>{pl.status.planned}</Text>
               </View>
             )}
           </View>

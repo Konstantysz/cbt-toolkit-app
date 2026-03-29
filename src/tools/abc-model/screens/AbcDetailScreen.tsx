@@ -28,7 +28,12 @@ function useStyles() {
   const colors = useColors();
   return StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.bg },
-    centered: { flex: 1, backgroundColor: colors.bg, alignItems: 'center', justifyContent: 'center' },
+    centered: {
+      flex: 1,
+      backgroundColor: colors.bg,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
     scroll: { padding: 20 },
     metaRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 20 },
     date: { fontSize: 12, color: colors.textMuted, letterSpacing: 0.5, flex: 1 },
@@ -154,9 +159,7 @@ export function AbcDetailScreen({ id }: Props): React.JSX.Element {
           <Text style={styles.date}>{formattedDate}</Text>
           {entry.isComplete ? (
             <View style={[styles.badge, styles.badgeComplete]}>
-              <Text style={[styles.badgeText, styles.badgeCompleteText]}>
-                {pl.detail.complete}
-              </Text>
+              <Text style={[styles.badgeText, styles.badgeCompleteText]}>{pl.detail.complete}</Text>
             </View>
           ) : (
             <View style={[styles.badge, styles.badgeInProgress]}>
@@ -201,7 +204,12 @@ export function AbcDetailScreen({ id }: Props): React.JSX.Element {
           accessibilityLabel="Edytuj wpis"
         >
           <View style={iconRow}>
-            <Ionicons name="create-outline" size={14} color={styles.accentColor.color} accessible={false} />
+            <Ionicons
+              name="create-outline"
+              size={14}
+              color={styles.accentColor.color}
+              accessible={false}
+            />
             <Text style={styles.editBtnText}>{pl.detail.editBtn}</Text>
           </View>
         </TouchableOpacity>
