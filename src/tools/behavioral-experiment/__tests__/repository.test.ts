@@ -153,3 +153,13 @@ describe('deleteAll', () => {
     expect(calls.some((sql) => sql.includes('DELETE') && sql.includes('tool_entries'))).toBe(true);
   });
 });
+
+describe('deleteExperiment', () => {
+  it('deletes from tool_entries by id', async () => {
+    await repo.deleteExperiment(mockDb, 'test-uuid-1234');
+
+    const calls = (mockDb.runAsync as jest.Mock).mock.calls.map((c: unknown[]) => c[0] as string);
+    expect(calls.some((sql) => sql.includes('DELETE') && sql.includes('tool_entries'))).toBe(true);
+    expect((mockDb.runAsync as jest.Mock).mock.calls[0][1]).toContain('test-uuid-1234');
+  });
+});

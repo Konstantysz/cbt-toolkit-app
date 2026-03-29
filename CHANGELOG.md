@@ -19,6 +19,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Jest coverage reporters extended with `json` and `json-summary` (required by the coverage comment action)
 - `collectCoverage` moved from `jest.config.js` to CI test scripts — local `npm test` no longer pays instrumentation overhead by default
+- **Coverage thresholds raised** — `jest.config.js` enforces stmt 80 / branch 70 / fn 75 / lines 82
+- `react-native` bumped to `0.83.4` (Expo SDK compatibility requirement)
+
+### Tests
+
+- **+50 tests** (108 → 158): expanded repository, hook, screen, and flow coverage across thought-record, abc-model, and behavioral-experiment modules
+- Statement coverage: 69% → 80% · Branch: 58% → 72% · Functions: 62% → 77% · Lines: 71% → 82%
 
 ---
 
