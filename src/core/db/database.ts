@@ -3,6 +3,7 @@ import type { Migration } from '../types/tool';
 
 export async function initCoreTables(db: SQLite.SQLiteDatabase): Promise<void> {
   await db.execAsync(`
+    PRAGMA foreign_keys = ON;
     CREATE TABLE IF NOT EXISTS tool_entries (
       id TEXT PRIMARY KEY,
       tool_id TEXT NOT NULL,

@@ -84,6 +84,23 @@ describe('validateExportFile', () => {
     };
     expect(validateExportFile(big)).not.toBeNull();
   });
+
+  it('accepts file without abcEntries (backward compat)', () => {
+    expect(validateExportFile(validFile)).toBeNull();
+  });
+
+  it('accepts file with valid abcEntries array', () => {
+    const withAbc = {
+      ...validFile,
+      abcEntries: [{ id: 'abc1', situation: 'x', createdAt: '2026-01-01T00:00:00.000Z' }],
+    };
+    expect(validateExportFile(withAbc)).toBeNull();
+  });
+
+  it('rejects non-array abcEntries', () => {
+    const bad = { ...validFile, abcEntries: 'not-an-array' };
+    expect(validateExportFile(bad)).not.toBeNull();
+  });
 });
 
 describe('importData', () => {
@@ -119,5 +136,31 @@ describe('importData', () => {
     const invalidFile = { version: 99, thoughtRecords: [], behavioralExperiments: [] };
     (FileSystem.readAsStringAsync as jest.Mock).mockResolvedValueOnce(JSON.stringify(invalidFile));
     await expect(importData(mockDb, 'file:///bad.json')).rejects.toThrow('Nieznana wersja pliku');
+  });
+
+  it('imports abc entries when present', async () => {
+    (mockDb.getFirstAsync as jest.Mock).mockResolvedValue(null);
+    const fileWithAbc = {
+      ...validFile,
+      abcEntries: [{ id: 'abc1', situation: 'Sytuacja', createdAt: '2026-01-01T00:00:00.000Z' }],
+    };
+    (FileSystem.readAsStringAsync as jest.Mock).mockResolvedValueOnce(JSON.stringify(fileWithAbc));
+
+    const result = await importData(mockDb, 'file:///test.json');
+
+    expect(result.imported).toBe(3); // 1 thought + 1 experiment + 1 abc
+    expect(result.skipped).toBe(0);
+    const calls = (mockDb.runAsync as jest.Mock).mock.calls as unknown[][];
+    const abcInsert = calls.find((c) => (c[0] as string).includes('abc-model'));
+    expect(abcInsert).toBeDefined();
+  });
+
+  it('imports successfully without abcEntries (backward compat)', async () => {
+    (mockDb.getFirstAsync as jest.Mock).mockResolvedValue(null);
+    (FileSystem.readAsStringAsync as jest.Mock).mockResolvedValueOnce(JSON.stringify(validFile));
+
+    const result = await importData(mockDb, 'file:///test.json');
+    expect(result.imported).toBe(2);
+    expect(result.skipped).toBe(0);
   });
 });
