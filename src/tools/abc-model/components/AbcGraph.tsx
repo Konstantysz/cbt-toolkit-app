@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Svg, Path, Line, Rect, Text as SvgText } from 'react-native-svg';
-import { colors } from '../../../core/theme';
+import { useColors } from '../../../core/theme/useColors';
 
 export interface AbcGraphProps {
   situation: string;
@@ -57,6 +57,7 @@ export function AbcGraph({
   emotions,
   physicalSymptoms,
 }: AbcGraphProps): React.JSX.Element {
+  const colors = useColors();
   // Straight line endpoints
   const ab = { x1: A.x, y1: A.y + A.h / 2 + 2, x2: B.x, y2: B.y - B.h / 2 - 2 };
   const bc1 = { x1: B.x - B.w / 2 + 4, y1: B.y + 10, x2: C1.x + C1.w / 2 - 4, y2: C1.y - 10 };

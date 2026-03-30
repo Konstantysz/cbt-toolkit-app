@@ -7,7 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { initCoreTables, runMigrations } from '../core/db/database';
 import { getAllMigrations } from '../tools/registry';
 import { pl } from '../core/i18n/pl';
-import { colors } from '../core/theme';
+import { useColors } from '../core/theme/useColors';
 import { useSettings } from '../core/settings/store';
 import { scheduleReminder, cancelReminder } from '../core/notifications/schedule';
 
@@ -17,6 +17,7 @@ async function onInit(db: import('expo-sqlite').SQLiteDatabase) {
 }
 
 function DbLoading() {
+  const colors = useColors();
   return (
     <View
       style={{
@@ -32,6 +33,7 @@ function DbLoading() {
 }
 
 export default function RootLayout(): React.JSX.Element {
+  const colors = useColors();
   const reminderEnabled = useSettings((s) => s.reminderEnabled);
   const reminderTime = useSettings((s) => s.reminderTime);
 
