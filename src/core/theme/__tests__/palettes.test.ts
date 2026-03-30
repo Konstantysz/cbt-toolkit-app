@@ -51,9 +51,4 @@ describe('PALETTES registry', () => {
   it('warm-dark.dark.accent equals #C4956A', () => {
     expect(PALETTES['warm-dark'].dark.accent).toBe('#C4956A');
   });
-
-  it('warm-dark.dark matches existing colors export', () => {
-    const { colors } = require('../index');
-    expect(PALETTES['warm-dark'].dark).toBe(colors);
-  });
 });

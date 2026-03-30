@@ -39,11 +39,6 @@ export const PALETTES: Record<PaletteId, PaletteDefinition> = {
   ocean: { id: 'ocean', ...ocean },
 };
 
-/** @deprecated Use useColors() instead. Removed in cleanup task. */
-export const colors: ColorSet = PALETTES['warm-dark'].dark;
-/** @deprecated Use useColors() instead. Removed in cleanup task. */
-export const highContrastColors: ColorSet = PALETTES['warm-dark'].darkHighContrast;
-
 export const spacing = {
   xs: 4,
   sm: 8,
