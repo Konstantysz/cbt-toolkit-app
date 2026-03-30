@@ -9,13 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Theme palette selection** — new Settings section "Wygląd" with a palette picker (color swatches); initial palettes: _Ciepły_ (warm dark, existing colors) and _Ocean_ (navy/teal)
+- **Light/dark mode toggle** — Switch in Settings lets the user switch between light and dark variants of the active palette; default remains dark mode
+- **Per-palette high contrast** — each palette ships 4 variants: `dark`, `darkHighContrast`, `light`, `lightHighContrast`; high contrast preference continues to work across all combinations
+
+### Changed
+
+- `useColors()` now reads `palette`, `darkMode`, and `highContrast` from the settings store and returns the matching `ColorSet` — all screens update live on settings change
+- Theme architecture extended: `ColorSet` interface, `PaletteDefinition`, `PALETTES` registry in `theme/index.ts`
+- Settings store: new persisted fields `palette` (default `'warm-dark'`) and `darkMode` (default `true`)
+- `StyleSheet.create` and `screenOptions` objects in layout components wrapped in `useMemo` to avoid unnecessary re-creation on re-render
+
 ### Fixed
 
+- **`useColors()` crash on stale palette key** — unknown palette ID (e.g. from an older AsyncStorage) falls back to `warm-dark` instead of crashing
 - **Accessibility: `useColors()` propagated to tool screens and shared components** — high contrast mode now applies to CBT tool UIs (partial: list, flow, and shared component screens; detail screens follow-up in a separate PR)
 - **Theme tokens: `typography` scale added** — `fontSize` magic numbers replaced with `typography.xs/sm/md/lg/xl/xxl` tokens across tool screens
 - **Jest: `AsyncStorage` global mock** — tests no longer fail when components import `useColors`
 - **Jest: `.claude/` worktree directory excluded** from test discovery and coverage
-
 - **ABC Model data loss on export/import** — `exportData()` now includes `abc_entries`; import handles `abcEntries` as optional for backward compatibility with older export files
 - **SQLite foreign key constraints inactive** — `PRAGMA foreign_keys = ON` added to DB init; `ON DELETE CASCADE` now works as intended
 
