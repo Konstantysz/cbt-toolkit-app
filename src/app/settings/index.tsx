@@ -17,6 +17,8 @@ import Constants from 'expo-constants';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as DocumentPicker from 'expo-document-picker';
 
+import { Ionicons } from '@expo/vector-icons';
+
 import { useSettings } from '../../core/settings/store';
 import { useColors } from '../../core/theme/useColors';
 import { scaledFont } from '../../core/settings/fontScale';
@@ -27,7 +29,7 @@ import { importData } from '../../core/data/import';
 import * as ThoughtRecordRepo from '../../tools/thought-record/repository';
 import * as ExperimentRepo from '../../tools/behavioral-experiment/repository';
 import { pl } from '../../core/i18n/pl';
-import { spacing, radius } from '../../core/theme';
+import { spacing, radius, PALETTES, type PaletteId } from '../../core/theme';
 
 const GITHUB_RELEASES = 'https://github.com/your-org/cbt-toolkit/releases';
 const GITHUB_ISSUES = 'https://github.com/your-org/cbt-toolkit/issues';
@@ -42,11 +44,15 @@ export default function SettingsScreen() {
     fontSize,
     reducedMotion,
     highContrast,
+    palette,
+    darkMode,
     setReminderEnabled,
     setReminderTime,
     setFontSize,
     setReducedMotion,
     setHighContrast,
+    setPalette,
+    setDarkMode,
   } = useSettings();
 
   const [showTimePicker, setShowTimePicker] = useState(false);
@@ -205,6 +211,28 @@ export default function SettingsScreen() {
     appBlock: { paddingHorizontal: spacing.md, paddingVertical: 14 },
     appName: { fontSize: fs(16), fontWeight: '700', color: colors.text },
     appVersion: { fontSize: fs(12), color: colors.textMuted, marginTop: 2 },
+    paletteRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: spacing.md,
+      paddingVertical: 12,
+    },
+    paletteSwatchOuter: {
+      width: 28,
+      height: 28,
+      borderRadius: radius.sm,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: spacing.sm,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    paletteSwatchInner: {
+      width: 16,
+      height: 16,
+      borderRadius: 8,
+    },
+    paletteCheck: { marginLeft: spacing.xs },
   });
 
   const fontSizes: { key: 'sm' | 'md' | 'lg'; label: string; size: number }[] = [
@@ -251,6 +279,53 @@ export default function SettingsScreen() {
             <Text style={s.chevron}>›</Text>
           </TouchableOpacity>
         )}
+      </View>
+
+      {/* Wygląd */}
+      <View style={s.sectionHeader}>
+        <Text style={s.sectionTitle}>{pl.settings.appearance.title}</Text>
+      </View>
+      <View style={s.card}>
+        <View style={s.row}>
+          <View style={s.rowLabel}>
+            <Text style={s.rowLabelText}>{pl.settings.appearance.darkMode}</Text>
+            <Text style={s.rowSubText}>{pl.settings.appearance.darkModeSub}</Text>
+          </View>
+          <Switch
+            value={darkMode}
+            onValueChange={setDarkMode}
+            trackColor={{ false: colors.border, true: colors.accent }}
+            thumbColor={colors.text}
+          />
+        </View>
+        <View style={[s.row, s.rowBorder]}>
+          <View style={s.rowLabel}>
+            <Text style={s.rowLabelText}>{pl.settings.appearance.palette}</Text>
+          </View>
+        </View>
+        {(Object.keys(PALETTES) as PaletteId[]).map((id) => {
+          const p = PALETTES[id];
+          const isSelected = palette === id;
+          return (
+            <TouchableOpacity
+              key={id}
+              style={[s.paletteRow, s.rowBorder]}
+              onPress={() => setPalette(id)}
+            >
+              <View style={[s.paletteSwatchOuter, { backgroundColor: p.dark.surface }]}>
+                <View style={[s.paletteSwatchInner, { backgroundColor: p.dark.accent }]} />
+              </View>
+              <View style={s.rowLabel}>
+                <Text style={[s.rowLabelText, isSelected && { color: colors.accent }]}>
+                  {p.name}
+                </Text>
+              </View>
+              {isSelected && (
+                <Ionicons name="checkmark" size={18} color={colors.accent} style={s.paletteCheck} />
+              )}
+            </TouchableOpacity>
+          );
+        })}
       </View>
 
       {/* Dostępność */}
