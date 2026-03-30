@@ -16,7 +16,8 @@ import { useSQLiteContext } from 'expo-sqlite';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { format, parseISO } from 'date-fns';
 import { pl as dateFnsPl } from 'date-fns/locale';
-import { colors, iconRow } from '../../../core/theme';
+import { useColors } from '../../../core/theme/useColors';
+import { iconRow } from '../../../core/theme';
 import { StepProgress } from '../../../core/components/StepProgress';
 import { TextStep } from '../components/TextStep';
 import { EmotionPicker } from '../../../core/components/EmotionPicker';
@@ -45,46 +46,91 @@ function todayIso() {
   return new Date().toISOString().split('T')[0];
 }
 
-const stepStyles = StyleSheet.create({
-  prompt: {
-    fontSize: 15,
-    color: colors.textMuted,
-    lineHeight: 22,
-    marginBottom: 12,
-    fontStyle: 'italic',
-  },
-  fieldLabel: {
-    fontSize: 11,
-    color: colors.textMuted,
-    letterSpacing: 1.2,
-    textTransform: 'uppercase',
-    marginBottom: 8,
-  },
-  errorText: { fontSize: 13, color: colors.danger, fontStyle: 'italic', marginBottom: 12 },
-  dateRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 12,
-    padding: 14,
-    marginTop: 14,
-  },
-  dateLabel: { fontSize: 13, color: colors.textMuted },
-  dateValue: { fontSize: 14, color: colors.accent, fontWeight: '600' },
-  input: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 12,
-    padding: 15,
-    fontSize: 15,
-    color: colors.text,
-    lineHeight: 24,
-  },
-});
+function useStepStyles() {
+  const colors = useColors();
+  return StyleSheet.create({
+    prompt: {
+      fontSize: 15,
+      color: colors.textMuted,
+      lineHeight: 22,
+      marginBottom: 12,
+      fontStyle: 'italic',
+    },
+    fieldLabel: {
+      fontSize: 11,
+      color: colors.textMuted,
+      letterSpacing: 1.2,
+      textTransform: 'uppercase',
+      marginBottom: 8,
+    },
+    errorText: { fontSize: 13, color: colors.danger, fontStyle: 'italic', marginBottom: 12 },
+    dateRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 12,
+      padding: 14,
+      marginTop: 14,
+    },
+    dateLabel: { fontSize: 13, color: colors.textMuted },
+    dateValue: { fontSize: 14, color: colors.accent, fontWeight: '600' },
+    input: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 12,
+      padding: 15,
+      fontSize: 15,
+      color: colors.text,
+      lineHeight: 24,
+    },
+  });
+}
+
+function useStyles() {
+  const colors = useColors();
+  return StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.bg },
+    centered: {
+      flex: 1,
+      backgroundColor: colors.bg,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    scroll: { flex: 1 },
+    scrollContent: { padding: 20, paddingTop: 4 },
+    nav: {
+      flexDirection: 'row',
+      gap: 10,
+      padding: 16,
+      paddingBottom: 24,
+      borderTopWidth: 1,
+      borderTopColor: colors.border,
+      backgroundColor: colors.bg,
+    },
+    btnGhost: {
+      flex: 1,
+      paddingVertical: 14,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: colors.border,
+      alignItems: 'center',
+    },
+    btnGhostText: { color: colors.textMuted, fontSize: 15 },
+    btnPrimary: {
+      flex: 1,
+      paddingVertical: 14,
+      borderRadius: 12,
+      backgroundColor: colors.accent,
+      alignItems: 'center',
+    },
+    btnSuccess: { backgroundColor: colors.success },
+    btnPrimaryText: { color: colors.bg, fontSize: 15, fontWeight: '600' },
+  });
+}
 
 function Step1Situation({
   state,
@@ -93,6 +139,7 @@ function Step1Situation({
   state: FlowState;
   update: <K extends keyof FlowState>(key: K, value: FlowState[K]) => void;
 }) {
+  const stepStyles = useStepStyles();
   const [showPicker, setShowPicker] = useState(false);
   const date = parseISO(state.situationDate);
   const dateLabel = format(date, 'd MMMM yyyy', { locale: dateFnsPl });
@@ -135,6 +182,7 @@ function Step2Emotions({
   update: <K extends keyof FlowState>(key: K, value: FlowState[K]) => void;
   error: boolean;
 }) {
+  const stepStyles = useStepStyles();
   return (
     <View>
       <Text style={stepStyles.prompt}>{pl.step2.prompt}</Text>
@@ -174,6 +222,8 @@ function Step7Outcome({
   state: FlowState;
   update: <K extends keyof FlowState>(key: K, value: FlowState[K]) => void;
 }) {
+  const stepStyles = useStepStyles();
+  const colors = useColors();
   return (
     <View>
       <Text style={stepStyles.prompt}>{pl.step7.prompt}</Text>
@@ -280,6 +330,8 @@ export function NewRecordFlow({ existingId }: NewRecordFlowProps): React.JSX.Ele
   const db = useSQLiteContext();
   const [currentStep, setCurrentStep] = useState(1);
   const [editLoading, setEditLoading] = useState(existingId !== undefined);
+  const colors = useColors();
+  const styles = useStyles();
   const [state, setState] = useState<FlowState>({
     recordId: existingId ?? null,
     situation: '',
@@ -384,8 +436,8 @@ export function NewRecordFlow({ existingId }: NewRecordFlowProps): React.JSX.Ele
     scrollRef.current?.scrollTo({ y: 0, animated: false });
   }
 
-  function renderNextContent(saving: boolean, step: number, total: number) {
-    if (saving) return <Text style={styles.btnPrimaryText}>...</Text>;
+  function renderNextContent(isSaving: boolean, step: number, total: number) {
+    if (isSaving) return <Text style={styles.btnPrimaryText}>...</Text>;
     if (step === total) {
       return (
         <View style={iconRow}>
@@ -454,37 +506,3 @@ export function NewRecordFlow({ existingId }: NewRecordFlowProps): React.JSX.Ele
     </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.bg },
-  centered: { flex: 1, backgroundColor: colors.bg, alignItems: 'center', justifyContent: 'center' },
-  scroll: { flex: 1 },
-  scrollContent: { padding: 20, paddingTop: 4 },
-  nav: {
-    flexDirection: 'row',
-    gap: 10,
-    padding: 16,
-    paddingBottom: 24,
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
-    backgroundColor: colors.bg,
-  },
-  btnGhost: {
-    flex: 1,
-    paddingVertical: 14,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.border,
-    alignItems: 'center',
-  },
-  btnGhostText: { color: colors.textMuted, fontSize: 15 },
-  btnPrimary: {
-    flex: 1,
-    paddingVertical: 14,
-    borderRadius: 12,
-    backgroundColor: colors.accent,
-    alignItems: 'center',
-  },
-  btnSuccess: { backgroundColor: colors.success },
-  btnPrimaryText: { color: colors.bg, fontSize: 15, fontWeight: '600' },
-});

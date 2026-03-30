@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { colors } from '../theme';
+import { useColors } from '../theme/useColors';
+import { spacing } from '../theme';
 import type { Emotion } from '../types';
 
 export const PREDEFINED_EMOTIONS = [
@@ -31,7 +32,38 @@ interface Props {
   onChange: (emotions: Emotion[]) => void;
 }
 
+function useStyles() {
+  const colors = useColors();
+  return StyleSheet.create({
+    grid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: spacing.sm,
+    },
+    chip: {
+      paddingHorizontal: 12,
+      paddingVertical: spacing.sm,
+      borderRadius: 10,
+      borderWidth: 1,
+      borderColor: colors.border,
+      backgroundColor: colors.surface,
+    },
+    chipSelected: {
+      backgroundColor: colors.accentDim,
+      borderColor: colors.accent,
+    },
+    chipText: {
+      fontSize: 13,
+      color: colors.textMuted,
+    },
+    chipTextSelected: {
+      color: colors.accent,
+    },
+  });
+}
+
 export function EmotionPicker({ selected, onChange }: Props) {
+  const styles = useStyles();
   const selectedNames = new Set(selected.map((e) => e.name));
 
   function toggle(label: string) {
@@ -60,30 +92,3 @@ export function EmotionPicker({ selected, onChange }: Props) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  chip: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
-  },
-  chipSelected: {
-    backgroundColor: colors.accentDim,
-    borderColor: colors.accent,
-  },
-  chipText: {
-    fontSize: 13,
-    color: colors.textMuted,
-  },
-  chipTextSelected: {
-    color: colors.accent,
-  },
-});
