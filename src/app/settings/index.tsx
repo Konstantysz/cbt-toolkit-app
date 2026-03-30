@@ -317,7 +317,7 @@ export default function SettingsScreen() {
               </View>
               <View style={s.rowLabel}>
                 <Text style={[s.rowLabelText, isSelected && { color: colors.accent }]}>
-                  {p.name}
+                  {pl.settings.appearance.palettes[id]}
                 </Text>
               </View>
               {isSelected && (

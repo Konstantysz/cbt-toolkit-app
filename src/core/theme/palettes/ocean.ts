@@ -88,4 +88,4 @@ const lightHighContrast: ColorSet = {
   accentSubtle: 'rgba(10,80,112,0.38)',
 };
 
-export const ocean = { dark, darkHighContrast, light, lightHighContrast, name: 'Ocean' };
+export const ocean = { dark, darkHighContrast, light, lightHighContrast };

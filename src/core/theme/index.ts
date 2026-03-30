@@ -27,7 +27,6 @@ export type PaletteId = 'warm-dark' | 'ocean';
 
 export interface PaletteDefinition {
   id: PaletteId;
-  name: string;
   dark: ColorSet;
   darkHighContrast: ColorSet;
   light: ColorSet;

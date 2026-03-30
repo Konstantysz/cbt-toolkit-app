@@ -40,11 +40,6 @@ describe('PALETTES registry', () => {
           });
         });
       });
-
-      it('has a non-empty name string', () => {
-        expect(typeof PALETTES[id].name).toBe('string');
-        expect(PALETTES[id].name.length).toBeGreaterThan(0);
-      });
     });
   });
 

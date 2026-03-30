@@ -37,6 +37,10 @@ export const pl = {
       darkMode: 'Tryb ciemny',
       darkModeSub: 'Ciemne tło, jasny tekst',
       palette: 'Paleta kolorów',
+      palettes: {
+        'warm-dark': 'Ciepły',
+        ocean: 'Ocean',
+      },
     },
     data: {
       title: 'Dane',
