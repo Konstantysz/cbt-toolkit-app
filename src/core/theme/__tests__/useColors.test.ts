@@ -7,7 +7,7 @@ import { useSettings } from '../../settings/store';
 import { PALETTES } from '../index';
 
 type MockState = {
-  palette: 'warm-dark' | 'ocean';
+  palette: 'warm-dark' | 'ocean' | string;
   darkMode: boolean;
   highContrast: boolean;
 };
@@ -47,5 +47,10 @@ describe('useColors', () => {
   it('returns ocean light when palette=ocean, darkMode=false, highContrast=false', () => {
     mockSettings({ palette: 'ocean', darkMode: false, highContrast: false });
     expect(useColors()).toBe(PALETTES['ocean'].light);
+  });
+
+  it('falls back to warm-dark when palette is unknown', () => {
+    mockSettings({ palette: 'unknown-palette', darkMode: true, highContrast: false });
+    expect(useColors()).toBe(PALETTES['warm-dark'].dark);
   });
 });

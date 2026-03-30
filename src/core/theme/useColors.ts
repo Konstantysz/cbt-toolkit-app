@@ -5,7 +5,7 @@ export function useColors() {
   const palette = useSettings((s) => s.palette);
   const darkMode = useSettings((s) => s.darkMode);
   const highContrast = useSettings((s) => s.highContrast);
-  const p = PALETTES[palette];
+  const p = PALETTES[palette] ?? PALETTES['warm-dark'];
   if (darkMode) {
     return highContrast ? p.darkHighContrast : p.dark;
   }
