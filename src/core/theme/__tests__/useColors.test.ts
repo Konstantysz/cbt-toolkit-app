@@ -4,20 +4,48 @@ jest.mock('../../settings/store', () => ({
 
 import { useColors } from '../useColors';
 import { useSettings } from '../../settings/store';
-import { colors, highContrastColors } from '../index';
+import { PALETTES } from '../index';
+
+type MockState = {
+  palette: 'warm-dark' | 'ocean';
+  darkMode: boolean;
+  highContrast: boolean;
+};
+
+function mockSettings(state: MockState) {
+  (useSettings as unknown as jest.Mock).mockImplementation((sel: (s: MockState) => unknown) =>
+    sel(state)
+  );
+}
 
 describe('useColors', () => {
-  it('returns colors when highContrast is false', () => {
-    (useSettings as unknown as jest.Mock).mockImplementation(
-      (sel: (s: { highContrast: boolean }) => boolean) => sel({ highContrast: false })
-    );
-    expect(useColors()).toBe(colors);
+  it('returns warm-dark dark when palette=warm-dark, darkMode=true, highContrast=false', () => {
+    mockSettings({ palette: 'warm-dark', darkMode: true, highContrast: false });
+    expect(useColors()).toBe(PALETTES['warm-dark'].dark);
   });
 
-  it('returns highContrastColors when highContrast is true', () => {
-    (useSettings as unknown as jest.Mock).mockImplementation(
-      (sel: (s: { highContrast: boolean }) => boolean) => sel({ highContrast: true })
-    );
-    expect(useColors()).toBe(highContrastColors);
+  it('returns warm-dark darkHighContrast when palette=warm-dark, darkMode=true, highContrast=true', () => {
+    mockSettings({ palette: 'warm-dark', darkMode: true, highContrast: true });
+    expect(useColors()).toBe(PALETTES['warm-dark'].darkHighContrast);
+  });
+
+  it('returns warm-dark light when palette=warm-dark, darkMode=false, highContrast=false', () => {
+    mockSettings({ palette: 'warm-dark', darkMode: false, highContrast: false });
+    expect(useColors()).toBe(PALETTES['warm-dark'].light);
+  });
+
+  it('returns warm-dark lightHighContrast when palette=warm-dark, darkMode=false, highContrast=true', () => {
+    mockSettings({ palette: 'warm-dark', darkMode: false, highContrast: true });
+    expect(useColors()).toBe(PALETTES['warm-dark'].lightHighContrast);
+  });
+
+  it('returns ocean dark when palette=ocean, darkMode=true, highContrast=false', () => {
+    mockSettings({ palette: 'ocean', darkMode: true, highContrast: false });
+    expect(useColors()).toBe(PALETTES['ocean'].dark);
+  });
+
+  it('returns ocean light when palette=ocean, darkMode=false, highContrast=false', () => {
+    mockSettings({ palette: 'ocean', darkMode: false, highContrast: false });
+    expect(useColors()).toBe(PALETTES['ocean'].light);
   });
 });
