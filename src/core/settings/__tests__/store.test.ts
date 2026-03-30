@@ -16,6 +16,8 @@ const DEFAULTS = {
   fontSize: 'md' as const,
   reducedMotion: false,
   highContrast: false,
+  palette: 'warm-dark' as const,
+  darkMode: true,
 };
 
 beforeEach(() => {
@@ -30,6 +32,14 @@ describe('useSettings — defaults', () => {
     expect(s.fontSize).toBe('md');
     expect(s.reducedMotion).toBe(false);
     expect(s.highContrast).toBe(false);
+  });
+
+  it('has default palette warm-dark', () => {
+    expect(useSettings.getState().palette).toBe('warm-dark');
+  });
+
+  it('has default darkMode true', () => {
+    expect(useSettings.getState().darkMode).toBe(true);
   });
 });
 
@@ -58,6 +68,16 @@ describe('useSettings — setters', () => {
     useSettings.getState().setHighContrast(true);
     expect(useSettings.getState().highContrast).toBe(true);
   });
+
+  it('setPalette updates palette', () => {
+    useSettings.getState().setPalette('ocean');
+    expect(useSettings.getState().palette).toBe('ocean');
+  });
+
+  it('setDarkMode updates darkMode', () => {
+    useSettings.getState().setDarkMode(false);
+    expect(useSettings.getState().darkMode).toBe(false);
+  });
 });
 
 describe('useSettings — persist rehydration', () => {
@@ -69,6 +89,8 @@ describe('useSettings — persist rehydration', () => {
         fontSize: 'lg',
         reducedMotion: true,
         highContrast: true,
+        palette: 'ocean',
+        darkMode: false,
       },
       version: 0,
     };
@@ -82,5 +104,7 @@ describe('useSettings — persist rehydration', () => {
     expect(s.fontSize).toBe('lg');
     expect(s.reducedMotion).toBe(true);
     expect(s.highContrast).toBe(true);
+    expect(s.palette).toBe('ocean');
+    expect(s.darkMode).toBe(false);
   });
 });

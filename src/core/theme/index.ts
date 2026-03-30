@@ -1,46 +1,42 @@
-export const colors = {
-  bg: '#0C0B09',
-  surface: '#161510',
-  surfaceRaised: '#1E1C17',
-  border: '#2C2920',
-  borderFocus: '#4A4438',
-  accent: '#C4956A',
-  accentDim: 'rgba(196,149,106,0.13)',
-  accentBorder: 'rgba(196,149,106,0.25)',
-  text: '#EDE5D8',
-  textMuted: '#8C8276',
-  textDim: '#4A453E',
-  danger: '#C4605A',
-  dangerDim: 'rgba(196,96,90,0.12)',
-  dangerBorder: 'rgba(196,96,90,0.22)',
-  success: '#7A9E7E',
-  successDim: 'rgba(122,158,126,0.12)',
-  inProgress: '#B8974A',
-  inProgressDim: 'rgba(184,151,74,0.10)',
-  accentSubtle: 'rgba(196,149,106,0.35)',
-} as const;
+import { warmDark } from './palettes/warm-dark';
+import { ocean } from './palettes/ocean';
 
-export const highContrastColors = {
-  bg: '#000000',
-  surface: '#0D0D0D',
-  surfaceRaised: '#1A1A1A',
-  border: '#5C5650',
-  borderFocus: '#8C8276',
-  accent: '#C4956A',
-  accentDim: 'rgba(196,149,106,0.20)',
-  accentBorder: 'rgba(196,149,106,0.40)',
-  text: '#FFFFFF',
-  textMuted: '#B0A898',
-  textDim: '#6B6560',
-  danger: '#E8706A',
-  dangerDim: 'rgba(232,112,106,0.20)',
-  dangerBorder: 'rgba(232,112,106,0.35)',
-  success: '#8BBF90',
-  successDim: 'rgba(139,191,144,0.18)',
-  inProgress: '#D4AF6A',
-  inProgressDim: 'rgba(212,175,106,0.15)',
-  accentSubtle: 'rgba(196,149,106,0.50)',
-} as const;
+export interface ColorSet {
+  bg: string;
+  surface: string;
+  surfaceRaised: string;
+  border: string;
+  borderFocus: string;
+  accent: string;
+  accentDim: string;
+  accentBorder: string;
+  text: string;
+  textMuted: string;
+  textDim: string;
+  danger: string;
+  dangerDim: string;
+  dangerBorder: string;
+  success: string;
+  successDim: string;
+  inProgress: string;
+  inProgressDim: string;
+  accentSubtle: string;
+}
+
+export type PaletteId = 'warm-dark' | 'ocean';
+
+export interface PaletteDefinition {
+  id: PaletteId;
+  dark: ColorSet;
+  darkHighContrast: ColorSet;
+  light: ColorSet;
+  lightHighContrast: ColorSet;
+}
+
+export const PALETTES: Record<PaletteId, PaletteDefinition> = {
+  'warm-dark': { id: 'warm-dark', ...warmDark },
+  ocean: { id: 'ocean', ...ocean },
+};
 
 export const spacing = {
   xs: 4,

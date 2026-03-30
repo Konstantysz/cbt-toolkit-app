@@ -32,6 +32,16 @@ export const pl = {
       highContrast: 'Wysoki kontrast',
       highContrastSub: 'Mocniejsze kolory i obramowania',
     },
+    appearance: {
+      title: 'Wygląd',
+      darkMode: 'Tryb ciemny',
+      darkModeSub: 'Ciemne tło, jasny tekst',
+      palette: 'Paleta kolorów',
+      palettes: {
+        'warm-dark': 'Ciepły',
+        ocean: 'Ocean',
+      },
+    },
     data: {
       title: 'Dane',
       export: 'Eksportuj dane',
