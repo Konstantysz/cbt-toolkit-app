@@ -76,7 +76,10 @@ describe('PinLockScreen — biometrics button', () => {
 
   it('stays locked when biometrics fail', async () => {
     useSettings.setState({ biometricsEnabled: true });
-    mockLocalAuth.authenticateAsync.mockResolvedValueOnce({ success: false });
+    mockLocalAuth.authenticateAsync.mockResolvedValueOnce({
+      success: false,
+      error: 'user_cancel',
+    } as never);
     const onUnlock = jest.fn();
     const { getByText } = render(<PinLockScreen onUnlock={onUnlock} />);
     fireEvent.press(getByText(pl.auth.lock.useBiometrics));
