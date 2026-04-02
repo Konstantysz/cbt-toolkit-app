@@ -36,3 +36,12 @@ export async function runMigrations(
     }
   }
 }
+
+export async function resetDatabase(db: SQLite.SQLiteDatabase): Promise<void> {
+  const rows = await db.getAllAsync<{ name: string }>(
+    `SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name != 'migrations_log'`
+  );
+  for (const { name } of rows) {
+    await db.execAsync(`DELETE FROM "${name}"`);
+  }
+}
