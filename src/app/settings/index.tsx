@@ -20,6 +20,8 @@ import * as DocumentPicker from 'expo-document-picker';
 import { Ionicons } from '@expo/vector-icons';
 
 import { useSettings } from '../../core/settings/store';
+import { useAuthStore } from '../../core/auth/store';
+import { clearPin } from '../../core/auth/pin';
 import { useColors } from '../../core/theme/useColors';
 import { scaledFont } from '../../core/settings/fontScale';
 import { requestPermissions } from '../../core/notifications/permissions';
@@ -54,6 +56,9 @@ export default function SettingsScreen() {
     setPalette,
     setDarkMode,
   } = useSettings();
+
+  const pinEnabled = useSettings((s) => s.pinEnabled);
+  const { setPinEnabled, setBiometricsEnabled } = useSettings.getState();
 
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [tempTime, setTempTime] = useState(reminderTime);
@@ -139,6 +144,25 @@ export default function SettingsScreen() {
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : pl.settings.data.importError;
       Alert.alert('Błąd importu', msg);
+    }
+  }
+
+  function handlePinToggle(value: boolean) {
+    if (value) {
+      useAuthStore.getState().setPhase('setup');
+    } else {
+      Alert.alert(pl.settings.privacy.disablePinTitle, pl.settings.privacy.disablePinMessage, [
+        { text: pl.common.cancel, style: 'cancel' },
+        {
+          text: pl.settings.privacy.disablePinButton,
+          style: 'destructive',
+          onPress: async () => {
+            await clearPin();
+            setPinEnabled(false);
+            setBiometricsEnabled(false);
+          },
+        },
+      ]);
     }
   }
 
@@ -381,6 +405,35 @@ export default function SettingsScreen() {
             thumbColor={colors.text}
           />
         </View>
+      </View>
+
+      {/* Prywatność */}
+      <View style={s.sectionHeader}>
+        <Text style={s.sectionTitle}>{pl.settings.privacy.title}</Text>
+      </View>
+      <View style={s.card}>
+        <View style={s.row}>
+          <View style={s.rowLabel}>
+            <Text style={s.rowLabelText}>{pl.settings.privacy.pinEnabled}</Text>
+          </View>
+          <Switch
+            value={pinEnabled}
+            onValueChange={handlePinToggle}
+            trackColor={{ false: colors.border, true: colors.accent }}
+            thumbColor={colors.text}
+          />
+        </View>
+        {pinEnabled && (
+          <TouchableOpacity
+            style={[s.row, s.rowBorder]}
+            onPress={() => useAuthStore.getState().setPhase('setup')}
+          >
+            <View style={s.rowLabel}>
+              <Text style={s.rowLabelText}>{pl.settings.privacy.changePin}</Text>
+            </View>
+            <Text style={s.chevron}>›</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       {/* Dane */}
