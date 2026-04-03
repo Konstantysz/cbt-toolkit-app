@@ -11,6 +11,8 @@ import { useColors } from '../core/theme/useColors';
 import { useSettings } from '../core/settings/store';
 import { scheduleReminder, cancelReminder } from '../core/notifications/schedule';
 import { useAuthGuard } from '../core/auth/useAuthGuard';
+import { useAuthStore } from '../core/auth/store';
+import { clearPin } from '../core/auth/pin';
 import { PinOnboardingScreen } from '../core/auth/screens/PinOnboardingScreen';
 import { PinSetupScreen } from '../core/auth/screens/PinSetupScreen';
 import { PinLockScreen } from '../core/auth/screens/PinLockScreen';
@@ -57,6 +59,25 @@ function AppContent() {
     [colors]
   );
 
+  async function handleVerified() {
+    const { pendingAction } = useAuthStore.getState();
+    useAuthStore.getState().setPendingAction(null);
+    if (pendingAction === 'disable-pin') {
+      try {
+        await clearPin();
+      } catch {
+        // Non-critical: SecureStore delete failure — proceed with disabling in settings
+      }
+      useSettings.getState().setPinEnabled(false);
+      useSettings.getState().setBiometricsEnabled(false);
+      goToUnlocked();
+    } else if (pendingAction === 'change-pin') {
+      goToSetup();
+    } else {
+      goToUnlocked();
+    }
+  }
+
   if (authPhase === 'loading') {
     return (
       <View
@@ -80,8 +101,8 @@ function AppContent() {
     return <PinSetupScreen onComplete={goToUnlocked} />;
   }
 
-  if (authPhase === 'locked') {
-    return <PinLockScreen onUnlock={goToUnlocked} />;
+  if (authPhase === 'locked' || authPhase === 'verify') {
+    return <PinLockScreen onUnlock={authPhase === 'verify' ? handleVerified : goToUnlocked} />;
   }
 
   return (

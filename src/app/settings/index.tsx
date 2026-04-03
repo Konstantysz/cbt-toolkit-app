@@ -21,7 +21,6 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { useSettings } from '../../core/settings/store';
 import { useAuthStore } from '../../core/auth/store';
-import { clearPin } from '../../core/auth/pin';
 import { useColors } from '../../core/theme/useColors';
 import { scaledFont } from '../../core/settings/fontScale';
 import { requestPermissions } from '../../core/notifications/permissions';
@@ -152,22 +151,8 @@ export default function SettingsScreen() {
     if (value) {
       useAuthStore.getState().setPhase('setup');
     } else {
-      Alert.alert(pl.settings.privacy.disablePinTitle, pl.settings.privacy.disablePinMessage, [
-        { text: pl.common.cancel, style: 'cancel' },
-        {
-          text: pl.settings.privacy.disablePinButton,
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await clearPin();
-              setPinEnabled(false);
-              setBiometricsEnabled(false);
-            } catch {
-              Alert.alert('Błąd', 'Nie udało się wyłączyć kodu PIN. Spróbuj ponownie.');
-            }
-          },
-        },
-      ]);
+      // Require current PIN verification before disabling — handled in _layout.tsx
+      useAuthStore.getState().requestVerify('disable-pin');
     }
   }
 
@@ -432,7 +417,7 @@ export default function SettingsScreen() {
         {pinEnabled && (
           <TouchableOpacity
             style={[s.row, s.rowBorder]}
-            onPress={() => useAuthStore.getState().setPhase('setup')}
+            onPress={() => useAuthStore.getState().requestVerify('change-pin')}
           >
             <View style={s.rowLabel}>
               <Text style={s.rowLabelText}>{pl.settings.privacy.changePin}</Text>

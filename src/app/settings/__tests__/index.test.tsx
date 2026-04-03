@@ -60,9 +60,11 @@ jest.mock('../../../core/auth/store', () => {
   const useAuthStore = jest.fn((selector?: (s: { authPhase: string }) => unknown) =>
     selector ? selector({ authPhase: 'unlocked' }) : { authPhase: 'unlocked' }
   );
-  (useAuthStore as unknown as { getState: () => { setPhase: jest.Mock } }).getState = jest
-    .fn()
-    .mockReturnValue({ setPhase: jest.fn() });
+  (
+    useAuthStore as unknown as {
+      getState: () => { setPhase: jest.Mock; requestVerify: jest.Mock };
+    }
+  ).getState = jest.fn().mockReturnValue({ setPhase: jest.fn(), requestVerify: jest.fn() });
   return { useAuthStore };
 });
 

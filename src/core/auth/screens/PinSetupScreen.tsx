@@ -64,7 +64,9 @@ export function PinSetupScreen({ onComplete }: PinSetupScreenProps) {
       setConfirmPin('');
       return;
     }
-    await savePin(value);
+    // PIN kept in memory until finish() — only written to SecureStore as the
+    // last step so that an interrupted setup never leaves pinEnabled=true
+    // without a corresponding hash in SecureStore.
     const hasHardware = await LocalAuth.hasHardwareAsync();
     const isEnrolled = await LocalAuth.isEnrolledAsync();
     if (hasHardware && isEnrolled) {
@@ -75,6 +77,9 @@ export function PinSetupScreen({ onComplete }: PinSetupScreenProps) {
   }
 
   async function finish(withBiometrics: boolean) {
+    // Flush PIN to SecureStore first, then persist flags — ensures the hash
+    // always exists before pinEnabled becomes true.
+    await savePin(firstPin);
     setPinEnabled(true);
     setPinOnboardingShown(true);
     setBiometricsEnabled(withBiometrics);
