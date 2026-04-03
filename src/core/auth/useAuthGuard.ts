@@ -22,7 +22,10 @@ export function useAuthGuard(): {
     } else {
       setPhase('unlocked');
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
+    // Intentionally empty deps: phase is initialised once on mount from
+    // persisted settings. Re-running on settings changes would reset the
+    // phase mid-session (e.g. switching back to 'locked' after PIN setup).
   }, []);
 
   // AppState: track background time and lock on return

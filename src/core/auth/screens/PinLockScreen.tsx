@@ -40,10 +40,15 @@ export function PinLockScreen({ onUnlock }: PinLockScreenProps) {
     setPin(value);
     setError(undefined);
     if (value.length === 4) {
-      const ok = await verifyPin(value);
-      if (ok) {
-        onUnlock();
-      } else {
+      try {
+        const ok = await verifyPin(value);
+        if (ok) {
+          onUnlock();
+        } else {
+          setError(pl.auth.lock.wrongPin);
+          setPin('');
+        }
+      } catch {
         setError(pl.auth.lock.wrongPin);
         setPin('');
       }
@@ -51,11 +56,15 @@ export function PinLockScreen({ onUnlock }: PinLockScreenProps) {
   }
 
   async function handleBiometrics() {
-    const result = await LocalAuth.authenticateAsync({
-      promptMessage: pl.auth.lock.title,
-      fallbackLabel: '',
-    });
-    if (result.success) onUnlock();
+    try {
+      const result = await LocalAuth.authenticateAsync({
+        promptMessage: pl.auth.lock.title,
+        fallbackLabel: '',
+      });
+      if (result.success) onUnlock();
+    } catch {
+      // biometrics unavailable — remain locked
+    }
   }
 
   function handleForgotPin() {
@@ -65,9 +74,14 @@ export function PinLockScreen({ onUnlock }: PinLockScreenProps) {
         text: pl.auth.reset.confirm,
         style: 'destructive',
         onPress: async () => {
-          await resetDatabase(db);
-          await clearPin();
-          resetSettings();
+          try {
+            await resetDatabase(db);
+            await clearPin();
+            resetSettings();
+            onUnlock();
+          } catch {
+            Alert.alert('Błąd', 'Nie udało się zresetować aplikacji. Spróbuj ponownie.');
+          }
         },
       },
     ]);

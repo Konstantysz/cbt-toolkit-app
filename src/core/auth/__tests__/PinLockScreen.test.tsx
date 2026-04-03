@@ -15,6 +15,7 @@ jest.mock('expo-sqlite', () => ({
 }));
 
 import React from 'react';
+import { Alert } from 'react-native';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { PinLockScreen } from '../screens/PinLockScreen';
 import { useSettings } from '../../settings/store';
@@ -25,12 +26,17 @@ import { pl } from '../../i18n/pl';
 const mockSecureStore = SecureStore as jest.Mocked<typeof SecureStore> & { __reset?: () => void };
 const mockLocalAuth = LocalAuth as jest.Mocked<typeof LocalAuth>;
 
+// Mock getRandomValues fills [0..15] → salt = '000102030405060708090a0b0c0d0e0f'
+// Mock digestStringAsync returns 'hashed:<input>'
+const TEST_SALT = '000102030405060708090a0b0c0d0e0f';
+const storedFor = (pin: string) => TEST_SALT + `hashed:${TEST_SALT}${pin}`;
+
 beforeEach(() => {
   jest.clearAllMocks();
   mockSecureStore.__reset?.();
   useSettings.setState({ pinEnabled: true, biometricsEnabled: false });
-  // Store hash for PIN '1234' (mock returns 'hashed:1234')
-  mockSecureStore.getItemAsync.mockResolvedValue('hashed:1234');
+  // Stored value for PIN '1234' in salted format
+  mockSecureStore.getItemAsync.mockResolvedValue(storedFor('1234'));
 });
 
 describe('PinLockScreen — correct PIN', () => {
@@ -91,5 +97,16 @@ describe('PinLockScreen — reset', () => {
   it('shows forgot PIN button', () => {
     const { getByText } = render(<PinLockScreen onUnlock={jest.fn()} />);
     expect(getByText(pl.auth.lock.forgotPin)).toBeTruthy();
+  });
+
+  it('calls onUnlock after confirmed reset', async () => {
+    jest.spyOn(Alert, 'alert').mockImplementationOnce((_title, _msg, buttons) => {
+      const confirmBtn = buttons?.find((b) => b.style === 'destructive');
+      confirmBtn?.onPress?.();
+    });
+    const onUnlock = jest.fn();
+    const { getByText } = render(<PinLockScreen onUnlock={onUnlock} />);
+    fireEvent.press(getByText(pl.auth.lock.forgotPin));
+    await waitFor(() => expect(onUnlock).toHaveBeenCalled());
   });
 });

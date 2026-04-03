@@ -157,9 +157,13 @@ export default function SettingsScreen() {
           text: pl.settings.privacy.disablePinButton,
           style: 'destructive',
           onPress: async () => {
-            await clearPin();
-            setPinEnabled(false);
-            setBiometricsEnabled(false);
+            try {
+              await clearPin();
+              setPinEnabled(false);
+              setBiometricsEnabled(false);
+            } catch {
+              Alert.alert('Błąd', 'Nie udało się wyłączyć kodu PIN. Spróbuj ponownie.');
+            }
           },
         },
       ]);

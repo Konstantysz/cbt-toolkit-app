@@ -37,6 +37,12 @@ export async function runMigrations(
   }
 }
 
+/**
+ * Deletes all user data from tool tables (DELETE FROM, not DROP TABLE).
+ * Intentionally preserves migrations_log so the schema stays intact and
+ * migrations are not re-applied on the next cold start. The tables remain
+ * empty and fully functional after this call.
+ */
 export async function resetDatabase(db: SQLite.SQLiteDatabase): Promise<void> {
   const rows = await db.getAllAsync<{ name: string }>(
     `SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name != 'migrations_log'`
