@@ -3,27 +3,37 @@ import { savePin, loadPinHash, clearPin, verifyPin } from '../pin';
 
 const mockSecureStore = SecureStore as jest.Mocked<typeof SecureStore>;
 
-// Mock getRandomValues fills [0, 1, 2, ..., 15] → salt = '000102030405060708090a0b0c0d0e0f'
-// Mock digestStringAsync returns 'hashed:<input>'
-// So stored value = salt + 'hashed:' + salt + pin
-const TEST_SALT = '000102030405060708090a0b0c0d0e0f';
-const storedFor = (pin: string) => TEST_SALT + `hashed:${TEST_SALT}${pin}`;
-
 beforeEach(() => {
   jest.clearAllMocks();
   (SecureStore as { __reset?: () => void }).__reset?.();
 });
 
 describe('savePin', () => {
-  it('stores salt+hash in SecureStore under cbt-pin-hash', async () => {
+  it('stores a value in SecureStore under cbt-pin-hash', async () => {
     await savePin('1234');
-    expect(mockSecureStore.setItemAsync).toHaveBeenCalledWith('cbt-pin-hash', storedFor('1234'));
+    expect(mockSecureStore.setItemAsync).toHaveBeenCalledWith('cbt-pin-hash', expect.any(String));
   });
 
-  it('stored value begins with 32-char hex salt', async () => {
+  it('stored value starts with a 32-char hex salt', async () => {
     await savePin('0000');
     const [[, stored]] = mockSecureStore.setItemAsync.mock.calls;
     expect(stored.slice(0, 32)).toMatch(/^[0-9a-f]{32}$/);
+  });
+
+  it('stored value is longer than 32 chars (salt + derived key)', async () => {
+    await savePin('1234');
+    const [[, stored]] = mockSecureStore.setItemAsync.mock.calls;
+    expect(stored.length).toBeGreaterThan(32);
+  });
+
+  it('produces different stored values for the same PIN on each call (random salt)', async () => {
+    await savePin('1234');
+    const [[, first]] = mockSecureStore.setItemAsync.mock.calls;
+    (SecureStore as { __reset?: () => void }).__reset?.();
+    jest.clearAllMocks();
+    await savePin('1234');
+    const [[, second]] = mockSecureStore.setItemAsync.mock.calls;
+    expect(first).not.toBe(second);
   });
 });
 
@@ -34,8 +44,10 @@ describe('loadPinHash', () => {
   });
 
   it('returns the stored value', async () => {
-    mockSecureStore.getItemAsync.mockResolvedValueOnce(storedFor('1234'));
-    expect(await loadPinHash()).toBe(storedFor('1234'));
+    await savePin('1234');
+    const [[, stored]] = mockSecureStore.setItemAsync.mock.calls;
+    // The mock store is already populated; loadPinHash reads from it
+    expect(await loadPinHash()).toBe(stored);
   });
 });
 
@@ -52,18 +64,18 @@ describe('verifyPin', () => {
     expect(await verifyPin('1234')).toBe(false);
   });
 
-  it('returns false when stored value is too short (malformed)', async () => {
+  it('returns false when stored value is malformed (too short)', async () => {
     mockSecureStore.getItemAsync.mockResolvedValueOnce('tooshort');
     expect(await verifyPin('1234')).toBe(false);
   });
 
-  it('returns true when PIN matches stored salt+hash', async () => {
-    mockSecureStore.getItemAsync.mockResolvedValueOnce(storedFor('1234'));
+  it('returns true when PIN matches (round-trip via mock store)', async () => {
+    await savePin('1234');
     expect(await verifyPin('1234')).toBe(true);
   });
 
   it('returns false when PIN does not match', async () => {
-    mockSecureStore.getItemAsync.mockResolvedValueOnce(storedFor('1234'));
+    await savePin('1234');
     expect(await verifyPin('9999')).toBe(false);
   });
 });

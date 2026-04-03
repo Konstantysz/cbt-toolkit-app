@@ -11,6 +11,7 @@ jest.mock('expo-sqlite', () => ({
   useSQLiteContext: jest.fn().mockReturnValue({
     getAllAsync: jest.fn().mockResolvedValue([]),
     execAsync: jest.fn().mockResolvedValue(undefined),
+    withTransactionAsync: jest.fn(async (cb: () => Promise<void>) => cb()),
   }),
 }));
 
@@ -21,22 +22,18 @@ import { PinLockScreen } from '../screens/PinLockScreen';
 import { useSettings } from '../../settings/store';
 import * as SecureStore from 'expo-secure-store';
 import * as LocalAuth from 'expo-local-authentication';
+import { savePin } from '../pin';
 import { pl } from '../../i18n/pl';
 
 const mockSecureStore = SecureStore as jest.Mocked<typeof SecureStore> & { __reset?: () => void };
 const mockLocalAuth = LocalAuth as jest.Mocked<typeof LocalAuth>;
 
-// Mock getRandomValues fills [0..15] → salt = '000102030405060708090a0b0c0d0e0f'
-// Mock digestStringAsync returns 'hashed:<input>'
-const TEST_SALT = '000102030405060708090a0b0c0d0e0f';
-const storedFor = (pin: string) => TEST_SALT + `hashed:${TEST_SALT}${pin}`;
-
-beforeEach(() => {
+beforeEach(async () => {
   jest.clearAllMocks();
   mockSecureStore.__reset?.();
   useSettings.setState({ pinEnabled: true, biometricsEnabled: false });
-  // Stored value for PIN '1234' in salted format
-  mockSecureStore.getItemAsync.mockResolvedValue(storedFor('1234'));
+  // Store a real PBKDF2 hash for PIN '1234' so verifyPin works correctly in tests
+  await savePin('1234');
 });
 
 describe('PinLockScreen — correct PIN', () => {

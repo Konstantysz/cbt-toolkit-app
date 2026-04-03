@@ -56,9 +56,15 @@ jest.mock('@react-native-community/datetimepicker', () => 'DateTimePicker');
 jest.mock('../../../core/auth/pin', () => ({
   clearPin: jest.fn().mockResolvedValue(undefined),
 }));
-jest.mock('../../../core/auth/store', () => ({
-  useAuthStore: { getState: jest.fn().mockReturnValue({ setPhase: jest.fn() }) },
-}));
+jest.mock('../../../core/auth/store', () => {
+  const useAuthStore = jest.fn((selector?: (s: { authPhase: string }) => unknown) =>
+    selector ? selector({ authPhase: 'unlocked' }) : { authPhase: 'unlocked' }
+  );
+  (useAuthStore as unknown as { getState: () => { setPhase: jest.Mock } }).getState = jest
+    .fn()
+    .mockReturnValue({ setPhase: jest.fn() });
+  return { useAuthStore };
+});
 
 import React from 'react';
 import { render, screen } from '@testing-library/react-native';

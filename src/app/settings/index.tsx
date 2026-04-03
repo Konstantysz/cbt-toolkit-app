@@ -59,6 +59,7 @@ export default function SettingsScreen() {
 
   const pinEnabled = useSettings((s) => s.pinEnabled);
   const { setPinEnabled, setBiometricsEnabled } = useSettings.getState();
+  const authPhase = useAuthStore((s) => s.authPhase);
 
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [tempTime, setTempTime] = useState(reminderTime);
@@ -423,6 +424,7 @@ export default function SettingsScreen() {
           <Switch
             value={pinEnabled}
             onValueChange={handlePinToggle}
+            disabled={authPhase === 'setup'}
             trackColor={{ false: colors.border, true: colors.accent }}
             thumbColor={colors.text}
           />
