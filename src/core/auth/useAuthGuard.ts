@@ -34,7 +34,7 @@ export function useAuthGuard(): {
     } else {
       setPhase('unlocked');
     }
-     
+
     // Intentionally depends only on hydrated: phase is initialized once from
     // persisted settings. Re-running on settings changes would reset the
     // phase mid-session (e.g. switching back to 'locked' after PIN setup).
