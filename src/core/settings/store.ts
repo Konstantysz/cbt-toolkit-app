@@ -13,7 +13,23 @@ export interface SettingsData {
   highContrast: boolean;
   palette: PaletteId;
   darkMode: boolean;
+  pinEnabled: boolean;
+  biometricsEnabled: boolean;
+  pinOnboardingShown: boolean;
 }
+
+const SETTINGS_DEFAULTS: SettingsData = {
+  reminderEnabled: false,
+  reminderTime: '20:00',
+  fontSize: 'md',
+  reducedMotion: false,
+  highContrast: false,
+  palette: 'warm-dark',
+  darkMode: true,
+  pinEnabled: false,
+  biometricsEnabled: false,
+  pinOnboardingShown: false,
+};
 
 interface SettingsActions {
   setReminderEnabled: (value: boolean) => void;
@@ -23,6 +39,10 @@ interface SettingsActions {
   setHighContrast: (value: boolean) => void;
   setPalette: (value: PaletteId) => void;
   setDarkMode: (value: boolean) => void;
+  setPinEnabled: (value: boolean) => void;
+  setBiometricsEnabled: (value: boolean) => void;
+  setPinOnboardingShown: (value: boolean) => void;
+  reset: () => void;
 }
 
 type SettingsState = SettingsData & SettingsActions;
@@ -30,13 +50,7 @@ type SettingsState = SettingsData & SettingsActions;
 export const useSettings = create<SettingsState>()(
   persist(
     (set) => ({
-      reminderEnabled: false,
-      reminderTime: '20:00',
-      fontSize: 'md' as FontSize,
-      reducedMotion: false,
-      highContrast: false,
-      palette: 'warm-dark' as PaletteId,
-      darkMode: true,
+      ...SETTINGS_DEFAULTS,
       setReminderEnabled: (value) => set({ reminderEnabled: value }),
       setReminderTime: (value) => set({ reminderTime: value }),
       setFontSize: (value) => set({ fontSize: value }),
@@ -44,6 +58,10 @@ export const useSettings = create<SettingsState>()(
       setHighContrast: (value) => set({ highContrast: value }),
       setPalette: (value) => set({ palette: value }),
       setDarkMode: (value) => set({ darkMode: value }),
+      setPinEnabled: (value) => set({ pinEnabled: value }),
+      setBiometricsEnabled: (value) => set({ biometricsEnabled: value }),
+      setPinOnboardingShown: (value) => set({ pinOnboardingShown: value }),
+      reset: () => set({ ...SETTINGS_DEFAULTS }),
     }),
     {
       name: 'cbt-toolkit-settings',
@@ -56,6 +74,9 @@ export const useSettings = create<SettingsState>()(
         highContrast: state.highContrast,
         palette: state.palette,
         darkMode: state.darkMode,
+        pinEnabled: state.pinEnabled,
+        biometricsEnabled: state.biometricsEnabled,
+        pinOnboardingShown: state.pinOnboardingShown,
       }),
       merge: (persisted, current) =>
         ({
