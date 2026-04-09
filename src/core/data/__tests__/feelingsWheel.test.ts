@@ -55,4 +55,14 @@ describe('feelingsWheel', () => {
       expect(hexRe.test(n.color)).toBe(true);
     });
   });
+
+  it('parentKey matches structural parent in tree', () => {
+    function check(nodes: EmotionNode[], expectedParentKey?: string) {
+      nodes.forEach((n) => {
+        expect(n.parentKey).toBe(expectedParentKey);
+        if (n.children) check(n.children, n.key);
+      });
+    }
+    check(feelingsWheel, undefined);
+  });
 });
