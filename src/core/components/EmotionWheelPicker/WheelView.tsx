@@ -121,9 +121,7 @@ export function WheelView({ nodes, selected, onChange }: Props) {
           opacity={isRootSelected ? 1 : 0.75}
           onPress={() => addEmotion(root.label, root.color)}
           accessible
-          accessibilityRole="button"
           accessibilityLabel={root.label}
-          accessibilityHint="Dodaj emocję"
         />
       );
 
@@ -157,9 +155,7 @@ export function WheelView({ nodes, selected, onChange }: Props) {
             opacity={isL2Selected ? 1 : 0.6}
             onPress={() => addEmotion(l2.label, l2.color)}
             accessible
-            accessibilityRole="button"
             accessibilityLabel={l2.label}
-            accessibilityHint="Dodaj emocję"
           />
         );
 
@@ -201,9 +197,7 @@ export function WheelView({ nodes, selected, onChange }: Props) {
               strokeWidth={0.5}
               onPress={() => addEmotion(l3.label, l3.color)}
               accessible
-              accessibilityRole="button"
               accessibilityLabel={l3.label}
-              accessibilityHint="Dodaj emocję"
             />
           );
         });
