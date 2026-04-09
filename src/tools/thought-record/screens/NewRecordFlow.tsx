@@ -20,7 +20,7 @@ import { useColors } from '../../../core/theme/useColors';
 import { iconRow } from '../../../core/theme';
 import { StepProgress } from '../../../core/components/StepProgress';
 import { TextStep } from '../components/TextStep';
-import { EmotionPicker } from '../../../core/components/EmotionPicker';
+import { EmotionWheelPicker } from '../../../core/components/EmotionWheelPicker';
 import { IntensitySlider } from '../../../core/components/IntensitySlider';
 import { StepHelper } from '../../../core/components/StepHelper';
 import { pl } from '../i18n/pl';
@@ -189,7 +189,7 @@ function Step2Emotions({
       {error && (
         <Text style={stepStyles.errorText}>Wybierz co najmniej jedną emocję, aby kontynuować.</Text>
       )}
-      <EmotionPicker
+      <EmotionWheelPicker
         selected={state.emotions}
         onChange={(emotions) => update('emotions', emotions)}
       />
