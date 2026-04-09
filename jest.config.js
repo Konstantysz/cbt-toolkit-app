@@ -14,6 +14,8 @@ module.exports = {
   },
   testMatch: ['**/__tests__/**/*.test.[jt]s?(x)'],
   testPathIgnorePatterns: ['/node_modules/', '<rootDir>/.worktrees/', '<rootDir>/.claude/'],
+  modulePathIgnorePatterns: ['<rootDir>/.worktrees/', '<rootDir>/.claude/'],
+  watchPathIgnorePatterns: ['<rootDir>/.worktrees/', '<rootDir>/.claude/'],
   coverageReporters: ['text-summary', 'lcov', 'json-summary', 'json'],
   coveragePathIgnorePatterns: [
     '/node_modules/',

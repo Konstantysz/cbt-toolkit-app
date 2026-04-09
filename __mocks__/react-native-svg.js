@@ -8,6 +8,7 @@ const mock = (name) => {
 };
 
 module.exports = {
+  __esModule: true,
   Svg: mock('Svg'),
   Rect: mock('Rect'),
   Line: mock('Line'),
