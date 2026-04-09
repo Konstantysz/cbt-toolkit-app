@@ -87,6 +87,9 @@ export function ChipView({ nodes, selected, onChange }: Props) {
               style={[styles.chip, isActive && [styles.chipActive, { borderColor: root.color }]]}
               onPress={() => toggleL1(root.key)}
               activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityLabel={root.label}
+              accessibilityHint="Rozwiń kategorię emocji"
             >
               <Text style={[styles.chipText, isActive && styles.chipTextActive]}>{root.label}</Text>
             </TouchableOpacity>
@@ -98,7 +101,12 @@ export function ChipView({ nodes, selected, onChange }: Props) {
       {expandedRoot !== null && (
         <View style={styles.section}>
           {/* "Dodaj [root]" button */}
-          <TouchableOpacity style={styles.addButton} onPress={() => addEmotion(expandedRoot.label)}>
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => addEmotion(expandedRoot.label)}
+            accessibilityRole="button"
+            accessibilityLabel={`Dodaj ${expandedRoot.label}`}
+          >
             <Text style={styles.addText}>Dodaj {expandedRoot.label}</Text>
           </TouchableOpacity>
 
@@ -112,6 +120,9 @@ export function ChipView({ nodes, selected, onChange }: Props) {
                   style={[styles.chip, isActive && [styles.chipActive, { borderColor: l2.color }]]}
                   onPress={() => toggleL2(l2.key)}
                   activeOpacity={0.7}
+                  accessibilityRole="button"
+                  accessibilityLabel={l2.label}
+                  accessibilityHint="Rozwiń podkategorię emocji"
                 >
                   <Text style={[styles.chipText, isActive && styles.chipTextActive]}>
                     {l2.label}
@@ -128,6 +139,8 @@ export function ChipView({ nodes, selected, onChange }: Props) {
               <TouchableOpacity
                 style={styles.addButton}
                 onPress={() => addEmotion(expandedL2Node.label)}
+                accessibilityRole="button"
+                accessibilityLabel={`Dodaj ${expandedL2Node.label}`}
               >
                 <Text style={styles.addText}>Dodaj {expandedL2Node.label}</Text>
               </TouchableOpacity>
@@ -142,6 +155,9 @@ export function ChipView({ nodes, selected, onChange }: Props) {
                       style={[styles.chip, isSelected && styles.chipSelected]}
                       onPress={() => addEmotion(l3.label)}
                       activeOpacity={0.7}
+                      accessibilityRole="button"
+                      accessibilityLabel={l3.label}
+                      accessibilityState={{ selected: isSelected }}
                     >
                       <Text style={[styles.chipText, isSelected && { color: l3.color }]}>
                         {l3.label}

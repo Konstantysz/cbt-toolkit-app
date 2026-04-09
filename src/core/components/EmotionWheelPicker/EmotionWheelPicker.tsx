@@ -39,7 +39,8 @@ function useStyles() {
 export function EmotionWheelPicker({ selected, onChange }: Props) {
   const styles = useStyles();
   const colors = useColors();
-  const { mode, setMode } = usePickerMode();
+  const { mode, isLoading, setMode } = usePickerMode();
+  if (isLoading) return null;
 
   function toggleMode() {
     setMode(mode === 'chips' ? 'wheel' : 'chips');
