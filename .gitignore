@@ -3,6 +3,9 @@
 # Git worktrees
 .worktrees/
 
+# oh-my-claudecode local config
+.omc/
+
 # dependencies
 node_modules/
 

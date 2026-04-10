@@ -7,13 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
+## [v0.5.0] - 2026-04-10
 
 ### Added
 
+- **PIN authentication + biometrics** — optional app lock via 4-digit PIN set in Settings "Prywatność"; biometric unlock (fingerprint / face) available if device supports it; PIN protected with PBKDF2 hashing; hydration gate prevents tool access before auth
+- **Emotion wheel picker** — step 2 of Thought Record now uses an interactive emotion wheel with 150 nodes across 3 levels (core → group → specific); two display modes: radial SVG wheel and flat chip list; WCAG-compliant contrast on all sector labels; accessible (`accessibilityLabel`, `accessibilityState`) on all interactive elements
 - **Theme palette selection** — new Settings section "Wygląd" with a palette picker (color swatches); initial palettes: _Ciepły_ (warm dark, existing colors) and _Ocean_ (navy/teal)
 - **Light/dark mode toggle** — Switch in Settings lets the user switch between light and dark variants of the active palette; default remains dark mode
-- **Per-palette high contrast** — each palette ships 4 variants: `dark`, `darkHighContrast`, `light`, `lightHighContrast`; high contrast preference continues to work across all combinations
+- **Per-palette high contrast** — each palette ships 4 variants: `dark`, `darkHighContrast`, `light`, `lightHighContrast`; high contrast toggle continues to work across all combinations
+- **CI: Preview APK on push to `develop`** — `preview-apk` workflow builds a release APK via Gradle and uploads it as a 30-day GitHub Actions artifact
+- **CI: Coverage delta comment on PRs** — `ArtiomTr/jest-coverage-report-action` posts a coverage table with delta on every pull request
+- **CI: Automated release APK on tag** — `release` workflow triggers on `vX.Y.Z` tags, builds APK and uploads it to the GitHub Release
 
 ### Changed
 
@@ -21,34 +26,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Theme architecture extended: `ColorSet` interface, `PaletteDefinition`, `PALETTES` registry in `theme/index.ts`
 - Settings store: new persisted fields `palette` (default `'warm-dark'`) and `darkMode` (default `true`)
 - `StyleSheet.create` and `screenOptions` objects in layout components wrapped in `useMemo` to avoid unnecessary re-creation on re-render
-
-### Fixed
-
-- **`useColors()` crash on stale palette key** — unknown palette ID (e.g. from an older AsyncStorage) falls back to `warm-dark` instead of crashing
-- **Accessibility: `useColors()` propagated to tool screens and shared components** — high contrast mode now applies to CBT tool UIs (partial: list, flow, and shared component screens; detail screens follow-up in a separate PR)
-- **Theme tokens: `typography` scale added** — `fontSize` magic numbers replaced with `typography.xs/sm/md/lg/xl/xxl` tokens across tool screens
-- **Jest: `AsyncStorage` global mock** — tests no longer fail when components import `useColors`
-- **Jest: `.claude/` worktree directory excluded** from test discovery and coverage
-- **ABC Model data loss on export/import** — `exportData()` now includes `abc_entries`; import handles `abcEntries` as optional for backward compatibility with older export files
-- **SQLite foreign key constraints inactive** — `PRAGMA foreign_keys = ON` added to DB init; `ON DELETE CASCADE` now works as intended
-
-### Added
-
-- **CI: Preview APK on push to `develop`** — `preview-apk` workflow builds a release APK via Gradle and uploads it as a 30-day GitHub Actions artifact
-- **CI: Coverage delta comment on PRs** — `ArtiomTr/jest-coverage-report-action` posts a coverage table with delta on every pull request
-- **CI: Automated release APK on tag** — `release` workflow triggers on `vX.Y.Z` tags, builds APK and uploads it to the GitHub Release
-
-### Changed
-
 - Jest coverage reporters extended with `json` and `json-summary` (required by the coverage comment action)
 - `collectCoverage` moved from `jest.config.js` to CI test scripts — local `npm test` no longer pays instrumentation overhead by default
 - **Coverage thresholds raised** — `jest.config.js` enforces stmt 80 / branch 70 / fn 75 / lines 82
 - `react-native` bumped to `0.83.4` (Expo SDK compatibility requirement)
 
-### Tests
+### Fixed
 
-- **+50 tests** (108 → 158): expanded repository, hook, screen, and flow coverage across thought-record, abc-model, and behavioral-experiment modules
-- Statement coverage: 69% → 80% · Branch: 58% → 72% · Functions: 62% → 77% · Lines: 71% → 82%
+- **ABC Model data loss on export/import** — `exportData()` now includes `abc_entries`; import handles `abcEntries` as optional for backward compatibility with older export files
+- **SQLite foreign key constraints inactive** — `PRAGMA foreign_keys = ON` added to DB init; `ON DELETE CASCADE` now works as intended
+- **Accessibility: `useColors()` propagated to tool screens and shared components** — high contrast mode now applies to CBT tool UIs
+- **Theme tokens: `typography` scale added** — `fontSize` magic numbers replaced with `typography.xs/sm/md/lg/xl/xxl` tokens across tool screens
+- **`useColors()` crash on stale palette key** — unknown palette ID falls back to `warm-dark` instead of crashing
+- **CI: expo prebuild missing before Gradle build** — `preview-apk` and `release` workflows now run `npx expo prebuild --platform android --no-install` before Gradle steps; fixes workflow failures since v0.4.1
+- **Jest: `AsyncStorage` global mock** — tests no longer fail when components import `useColors`
+- **Jest: `.claude/` worktree directory excluded** from test discovery and coverage
+- **+98 tests** (108 → 206): PIN auth module, EmotionWheelPicker (ChipView + WheelView), theme/palette hooks, and expanded repository coverage; statement coverage 69% → 82%
 
 ---
 
@@ -229,7 +222,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Dark theme** — warm dark palette with amber accent
 - **Jest test infrastructure** — jest-expo + @testing-library/react-native
 
-[Unreleased]: https://github.com/Konstantysz/cbt-toolkit-app/compare/v0.4.1...HEAD
+[Unreleased]: https://github.com/Konstantysz/cbt-toolkit-app/compare/v0.5.0...HEAD
+[v0.5.0]: https://github.com/Konstantysz/cbt-toolkit-app/compare/v0.4.1...v0.5.0
 [v0.4.1]: https://github.com/Konstantysz/cbt-toolkit-app/compare/v0.4.0...v0.4.1
 [v0.4.0]: https://github.com/Konstantysz/cbt-toolkit-app/compare/v0.3.0...v0.4.0
 [v0.3.0]: https://github.com/Konstantysz/cbt-toolkit-app/compare/v0.2.0...v0.3.0
