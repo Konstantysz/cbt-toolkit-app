@@ -24,12 +24,14 @@ const thoughtRows = [{ id: 'tr1', situation: 'Sytuacja', created_at: '2026-01-01
 const experimentRows = [
   { id: 'be1', belief: 'Przekonanie', created_at: '2026-01-01T00:00:00.000Z' },
 ];
+const abcRows = [{ id: 'abc1', situation: 'Sytuacja ABC', created_at: '2026-01-01T00:00:00.000Z' }];
 
 beforeEach(() => {
   jest.clearAllMocks();
   (mockDb.getAllAsync as jest.Mock)
     .mockResolvedValueOnce(thoughtRows)
-    .mockResolvedValueOnce(experimentRows);
+    .mockResolvedValueOnce(experimentRows)
+    .mockResolvedValueOnce(abcRows);
 });
 
 describe('exportData', () => {
@@ -46,11 +48,13 @@ describe('exportData', () => {
       settings: Record<string, unknown>;
       thoughtRecords: unknown[];
       behavioralExperiments: unknown[];
+      abcEntries: unknown[];
     };
     expect(parsed.version).toBe(1);
     expect(typeof parsed.exportedAt).toBe('string');
     expect(parsed.thoughtRecords).toEqual(thoughtRows);
     expect(parsed.behavioralExperiments).toEqual(experimentRows);
+    expect(parsed.abcEntries).toEqual(abcRows);
     expect(parsed.settings).toMatchObject({
       reminderEnabled: expect.any(Boolean),
       reminderTime: expect.any(String),

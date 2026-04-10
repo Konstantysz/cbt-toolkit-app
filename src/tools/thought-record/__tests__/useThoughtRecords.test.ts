@@ -1,5 +1,5 @@
 import { renderHook, act } from '@testing-library/react-native';
-import { useThoughtRecords } from '../hooks/useThoughtRecords';
+import { useThoughtRecords, useThoughtRecord } from '../hooks/useThoughtRecords';
 import * as repo from '../repository';
 
 jest.mock('../repository');
@@ -69,4 +69,43 @@ test('keeps loading=false during refresh when records already present', async ()
     resolveRefresh([makeRecord('2')]);
   });
   expect(result.current.loading).toBe(false);
+});
+
+test('refresh does not fetch when db is null', async () => {
+  const { result } = renderHook(() => useThoughtRecords(null));
+  await act(async () => {
+    await result.current.refresh();
+  });
+  expect(repo.getRecords).not.toHaveBeenCalled();
+});
+
+describe('useThoughtRecord', () => {
+  test('loads a single record by id on mount', async () => {
+    (repo.getRecordById as jest.Mock).mockResolvedValue(makeRecord('rec-1'));
+
+    const { result } = renderHook(() => useThoughtRecord(mockDb, 'rec-1'));
+
+    await act(async () => {});
+
+    expect(repo.getRecordById).toHaveBeenCalledWith(mockDb, 'rec-1');
+    expect(result.current.record?.id).toBe('rec-1');
+    expect(result.current.loading).toBe(false);
+  });
+
+  test('sets record to null when not found', async () => {
+    (repo.getRecordById as jest.Mock).mockResolvedValue(null);
+
+    const { result } = renderHook(() => useThoughtRecord(mockDb, 'missing'));
+
+    await act(async () => {});
+
+    expect(result.current.record).toBeNull();
+    expect(result.current.loading).toBe(false);
+  });
+
+  test('does not fetch when db is null', () => {
+    const { result } = renderHook(() => useThoughtRecord(null, 'rec-1'));
+    expect(repo.getRecordById).not.toHaveBeenCalled();
+    expect(result.current.loading).toBe(true);
+  });
 });

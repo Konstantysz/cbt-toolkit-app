@@ -3,6 +3,7 @@ import type { Migration } from '../types/tool';
 
 export async function initCoreTables(db: SQLite.SQLiteDatabase): Promise<void> {
   await db.execAsync(`
+    PRAGMA foreign_keys = ON;
     CREATE TABLE IF NOT EXISTS tool_entries (
       id TEXT PRIMARY KEY,
       tool_id TEXT NOT NULL,
@@ -34,4 +35,24 @@ export async function runMigrations(
       await db.runAsync('INSERT INTO migrations_log (id) VALUES (?)', [migration.id]);
     }
   }
+}
+
+/**
+ * Deletes all user data from tool tables (DELETE FROM, not DROP TABLE).
+ * Wrapped in a transaction so the wipe is atomic — a crash mid-loop leaves
+ * the database fully intact rather than in a half-wiped state.
+ * Intentionally preserves migrations_log so the schema stays intact and
+ * migrations are not re-applied on the next cold start.
+ * Note: all tables use TEXT (UUID) primary keys, so there is no
+ * sqlite_sequence to worry about.
+ */
+export async function resetDatabase(db: SQLite.SQLiteDatabase): Promise<void> {
+  const rows = await db.getAllAsync<{ name: string }>(
+    `SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name != 'migrations_log'`
+  );
+  await db.withTransactionAsync(async () => {
+    for (const { name } of rows) {
+      await db.execAsync(`DELETE FROM "${name}"`);
+    }
+  });
 }

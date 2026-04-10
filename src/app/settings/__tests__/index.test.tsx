@@ -23,25 +23,71 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
   setItem: jest.fn().mockResolvedValue(undefined),
   removeItem: jest.fn().mockResolvedValue(undefined),
 }));
+jest.mock('../../../core/settings/store', () => {
+  const state = {
+    reminderEnabled: false,
+    reminderTime: '20:00',
+    fontSize: 'md',
+    reducedMotion: false,
+    highContrast: false,
+    palette: 'warm-dark',
+    darkMode: true,
+    pinEnabled: false,
+    biometricsEnabled: false,
+    pinOnboardingShown: false,
+    setReminderEnabled: jest.fn(),
+    setReminderTime: jest.fn(),
+    setFontSize: jest.fn(),
+    setReducedMotion: jest.fn(),
+    setHighContrast: jest.fn(),
+    setPalette: jest.fn(),
+    setDarkMode: jest.fn(),
+    setPinEnabled: jest.fn(),
+    setBiometricsEnabled: jest.fn(),
+    setPinOnboardingShown: jest.fn(),
+  };
+  const useSettings = jest.fn((selector?: (s: typeof state) => unknown) =>
+    selector ? selector(state) : state
+  );
+  (useSettings as unknown as { getState: () => typeof state }).getState = () => state;
+  return { useSettings, __mockState: state };
+});
 jest.mock('@react-native-community/datetimepicker', () => 'DateTimePicker');
+jest.mock('../../../core/auth/pin', () => ({
+  clearPin: jest.fn().mockResolvedValue(undefined),
+}));
+jest.mock('../../../core/auth/store', () => {
+  const useAuthStore = jest.fn((selector?: (s: { authPhase: string }) => unknown) =>
+    selector ? selector({ authPhase: 'unlocked' }) : { authPhase: 'unlocked' }
+  );
+  (
+    useAuthStore as unknown as {
+      getState: () => { setPhase: jest.Mock; requestVerify: jest.Mock };
+    }
+  ).getState = jest.fn().mockReturnValue({ setPhase: jest.fn(), requestVerify: jest.fn() });
+  return { useAuthStore };
+});
 
 import React from 'react';
 import { render, screen } from '@testing-library/react-native';
 import SettingsScreen from '../index';
+import { pl } from '../../../core/i18n/pl';
+import * as SettingsStoreMock from '../../../core/settings/store';
 
 describe('SettingsScreen', () => {
-  it('renders all 5 section headers', () => {
+  it('renders all 6 section headers', () => {
     render(<SettingsScreen />);
-    expect(screen.getByText('Powiadomienia')).toBeTruthy();
-    expect(screen.getByText('Dostępność')).toBeTruthy();
-    expect(screen.getByText('Dane')).toBeTruthy();
-    expect(screen.getByText('Zasoby pomocowe')).toBeTruthy();
-    expect(screen.getByText('O aplikacji')).toBeTruthy();
+    expect(screen.getByText(pl.settings.notifications.title)).toBeTruthy();
+    expect(screen.getByText(pl.settings.appearance.title)).toBeTruthy();
+    expect(screen.getByText(pl.settings.accessibility.title)).toBeTruthy();
+    expect(screen.getByText(pl.settings.data.title)).toBeTruthy();
+    expect(screen.getByText(pl.settings.resources.title)).toBeTruthy();
+    expect(screen.getByText(pl.settings.about.title)).toBeTruthy();
   });
 
   it('hides time row when reminderEnabled is false (default)', () => {
     render(<SettingsScreen />);
-    expect(screen.queryByText('Godzina przypomnienia')).toBeNull();
+    expect(screen.queryByText(pl.settings.notifications.time)).toBeNull();
   });
 
   it('font size selector shows 3 options', () => {
@@ -49,5 +95,36 @@ describe('SettingsScreen', () => {
     // All three A labels are rendered
     const fontLabels = screen.getAllByText('A');
     expect(fontLabels.length).toBe(3);
+  });
+});
+
+describe('SettingsScreen — Prywatność section', () => {
+  beforeEach(() => {
+    (
+      SettingsStoreMock as unknown as { __mockState: { pinEnabled: boolean } }
+    ).__mockState.pinEnabled = false;
+  });
+
+  it('renders privacy section header', () => {
+    render(<SettingsScreen />);
+    expect(screen.getByText(pl.settings.privacy.title)).toBeTruthy();
+  });
+
+  it('renders PIN toggle', () => {
+    render(<SettingsScreen />);
+    expect(screen.getByText(pl.settings.privacy.pinEnabled)).toBeTruthy();
+  });
+
+  it('does not show "Zmień kod PIN" when pinEnabled is false', () => {
+    render(<SettingsScreen />);
+    expect(screen.queryByText(pl.settings.privacy.changePin)).toBeNull();
+  });
+
+  it('shows "Zmień kod PIN" when pinEnabled is true', () => {
+    (
+      SettingsStoreMock as unknown as { __mockState: { pinEnabled: boolean } }
+    ).__mockState.pinEnabled = true;
+    render(<SettingsScreen />);
+    expect(screen.getByText(pl.settings.privacy.changePin)).toBeTruthy();
   });
 });

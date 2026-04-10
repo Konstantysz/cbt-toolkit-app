@@ -2,7 +2,7 @@
   "expo": {
     "name": "cbt-toolkit-app",
     "slug": "cbt-toolkit-app",
-    "version": "1.0.0",
+    "version": "0.5.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "cbttoolkitapp",
@@ -13,7 +13,10 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSFaceIDUsageDescription": "Użyj Face ID do szybkiego odblokowania aplikacji."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -40,7 +43,10 @@
       "expo-sqlite",
       "expo-secure-store",
       "@react-native-community/datetimepicker",
-      "expo-sharing"
+      "expo-sharing",
+      "expo-local-authentication",
+      "expo-font",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true

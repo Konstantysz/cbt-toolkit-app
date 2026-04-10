@@ -32,6 +32,16 @@ export const pl = {
       highContrast: 'Wysoki kontrast',
       highContrastSub: 'Mocniejsze kolory i obramowania',
     },
+    appearance: {
+      title: 'Wygląd',
+      darkMode: 'Tryb ciemny',
+      darkModeSub: 'Ciemne tło, jasny tekst',
+      palette: 'Paleta kolorów',
+      palettes: {
+        'warm-dark': 'Ciepły',
+        ocean: 'Ocean',
+      },
+    },
     data: {
       title: 'Dane',
       export: 'Eksportuj dane',
@@ -57,6 +67,45 @@ export const pl = {
       changelog: 'Historia zmian',
       changelogSub: 'Co nowego w tej wersji',
       report: 'Zgłoś problem',
+    },
+    privacy: {
+      title: 'Prywatność',
+      pinEnabled: 'Kod PIN',
+      changePin: 'Zmień kod PIN',
+      biometrics: 'Użyj biometrii',
+      disablePinTitle: 'Wyłączyć kod PIN?',
+      disablePinMessage: 'Aplikacja nie będzie już chroniona kodem PIN.',
+      disablePinButton: 'Wyłącz',
+    },
+  },
+  auth: {
+    onboarding: {
+      title: 'Zabezpiecz aplikację kodem PIN',
+      description: 'Twoje wpisy zawierają prywatne informacje.',
+      warning:
+        'Jeśli zapomnisz kodu PIN, jedyną opcją będzie zresetowanie aplikacji, co usunie wszystkie Twoje wpisy.',
+      setupButton: 'Ustaw kod PIN',
+      skipButton: 'Nie, dziękuję',
+    },
+    setup: {
+      stepEnter: 'Wprowadź kod PIN (4 cyfry)',
+      stepConfirm: 'Potwierdź kod PIN',
+      mismatch: 'Kody PIN nie są zgodne',
+      biometricsTitle: 'Czy chcesz używać biometrii?',
+      biometricsEnable: 'Tak, włącz',
+      biometricsSkip: 'Nie',
+    },
+    lock: {
+      title: 'Wprowadź kod PIN',
+      wrongPin: 'Nieprawidłowy kod PIN',
+      useBiometrics: 'Użyj biometrii',
+      forgotPin: 'Zapomniałem kodu PIN',
+    },
+    reset: {
+      alertTitle: 'Zapomniałem kodu PIN',
+      alertMessage:
+        'Zresetowanie aplikacji usunie wszystkie Twoje wpisy. Tej operacji nie można cofnąć.',
+      confirm: 'Tak, usuń dane',
     },
   },
 } as const;

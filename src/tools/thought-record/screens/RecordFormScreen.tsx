@@ -13,7 +13,7 @@ import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import { captureRef } from 'react-native-view-shot';
 import { useSQLiteContext } from 'expo-sqlite';
-import { colors } from '../../../core/theme';
+import { useColors } from '../../../core/theme/useColors';
 import { useThoughtRecord } from '../hooks/useThoughtRecords';
 import { pl } from '../i18n/pl';
 import type { Emotion } from '../types';
@@ -22,17 +22,84 @@ interface Props {
   id: string;
 }
 
+function useStyles() {
+  const colors = useColors();
+  return StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.bg },
+    centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+    missing: { color: colors.textMuted, fontStyle: 'italic' },
+    scroll: { padding: 16, paddingBottom: 40 },
+    form: {
+      backgroundColor: colors.surface,
+      borderRadius: 12,
+      overflow: 'hidden',
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    formTitle: {
+      fontSize: 14,
+      color: colors.text,
+      fontWeight: '600',
+      letterSpacing: 1.5,
+      textTransform: 'uppercase',
+      textAlign: 'center',
+      padding: 16,
+      paddingBottom: 12,
+    },
+    accentLine: { height: 1, backgroundColor: colors.accent, marginHorizontal: 0, marginBottom: 0 },
+    section: { padding: 14, borderBottomWidth: 1, borderBottomColor: colors.border },
+    sectionLast: { borderBottomWidth: 0 },
+    sectionLabel: {
+      fontSize: 9,
+      color: colors.accent,
+      textTransform: 'uppercase',
+      letterSpacing: 1.5,
+      marginBottom: 6,
+      fontWeight: '600',
+    },
+    fieldText: { fontSize: 13, color: colors.text, lineHeight: 20 },
+    threeCol: { flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: colors.border },
+    col: { flex: 1, padding: 12, minHeight: 100 },
+    colLeft: { borderRightWidth: 1, borderRightColor: colors.border },
+    colMid: { borderRightWidth: 1, borderRightColor: colors.border },
+    colRight: {},
+    colLabel: {
+      fontSize: 9,
+      color: colors.accent,
+      textTransform: 'uppercase',
+      letterSpacing: 1,
+      marginBottom: 6,
+      fontWeight: '600',
+    },
+    colText: { fontSize: 12, color: colors.text, lineHeight: 18 },
+    exportRow: { flexDirection: 'row', gap: 10, marginTop: 20 },
+    exportBtn: {
+      flex: 1,
+      paddingVertical: 13,
+      borderRadius: 12,
+      alignItems: 'center',
+      borderWidth: 1,
+      borderColor: colors.border,
+      backgroundColor: colors.surface,
+    },
+    exportBtnDisabled: { opacity: 0.5 },
+    exportBtnText: { fontSize: 14, color: colors.textMuted },
+  });
+}
+
 export function RecordFormScreen({ id }: Props): React.JSX.Element {
   const db = useSQLiteContext();
   const { record, loading } = useThoughtRecord(db, id);
   const formRef = useRef<View>(null);
   const [isExporting, setIsExporting] = useState(false);
+  const colors = useColors();
+  const styles = useStyles();
 
   const handleExportPdf = useCallback(async () => {
     if (!record || isExporting) return;
     setIsExporting(true);
     try {
-      const html = buildHtml(record);
+      const html = buildHtml(record, colors.accent);
       const { uri } = await Print.printToFileAsync({ html });
       await Sharing.shareAsync(uri, { mimeType: 'application/pdf', UTI: 'com.adobe.pdf' });
     } catch (err) {
@@ -41,7 +108,7 @@ export function RecordFormScreen({ id }: Props): React.JSX.Element {
     } finally {
       setIsExporting(false);
     }
-  }, [record, isExporting]);
+  }, [record, isExporting, colors.accent]);
 
   const handleExportPng = useCallback(async () => {
     if (!formRef.current || isExporting) return;
@@ -83,11 +150,11 @@ export function RecordFormScreen({ id }: Props): React.JSX.Element {
         <Text style={styles.formTitle}>{pl.form.title}</Text>
         <View style={styles.accentLine} />
 
-        <FormSection label={pl.form.sections.situation}>
+        <FormSection label={pl.form.sections.situation} styles={styles}>
           <Text style={styles.fieldText}>{record.situation || '—'}</Text>
         </FormSection>
 
-        <FormSection label={pl.form.sections.emotionsBefore}>
+        <FormSection label={pl.form.sections.emotionsBefore} styles={styles}>
           {emotionsBefore.length === 0 ? (
             <Text style={styles.fieldText}>—</Text>
           ) : (
@@ -117,11 +184,11 @@ export function RecordFormScreen({ id }: Props): React.JSX.Element {
           </View>
         </View>
 
-        <FormSection label={pl.form.sections.alternativeThought}>
+        <FormSection label={pl.form.sections.alternativeThought} styles={styles}>
           <Text style={styles.fieldText}>{record.alternativeThought || '—'}</Text>
         </FormSection>
 
-        <FormSection label={pl.form.sections.emotionsAfter} last>
+        <FormSection label={pl.form.sections.emotionsAfter} styles={styles} last>
           {emotionsAfter.length === 0 ? (
             <Text style={styles.fieldText}>—</Text>
           ) : (
@@ -167,14 +234,18 @@ export function RecordFormScreen({ id }: Props): React.JSX.Element {
   );
 }
 
+type FormStyles = ReturnType<typeof useStyles>;
+
 function FormSection({
   label,
   children,
   last,
+  styles,
 }: {
   label: string;
   children: React.ReactNode;
   last?: boolean;
+  styles: FormStyles;
 }) {
   return (
     <View style={[styles.section, last && styles.sectionLast]}>
@@ -184,16 +255,17 @@ function FormSection({
   );
 }
 
-function buildHtml(record: {
-  situation: string;
-  emotions: Emotion[];
-  automaticThoughts: string;
-  evidenceFor: string;
-  evidenceAgainst: string;
-  alternativeThought: string;
-}): string {
-  const accent = colors.accent;
-
+function buildHtml(
+  record: {
+    situation: string;
+    emotions: Emotion[];
+    automaticThoughts: string;
+    evidenceFor: string;
+    evidenceAgainst: string;
+    alternativeThought: string;
+  },
+  accent: string
+): string {
   const emotionsBefore =
     record.emotions
       .filter((e) => e.intensityBefore !== undefined)
@@ -273,69 +345,3 @@ function escapeHtml(str: string): string {
     .replace(/"/g, '&quot;')
     .replace(/\r\n|\r|\n/g, '<br>');
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.bg },
-  centered: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  missing: { color: colors.textMuted, fontStyle: 'italic' },
-  scroll: { padding: 16, paddingBottom: 40 },
-
-  form: {
-    backgroundColor: colors.surface,
-    borderRadius: 12,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  formTitle: {
-    fontSize: 14,
-    color: colors.text,
-    fontWeight: '600',
-    letterSpacing: 1.5,
-    textTransform: 'uppercase',
-    textAlign: 'center',
-    padding: 16,
-    paddingBottom: 12,
-  },
-  accentLine: { height: 1, backgroundColor: colors.accent, marginHorizontal: 0, marginBottom: 0 },
-
-  section: { padding: 14, borderBottomWidth: 1, borderBottomColor: colors.border },
-  sectionLast: { borderBottomWidth: 0 },
-  sectionLabel: {
-    fontSize: 9,
-    color: colors.accent,
-    textTransform: 'uppercase',
-    letterSpacing: 1.5,
-    marginBottom: 6,
-    fontWeight: '600',
-  },
-  fieldText: { fontSize: 13, color: colors.text, lineHeight: 20 },
-
-  threeCol: { flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: colors.border },
-  col: { flex: 1, padding: 12, minHeight: 100 },
-  colLeft: { borderRightWidth: 1, borderRightColor: colors.border },
-  colMid: { borderRightWidth: 1, borderRightColor: colors.border },
-  colRight: {},
-  colLabel: {
-    fontSize: 9,
-    color: colors.accent,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    marginBottom: 6,
-    fontWeight: '600',
-  },
-  colText: { fontSize: 12, color: colors.text, lineHeight: 18 },
-
-  exportRow: { flexDirection: 'row', gap: 10, marginTop: 20 },
-  exportBtn: {
-    flex: 1,
-    paddingVertical: 13,
-    borderRadius: 12,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
-  },
-  exportBtnDisabled: { opacity: 0.5 },
-  exportBtnText: { fontSize: 14, color: colors.textMuted },
-});

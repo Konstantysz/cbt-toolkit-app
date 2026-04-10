@@ -13,7 +13,8 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
-import { colors, iconRow } from '../../../core/theme';
+import { useColors } from '../../../core/theme/useColors';
+import { iconRow } from '../../../core/theme';
 import { StepProgress } from '../../../core/components/StepProgress';
 import { StepHelper } from '../../../core/components/StepHelper';
 import { pl } from '../i18n/pl';
@@ -36,10 +37,62 @@ interface Props {
   existingId?: string;
 }
 
+function useStyles() {
+  const colors = useColors();
+  return StyleSheet.create({
+    centered: {
+      flex: 1,
+      backgroundColor: colors.bg,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    scroll: { padding: 20 },
+    footer: { padding: 16, paddingBottom: Platform.OS === 'ios' ? 32 : 16 },
+    btn: {
+      backgroundColor: colors.accent,
+      borderRadius: 14,
+      paddingVertical: 15,
+      alignItems: 'center',
+    },
+    btnDisabled: { opacity: 0.5 },
+    btnText: { fontSize: 15, fontWeight: '600', color: colors.bg, letterSpacing: 0.02 },
+    accentColor: { color: colors.accent },
+    bgColor: { color: colors.bg },
+  });
+}
+
+function useStepStyles() {
+  const colors = useColors();
+  return StyleSheet.create({
+    stepBody: { flex: 1 },
+    fieldTitle: { fontSize: 17, color: colors.accent, fontWeight: '500', marginBottom: 10 },
+    fieldTitleSpaced: {
+      fontSize: 17,
+      color: colors.accent,
+      fontWeight: '500',
+      marginBottom: 10,
+      marginTop: 20,
+    },
+    input: {
+      backgroundColor: colors.surface,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 12,
+      padding: 15,
+      fontSize: 15,
+      color: colors.text,
+      lineHeight: 24,
+      minHeight: 80,
+    },
+    placeholderColor: { color: colors.textDim },
+  });
+}
+
 export function NewAbcFlow({ existingId }: Props): React.JSX.Element {
   const db = useSQLiteContext();
   const [step, setStep] = useState(1);
   const [saving, setSaving] = useState(false);
+  const styles = useStyles();
   const [state, setState] = useState<FlowState>({
     entryId: null,
     situation: '',
@@ -119,7 +172,7 @@ export function NewAbcFlow({ existingId }: Props): React.JSX.Element {
   if (!state.entryId) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator color={colors.accent} />
+        <ActivityIndicator color={styles.accentColor.color} />
       </View>
     );
   }
@@ -147,7 +200,12 @@ export function NewAbcFlow({ existingId }: Props): React.JSX.Element {
           >
             <View style={iconRow}>
               <Text style={styles.btnText}>{pl.flow.next}</Text>
-              <Ionicons name="arrow-forward" size={15} color={colors.bg} accessible={false} />
+              <Ionicons
+                name="arrow-forward"
+                size={15}
+                color={styles.bgColor.color}
+                accessible={false}
+              />
             </View>
           </TouchableOpacity>
         ) : (
@@ -172,6 +230,7 @@ function Step1({
   state: FlowState;
   update: (field: keyof Omit<FlowState, 'entryId'>, value: string) => void;
 }): React.JSX.Element {
+  const styles = useStepStyles();
   return (
     <View style={styles.stepBody}>
       <Text style={styles.fieldTitle}>{pl.step1.situationLabel}</Text>
@@ -180,17 +239,17 @@ function Step1({
         value={state.situation}
         onChangeText={(v) => update('situation', v)}
         placeholder={pl.step1.situationPlaceholder}
-        placeholderTextColor={colors.textDim}
+        placeholderTextColor={styles.placeholderColor.color}
         multiline
         textAlignVertical="top"
       />
-      <Text style={[styles.fieldTitle, { marginTop: 20 }]}>{pl.step1.thoughtsLabel}</Text>
+      <Text style={styles.fieldTitleSpaced}>{pl.step1.thoughtsLabel}</Text>
       <TextInput
         style={styles.input}
         value={state.thoughts}
         onChangeText={(v) => update('thoughts', v)}
         placeholder={pl.step1.thoughtsPlaceholder}
-        placeholderTextColor={colors.textDim}
+        placeholderTextColor={styles.placeholderColor.color}
         multiline
         textAlignVertical="top"
       />
@@ -210,6 +269,7 @@ function Step2({
   state: FlowState;
   update: (field: keyof Omit<FlowState, 'entryId'>, value: string) => void;
 }): React.JSX.Element {
+  const styles = useStepStyles();
   return (
     <View style={styles.stepBody}>
       <Text style={styles.fieldTitle}>{pl.step2.behaviorsLabel}</Text>
@@ -218,27 +278,27 @@ function Step2({
         value={state.behaviors}
         onChangeText={(v) => update('behaviors', v)}
         placeholder={pl.step2.behaviorsPlaceholder}
-        placeholderTextColor={colors.textDim}
+        placeholderTextColor={styles.placeholderColor.color}
         multiline
         textAlignVertical="top"
       />
-      <Text style={[styles.fieldTitle, { marginTop: 20 }]}>{pl.step2.emotionsLabel}</Text>
+      <Text style={styles.fieldTitleSpaced}>{pl.step2.emotionsLabel}</Text>
       <TextInput
         style={styles.input}
         value={state.emotions}
         onChangeText={(v) => update('emotions', v)}
         placeholder={pl.step2.emotionsPlaceholder}
-        placeholderTextColor={colors.textDim}
+        placeholderTextColor={styles.placeholderColor.color}
         multiline
         textAlignVertical="top"
       />
-      <Text style={[styles.fieldTitle, { marginTop: 20 }]}>{pl.step2.physicalLabel}</Text>
+      <Text style={styles.fieldTitleSpaced}>{pl.step2.physicalLabel}</Text>
       <TextInput
         style={styles.input}
         value={state.physicalSymptoms}
         onChangeText={(v) => update('physicalSymptoms', v)}
         placeholder={pl.step2.physicalPlaceholder}
-        placeholderTextColor={colors.textDim}
+        placeholderTextColor={styles.placeholderColor.color}
         multiline
         textAlignVertical="top"
       />
@@ -250,30 +310,3 @@ function Step2({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  centered: { flex: 1, backgroundColor: colors.bg, alignItems: 'center', justifyContent: 'center' },
-  scroll: { padding: 20 },
-  stepBody: { flex: 1 },
-  fieldTitle: { fontSize: 17, color: colors.accent, fontWeight: '500', marginBottom: 10 },
-  input: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 12,
-    padding: 15,
-    fontSize: 15,
-    color: colors.text,
-    lineHeight: 24,
-    minHeight: 80,
-  },
-  footer: { padding: 16, paddingBottom: Platform.OS === 'ios' ? 32 : 16 },
-  btn: {
-    backgroundColor: colors.accent,
-    borderRadius: 14,
-    paddingVertical: 15,
-    alignItems: 'center',
-  },
-  btnDisabled: { opacity: 0.5 },
-  btnText: { fontSize: 15, fontWeight: '600', color: colors.bg, letterSpacing: 0.02 },
-});

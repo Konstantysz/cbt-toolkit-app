@@ -1,5 +1,8 @@
 import { renderHook, act } from '@testing-library/react-native';
-import { useBehavioralExperiments } from '../hooks/useBehavioralExperiments';
+import {
+  useBehavioralExperiments,
+  useBehavioralExperiment,
+} from '../hooks/useBehavioralExperiments';
 import * as repo from '../repository';
 
 jest.mock('../repository');
@@ -74,4 +77,43 @@ test('keeps loading=false during refresh when experiments already present', asyn
     resolveRefresh([makeExperiment('2')]);
   });
   expect(result.current.loading).toBe(false);
+});
+
+test('refresh does not fetch when db is null', async () => {
+  const { result } = renderHook(() => useBehavioralExperiments(null));
+  await act(async () => {
+    await result.current.refresh();
+  });
+  expect(repo.getExperiments).not.toHaveBeenCalled();
+});
+
+describe('useBehavioralExperiment', () => {
+  test('loads a single experiment by id on mount', async () => {
+    (repo.getExperimentById as jest.Mock).mockResolvedValue(makeExperiment('exp-1'));
+
+    const { result } = renderHook(() => useBehavioralExperiment(mockDb, 'exp-1'));
+
+    await act(async () => {});
+
+    expect(repo.getExperimentById).toHaveBeenCalledWith(mockDb, 'exp-1');
+    expect(result.current.experiment?.id).toBe('exp-1');
+    expect(result.current.loading).toBe(false);
+  });
+
+  test('sets experiment to null when not found', async () => {
+    (repo.getExperimentById as jest.Mock).mockResolvedValue(null);
+
+    const { result } = renderHook(() => useBehavioralExperiment(mockDb, 'missing'));
+
+    await act(async () => {});
+
+    expect(result.current.experiment).toBeNull();
+    expect(result.current.loading).toBe(false);
+  });
+
+  test('does not fetch when db is null', () => {
+    const { result } = renderHook(() => useBehavioralExperiment(null, 'exp-1'));
+    expect(repo.getExperimentById).not.toHaveBeenCalled();
+    expect(result.current.loading).toBe(true);
+  });
 });

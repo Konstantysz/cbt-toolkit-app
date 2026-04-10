@@ -1,5 +1,11 @@
 # Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
 
+# Git worktrees
+.worktrees/
+
+# oh-my-claudecode local config
+.omc/
+
 # dependencies
 node_modules/
 
@@ -50,3 +56,13 @@ docs/superpowers/
 
 # IDE
 .idea/
+
+# Test coverage output
+coverage/
+
+# Temp/generated files
+transform_theme*.js
+code_review_comments.md
+chatgpt_analysis.md
+claude_analysis.md
+deepseek_analysis.md

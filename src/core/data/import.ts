@@ -19,10 +19,19 @@ interface RawExperiment {
   [key: string]: unknown;
 }
 
+interface RawAbcEntry {
+  id?: unknown;
+  situation?: unknown;
+  createdAt?: unknown;
+  created_at?: unknown;
+  [key: string]: unknown;
+}
+
 interface ExportFile {
   version?: unknown;
   thoughtRecords?: unknown;
   behavioralExperiments?: unknown;
+  abcEntries?: unknown;
   settings?: unknown;
   [key: string]: unknown;
 }
@@ -34,8 +43,13 @@ export function validateExportFile(data: unknown): string | null {
   if (f.version !== 1) return 'Nieznana wersja pliku (oczekiwano 1)';
   if (!Array.isArray(f.thoughtRecords)) return 'Brak tablicy thoughtRecords';
   if (!Array.isArray(f.behavioralExperiments)) return 'Brak tablicy behavioralExperiments';
+  if (f.abcEntries !== undefined && !Array.isArray(f.abcEntries))
+    return 'Nieprawidłowy format abcEntries';
+  const abcCount = Array.isArray(f.abcEntries) ? (f.abcEntries as unknown[]).length : 0;
   const total =
-    (f.thoughtRecords as unknown[]).length + (f.behavioralExperiments as unknown[]).length;
+    (f.thoughtRecords as unknown[]).length +
+    (f.behavioralExperiments as unknown[]).length +
+    abcCount;
   if (total > 5000) return `Zbyt wiele rekordów (${total} > 5000)`;
   for (const r of f.thoughtRecords as RawRecord[]) {
     if (typeof r.id !== 'string' || !r.id) return 'Rekord myśli bez poprawnego id';
@@ -71,6 +85,7 @@ export async function importData(
   const file = parsed as {
     thoughtRecords: RawRecord[];
     behavioralExperiments: RawExperiment[];
+    abcEntries?: RawAbcEntry[];
     settings?: unknown;
   };
   const now = new Date().toISOString();
@@ -90,6 +105,12 @@ export async function importData(
       e.id as string,
     ]);
     if (row) existingIds.add(e.id as string);
+  }
+  for (const a of file.abcEntries ?? []) {
+    const row = await db.getFirstAsync<{ id: string }>('SELECT id FROM tool_entries WHERE id = ?', [
+      a.id as string,
+    ]);
+    if (row) existingIds.add(a.id as string);
   }
 
   await db.withTransactionAsync(async () => {
@@ -165,6 +186,38 @@ export async function importData(
           typeof e.conclusion === 'string' ? e.conclusion : null,
           typeof e.belief_strength_after === 'number' ? e.belief_strength_after : null,
           e.is_example ? 1 : 0,
+        ]
+      );
+      imported++;
+    }
+
+    for (const a of file.abcEntries ?? []) {
+      const id = a.id as string;
+      if (existingIds.has(id)) {
+        skipped++;
+        continue;
+      }
+      const createdAt = (a.createdAt ?? a.created_at) as string;
+      await db.runAsync(
+        `INSERT INTO tool_entries (id, tool_id, created_at, updated_at, is_complete, current_step) VALUES (?, 'abc-model', ?, ?, ?, ?)`,
+        [
+          id,
+          createdAt,
+          now,
+          a.is_complete ? 1 : 0,
+          typeof a.current_step === 'number' ? a.current_step : 1,
+        ]
+      );
+      await db.runAsync(
+        `INSERT OR IGNORE INTO abc_entries (id, situation, thoughts, behaviors, emotions, physical_symptoms, is_example) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [
+          id,
+          typeof a.situation === 'string' ? a.situation : '',
+          typeof a.thoughts === 'string' ? a.thoughts : '',
+          typeof a.behaviors === 'string' ? a.behaviors : '',
+          typeof a.emotions === 'string' ? a.emotions : '',
+          typeof a.physical_symptoms === 'string' ? a.physical_symptoms : '',
+          a.is_example ? 1 : 0,
         ]
       );
       imported++;

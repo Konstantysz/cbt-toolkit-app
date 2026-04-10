@@ -16,6 +16,11 @@ const DEFAULTS = {
   fontSize: 'md' as const,
   reducedMotion: false,
   highContrast: false,
+  palette: 'warm-dark' as const,
+  darkMode: true,
+  pinEnabled: false,
+  biometricsEnabled: false,
+  pinOnboardingShown: false,
 };
 
 beforeEach(() => {
@@ -30,6 +35,14 @@ describe('useSettings — defaults', () => {
     expect(s.fontSize).toBe('md');
     expect(s.reducedMotion).toBe(false);
     expect(s.highContrast).toBe(false);
+  });
+
+  it('has default palette warm-dark', () => {
+    expect(useSettings.getState().palette).toBe('warm-dark');
+  });
+
+  it('has default darkMode true', () => {
+    expect(useSettings.getState().darkMode).toBe(true);
   });
 });
 
@@ -58,6 +71,59 @@ describe('useSettings — setters', () => {
     useSettings.getState().setHighContrast(true);
     expect(useSettings.getState().highContrast).toBe(true);
   });
+
+  it('setPalette updates palette', () => {
+    useSettings.getState().setPalette('ocean');
+    expect(useSettings.getState().palette).toBe('ocean');
+  });
+
+  it('setDarkMode updates darkMode', () => {
+    useSettings.getState().setDarkMode(false);
+    expect(useSettings.getState().darkMode).toBe(false);
+  });
+});
+
+describe('useSettings — PIN fields', () => {
+  it('has pinEnabled default false', () => {
+    expect(useSettings.getState().pinEnabled).toBe(false);
+  });
+
+  it('has biometricsEnabled default false', () => {
+    expect(useSettings.getState().biometricsEnabled).toBe(false);
+  });
+
+  it('has pinOnboardingShown default false', () => {
+    expect(useSettings.getState().pinOnboardingShown).toBe(false);
+  });
+
+  it('setPinEnabled updates pinEnabled', () => {
+    useSettings.getState().setPinEnabled(true);
+    expect(useSettings.getState().pinEnabled).toBe(true);
+  });
+
+  it('setBiometricsEnabled updates biometricsEnabled', () => {
+    useSettings.getState().setBiometricsEnabled(true);
+    expect(useSettings.getState().biometricsEnabled).toBe(true);
+  });
+
+  it('setPinOnboardingShown updates pinOnboardingShown', () => {
+    useSettings.getState().setPinOnboardingShown(true);
+    expect(useSettings.getState().pinOnboardingShown).toBe(true);
+  });
+
+  it('reset restores all fields to defaults', () => {
+    useSettings.getState().setPinEnabled(true);
+    useSettings.getState().setBiometricsEnabled(true);
+    useSettings.getState().setPinOnboardingShown(true);
+    useSettings.getState().setDarkMode(false);
+    useSettings.getState().reset();
+    const s = useSettings.getState();
+    expect(s.pinEnabled).toBe(false);
+    expect(s.biometricsEnabled).toBe(false);
+    expect(s.pinOnboardingShown).toBe(false);
+    expect(s.darkMode).toBe(true);
+    expect(s.palette).toBe('warm-dark');
+  });
 });
 
 describe('useSettings — persist rehydration', () => {
@@ -69,6 +135,8 @@ describe('useSettings — persist rehydration', () => {
         fontSize: 'lg',
         reducedMotion: true,
         highContrast: true,
+        palette: 'ocean',
+        darkMode: false,
       },
       version: 0,
     };
@@ -82,5 +150,7 @@ describe('useSettings — persist rehydration', () => {
     expect(s.fontSize).toBe('lg');
     expect(s.reducedMotion).toBe(true);
     expect(s.highContrast).toBe(true);
+    expect(s.palette).toBe('ocean');
+    expect(s.darkMode).toBe(false);
   });
 });

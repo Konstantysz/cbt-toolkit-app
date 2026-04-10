@@ -42,6 +42,13 @@ describe('useAbcEntries', () => {
     const { result } = renderHook(() => useAbcEntries(mockDb));
     expect(result.current.loading).toBe(true);
   });
+
+  it('does not fetch when db is null', async () => {
+    const { result } = renderHook(() => useAbcEntries(null));
+    await act(async () => {});
+    expect(repo.getEntries).not.toHaveBeenCalled();
+    expect(result.current.entries).toEqual([]);
+  });
 });
 
 describe('useAbcEntry', () => {
@@ -54,5 +61,11 @@ describe('useAbcEntry', () => {
 
     expect(result.current.entry).toEqual(fakeEntry);
     expect(result.current.loading).toBe(false);
+  });
+
+  it('does not fetch when db is null', () => {
+    const { result } = renderHook(() => useAbcEntry(null, 'abc-1'));
+    expect(repo.getEntryById).not.toHaveBeenCalled();
+    expect(result.current.loading).toBe(true);
   });
 });

@@ -18,6 +18,13 @@ export async function exportData(db: SQLite.SQLiteDatabase): Promise<void> {
     ORDER BY te.created_at ASC
   `);
 
+  const abcEntries = await db.getAllAsync(`
+    SELECT ae.*, te.is_complete, te.current_step, te.created_at, te.updated_at
+    FROM abc_entries ae
+    JOIN tool_entries te ON ae.id = te.id
+    ORDER BY te.created_at ASC
+  `);
+
   const { reminderEnabled, reminderTime, fontSize, reducedMotion, highContrast } =
     useSettings.getState();
 
@@ -27,6 +34,7 @@ export async function exportData(db: SQLite.SQLiteDatabase): Promise<void> {
     settings: { reminderEnabled, reminderTime, fontSize, reducedMotion, highContrast },
     thoughtRecords,
     behavioralExperiments,
+    abcEntries,
   };
 
   const filePath = `${cacheDirectory}cbt-export-${Date.now()}.json`;
