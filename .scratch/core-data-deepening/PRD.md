@@ -35,3 +35,10 @@ Merged in from other areas (cross-area dedup):
 ## Rejected at verification
 
 - **`rescheduleReminder(time)` (cancel-then-schedule)** — oracle replayed (3 cancel+schedule pairs: `src/app/_layout.tsx:49`, `src/app/settings/index.tsx:113`, `:125-126`) but the deletion test fails: it is a two-line pass-through over `cancelReminder` (itself a one-line wrapper). The verifier found the real simplification is *deleting* the settings-screen calls, because the `_layout.tsx:47-50` effect on `[reminderEnabled, reminderTime]` already reschedules; the parallel `cancel().then(schedule)` from both places is a possible (unconfirmed) duplicate-notification race. Not a deepening — noted for a bug-hunt.
+
+## Settled decisions checked (brain ADRs)
+
+Checked against `cbt-toolkit-brain/Engineering/Decisions` (ADR-001…008) — no candidate re-proposes or contradicts a settled decision.
+- **ADR-002 (plugin architecture)** promises "new tools are added by importing them in the registry — zero other files change" and "cross-tool features must live in core". Issue 01 restores that promise (today `core/data/*` and the settings screen must change per tool); core receives the tool list as a parameter so it never imports tools.
+- **ADR-006 (clean-cut migrations)** explains bug B1: BE migration 002 dropped/recreated the table, but `import.ts` was not updated with it. ADR-006 also says clean-cut stops being acceptable after v1.0.0 — keeping per-tool import logic next to the tool's migrations (issue 01) is what prevents this class of drift.
+- Execution-Plan 4.9 ("ABC missing from export/import", done) fixed export/import for ABC but not delete-all — B2 is the remaining sibling of that bug.

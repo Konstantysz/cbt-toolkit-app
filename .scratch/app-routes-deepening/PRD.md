@@ -27,3 +27,8 @@ Merged out to other areas (cross-area dedup — survived, filed elsewhere):
 ## Rejected at verification
 
 None. (Candidate 01 was downgraded Strong → Worth-exploring: real seam, shallow module.)
+
+## Settled decisions checked (brain ADRs)
+
+Checked against `cbt-toolkit-brain/Engineering/Decisions` (ADR-001…008) — no conflicts.
+- **ADR-002** states "new tools are added by importing them in the registry — zero other files change". The hand-listed `Tabs.Screen` entries in `src/app/_layout.tsx` break that promise; issue 01 restores it (and must use *all* tools, since ADR-002 feature-flags WIP tools with `enabled: false`).

@@ -35,3 +35,10 @@ Several tool screens hard-code `rgba` values equal to warm-dark *default* tokens
 ## Rejected at verification
 
 None. (03 downgraded Strong → Worth-exploring: the verifier kept it Strong but called it borderline, and an independent proposer judged it shallow — interface of ~5 strings + callback for ~35 lines.)
+
+## Settled decisions checked (brain ADRs)
+
+Checked against `cbt-toolkit-brain/Engineering/Decisions` (ADR-001…008) — no conflicts.
+- **ADR-005 (search bar in every list screen)**: "filtering logic stays in each tool" — issue 04 keeps it there via the `matches` prop; `SearchBar` stays the shared primitive inside the new list screen.
+- **ADR-004**: issue 04 keeps the `useFocusEffect(refresh)` behaviour (moved inside the component).
+- **ADR-002**: all new components live in `src/core/components` and take tool-specific strings/callbacks as props.

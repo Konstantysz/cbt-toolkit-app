@@ -34,3 +34,9 @@ Merged out to other areas (cross-area dedup — survived, filed elsewhere):
 ## Rejected at verification
 
 None.
+
+## Settled decisions checked (brain ADRs)
+
+Checked against `cbt-toolkit-brain/Engineering/Decisions` (ADR-001…008) — no conflicts.
+- **ADR-004 (list-screen data refresh)** is exactly the rule issue 01 centralises: `useFocusEffect` refresh + "spinner only on first load" (`if (list.length === 0) setLoading(true)`). Today the ADR's rule is copied in 3 hooks; issue 01 makes the ADR enforceable in one place. Keep the `[db, items.length]` deps the ADR shows.
+- **ADR-002**: helpers live in `src/core`, tools opt in; no cross-tool imports.
