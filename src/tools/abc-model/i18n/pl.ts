@@ -50,7 +50,6 @@ export const pl = {
     deleteConfirmOk: 'Usuń',
     deleteError: 'Nie udało się usunąć wpisu. Spróbuj ponownie.',
     notFound: 'Nie znaleziono wpisu.',
-    editA11y: 'Edytuj wpis',
   },
   flow: {
     newTitle: 'Nowy wpis',

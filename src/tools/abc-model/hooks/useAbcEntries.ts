@@ -1,42 +1,21 @@
-import { useState, useEffect, useCallback } from 'react';
 import * as SQLite from 'expo-sqlite';
 import type { AbcEntry } from '../types';
 import * as repo from '../repository';
+import { useLoad } from '../../../core/db/useLoad';
+
+const NONE: AbcEntry[] = [];
 
 export function useAbcEntries(db: SQLite.SQLiteDatabase | null) {
-  const [entries, setEntries] = useState<AbcEntry[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const refresh = useCallback(async () => {
-    if (!db) return;
-    if (entries.length === 0) setLoading(true);
-    try {
-      const data = await repo.getEntries(db);
-      setEntries(data);
-    } finally {
-      setLoading(false);
-    }
-  }, [db, entries.length]);
-
-  useEffect(() => {
-    refresh();
-  }, [refresh]);
-
-  return { entries, loading, refresh };
+  const { data, loading, error, refresh } = useLoad(db, (d) => repo.getEntries(d), NONE);
+  return { entries: data, loading, error, refresh };
 }
 
 export function useAbcEntry(db: SQLite.SQLiteDatabase | null, id: string) {
-  const [entry, setEntry] = useState<AbcEntry | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!db) return;
-    setLoading(true);
-    repo
-      .getEntryById(db, id)
-      .then(setEntry)
-      .finally(() => setLoading(false));
-  }, [db, id]);
-
-  return { entry, loading };
+  const { data, loading, error, refresh } = useLoad<AbcEntry | null>(
+    db,
+    (d) => repo.getEntryById(d, id),
+    null,
+    id
+  );
+  return { entry: data, loading, error, refresh };
 }

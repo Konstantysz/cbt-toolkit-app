@@ -7,12 +7,14 @@ import { useColors } from '../../../core/theme/useColors';
 import { SearchBar } from '../../../core/components/SearchBar';
 import { useAbcEntries } from '../hooks/useAbcEntries';
 import { insertSeedEntry } from '../repository';
+import { LoadError } from '../../../core/components/LoadError';
+import { seedOnce } from '../../../core/db/seedOnce';
 import { pl } from '../i18n/pl';
 import { formatDate } from '../../../core/i18n/date';
 import { matchesQuery } from '../../../core/i18n/search';
-import type { AbcEntry } from '../types';
+import { pl as corePl } from '../../../core/i18n/pl';
 
-const ONBOARDING_KEY = 'abc-model:onboarding-seeded';
+import type { AbcEntry } from '../types';
 
 function useStyles() {
   const colors = useColors();
@@ -87,7 +89,7 @@ function useStyles() {
 
 export function AbcListScreen(): React.JSX.Element {
   const db = useSQLiteContext();
-  const { entries, loading, refresh } = useAbcEntries(db);
+  const { entries, loading, error, refresh } = useAbcEntries(db);
   const styles = useStyles();
   const [query, setQuery] = useState('');
 
@@ -98,19 +100,13 @@ export function AbcListScreen(): React.JSX.Element {
   );
 
   useEffect(() => {
-    if (entries.length > 0) return;
-    (async () => {
-      try {
-        const val = await AsyncStorage.getItem(ONBOARDING_KEY);
-        if (val !== null) return;
-        await insertSeedEntry(db);
-        await AsyncStorage.setItem(ONBOARDING_KEY, '1');
-        refresh();
-      } catch {
-        // seed failure is non-critical
-      }
-    })();
-  }, [entries.length, db, refresh]);
+    if (loading || error || entries.length > 0) return;
+    seedOnce(db, 'abc-model', insertSeedEntry)
+      .then((seeded) => {
+        if (seeded) refresh();
+      })
+      .catch(() => {}); // seed failure is non-critical
+  }, [loading, error, entries.length, db, refresh]);
 
   const filtered = useMemo(() => {
     if (!query) return entries;
@@ -120,6 +116,7 @@ export function AbcListScreen(): React.JSX.Element {
   const renderItem = useCallback(
     ({ item }: { item: AbcEntry }) => (
       <TouchableOpacity
+        accessibilityRole="button"
         style={styles.card}
         onPress={() => router.push(`/(tools)/abc-model/${item.id}`)}
         activeOpacity={0.8}
@@ -155,6 +152,7 @@ export function AbcListScreen(): React.JSX.Element {
   );
 
   if (loading) return <View style={styles.container} />;
+  if (error) return <LoadError onRetry={refresh} />;
 
   const showEmpty = filtered.length === 0;
   const showNoResults = showEmpty && query.length > 0;
@@ -183,7 +181,9 @@ export function AbcListScreen(): React.JSX.Element {
         />
       )}
       <TouchableOpacity
+        accessibilityRole="button"
         style={styles.fab}
+        accessibilityLabel={corePl.a11y.newEntry}
         onPress={() => router.push('/(tools)/abc-model/new')}
         activeOpacity={0.85}
       >

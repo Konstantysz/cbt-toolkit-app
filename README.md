@@ -140,13 +140,13 @@ Output: `android/app/build/outputs/apk/release/app-release.apk`
 npm test
 ```
 
-108 tests across 27 suites covering components, hooks, screens, and data layer.
+Jest suites cover components, hooks, screens, and the data layer. Before opening a PR also run `npm run lint`, `npm run format:check` and `npm run typecheck`.
 
 ---
 
 ## Architecture
 
-The app is a **modular platform** — a shell hosting independent CBT tool modules. Adding a new tool requires zero changes to existing code.
+The app is a **modular platform** — a shell hosting independent CBT tool modules. Adding a new tool requires no changes to existing tools (one line registering it in `src/tools/registry.ts`).
 
 ```
 src/
@@ -161,10 +161,12 @@ src/
 │   ├── settings/           # Zustand settings store + font scaling
 │   ├── notifications/      # Permission request + daily reminder scheduling
 │   ├── data/               # Export and import logic
+│   ├── auth/               # PIN lock store, guard and screens
 │   ├── i18n/               # Polish UI strings
 │   ├── types/              # Shared types (ToolDefinition, Emotion)
 │   └── components/         # EmotionPicker, IntensitySlider, StepHelper, StepProgress, SearchBar
 └── tools/
+    ├── registry.ts         # Registers all tools
     ├── thought-record/     # Self-contained CBT module
     │   ├── index.ts        # Tool registry entry
     │   ├── repository.ts   # SQLite data layer

@@ -14,6 +14,7 @@ import { useColors } from '../../../core/theme/useColors';
 import { iconRow } from '../../../core/theme';
 import { IntensitySlider } from '../../../core/components/IntensitySlider';
 import { useBehavioralExperiment } from '../hooks/useBehavioralExperiments';
+import { LoadError } from '../../../core/components/LoadError';
 import { pl } from '../i18n/pl';
 import { pl as corePl } from '../../../core/i18n/pl';
 import { formatDate } from '../../../core/i18n/date';
@@ -130,7 +131,7 @@ function useStyles() {
 
 export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
   const db = useSQLiteContext();
-  const { experiment, loading } = useBehavioralExperiment(db, id);
+  const { experiment, loading, error, refresh } = useBehavioralExperiment(db, id);
   const styles = useStyles();
 
   const confirmDelete = useCallback(() => {
@@ -157,6 +158,7 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
         <ActivityIndicator color={styles.accentColor.color} />
       </View>
     );
+  if (error) return <LoadError onRetry={refresh} />;
   if (!experiment)
     return (
       <View style={styles.centered}>
@@ -179,6 +181,7 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
             <Text style={styles.sliderSideLabel}>{pl.detail.beliefStrengthBefore}</Text>
             <IntensitySlider
               value={experiment.beliefStrengthBefore}
+              a11yLabel={pl.detail.beliefStrengthBefore}
               onChange={() => {}}
               label=""
               readOnly
@@ -189,6 +192,7 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
               <Text style={styles.sliderSideLabel}>{pl.detail.beliefStrengthAfter}</Text>
               <IntensitySlider
                 value={experiment.beliefStrengthAfter}
+                a11yLabel={pl.detail.beliefStrengthAfter}
                 onChange={() => {}}
                 label=""
                 readOnly
@@ -199,7 +203,9 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
       </View>
 
       {/* Plan section */}
-      <Text style={styles.sectionHeader}>{pl.detail.planSection}</Text>
+      <Text style={styles.sectionHeader} accessibilityRole="header">
+        {pl.detail.planSection}
+      </Text>
       <DetailRow label={pl.detail.plan} value={experiment.plan || '—'} styles={styles} />
       <DetailRow
         label={pl.detail.predictedOutcome}
@@ -220,6 +226,7 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
       {/* Add result button */}
       {experiment.status === 'planned' && (
         <TouchableOpacity
+          accessibilityRole="button"
           style={styles.addResultBtn}
           onPress={() => router.push(`/(tools)/behavioral-experiment/${id}/result`)}
           activeOpacity={0.85}
@@ -231,7 +238,9 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
       {/* Result section */}
       {experiment.status === 'completed' && (
         <>
-          <Text style={styles.sectionHeader}>{pl.detail.resultSection}</Text>
+          <Text style={styles.sectionHeader} accessibilityRole="header">
+            {pl.detail.resultSection}
+          </Text>
           {experiment.executionDate && (
             <DetailRow
               label={pl.detail.executionDate}
@@ -269,10 +278,10 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
       {/* Edit / Delete */}
       <View style={styles.actionRow}>
         <TouchableOpacity
+          accessibilityRole="button"
           style={styles.editBtn}
           onPress={() => router.push(`/(tools)/behavioral-experiment/${id}/edit`)}
           activeOpacity={0.8}
-          accessibilityLabel={pl.detail.editA11y}
         >
           <View style={iconRow}>
             <Ionicons
@@ -284,7 +293,12 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
             <Text style={styles.editBtnText}>{pl.detail.edit}</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.deleteBtn} onPress={confirmDelete} activeOpacity={0.8}>
+        <TouchableOpacity
+          accessibilityRole="button"
+          style={styles.deleteBtn}
+          onPress={confirmDelete}
+          activeOpacity={0.8}
+        >
           <Text style={styles.deleteBtnText}>{pl.detail.delete}</Text>
         </TouchableOpacity>
       </View>

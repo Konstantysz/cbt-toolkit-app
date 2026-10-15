@@ -26,7 +26,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.cbttoolkit.app"
+      "package": "com.cbttoolkit.app",
+      "allowBackup": false
     },
     "web": {
       "bundler": "metro",

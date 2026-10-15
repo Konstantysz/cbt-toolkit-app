@@ -24,6 +24,8 @@ export const pl = {
     helperToggle: 'Wskazówka',
     helperExample: 'Przykład',
     backWithChevron: '‹ Wstecz',
+    loadError: 'Nie udało się wczytać danych.',
+    retry: 'Spróbuj ponownie',
   },
   home: {
     subtitle: 'Narzędzia terapii poznawczo-behawioralnej',
@@ -32,13 +34,7 @@ export const pl = {
   emotionPicker: {
     modeWheel: 'Koło',
     modeList: 'Lista',
-    expandCategory: 'Rozwiń kategorię emocji',
-    expandSubcategory: 'Rozwiń podkategorię emocji',
     add: (label: string) => `Dodaj ${label}`,
-  },
-  notifications: {
-    reminderTitle: 'Czas na refleksję',
-    reminderBody: 'Zapisz swoje myśli i emocje',
   },
   settings: {
     links: {
@@ -52,6 +48,12 @@ export const pl = {
       time: 'Godzina przypomnienia',
       permissionDenied: 'Brak uprawnień do powiadomień.',
       permissionDeniedBtn: 'Otwórz ustawienia',
+      scheduleError: 'Nie udało się ustawić przypomnienia. Spróbuj ponownie.',
+      channelName: 'Codzienny reminder',
+      content: {
+        title: 'Czas na refleksję',
+        body: 'Zapisz swoje myśli i emocje',
+      },
     },
     accessibility: {
       title: 'Dostępność',
@@ -83,7 +85,6 @@ export const pl = {
       deleteConfirmMsg: 'Ta operacja jest nieodwracalna. Wszystkie twoje wpisy zostaną usunięte.',
       deleteDoneTitle: 'Gotowe',
       deleteDone: 'Wszystkie dane zostały usunięte.',
-      exportError: 'Nie udało się wyeksportować danych.',
       importError: 'Nieprawidłowy plik. Sprawdź format i spróbuj ponownie.',
       importErrorTitle: 'Błąd importu',
       importDoneTitle: 'Importowano',
@@ -104,6 +105,13 @@ export const pl = {
         experimentMissingBelief: 'Eksperyment bez weryfikowanej myśli.',
         experimentMissingCreatedAt: 'Eksperyment bez daty utworzenia.',
       } satisfies Record<ImportErrorCode, string>,
+      unencryptedTitle: 'Eksport bez szyfrowania',
+      unencryptedMessage:
+        'Eksportowany plik nie jest zaszyfrowany i zawiera wszystkie Twoje wpisy w postaci jawnej. Udostępnij go tylko osobie, której ufasz.',
+      unencryptedConfirm: 'Rozumiem, eksportuj',
+      exportErrorTitle: 'Błąd eksportu',
+      exportErrorMsg: 'Nie udało się wyeksportować danych. Spróbuj ponownie.',
+      shareUnavailable: 'Udostępnianie nie jest dostępne na tym urządzeniu.',
     },
     resources: {
       title: 'Zasoby pomocowe',
@@ -143,9 +151,17 @@ export const pl = {
       disablePinTitle: 'Wyłączyć kod PIN?',
       disablePinMessage: 'Aplikacja nie będzie już chroniona kodem PIN.',
       disablePinButton: 'Wyłącz',
+      lockTimeout: 'Blokuj po',
+      lockTimeoutImmediately: 'Natychmiast',
+      lockTimeoutSeconds: '30 sekundach',
+      lockTimeoutMinute: '1 minucie',
+      lockTimeoutMinutes: '5 minutach',
     },
   },
   auth: {
+    confirm: {
+      title: 'Potwierdź kod PIN',
+    },
     onboarding: {
       title: 'Zabezpiecz aplikację kodem PIN',
       description: 'Twoje wpisy zawierają prywatne informacje.',
@@ -168,9 +184,6 @@ export const pl = {
       useBiometrics: 'Użyj biometrii',
       forgotPin: 'Zapomniałem kodu PIN',
     },
-    pinPad: {
-      delete: 'usuń',
-    },
     reset: {
       alertTitle: 'Zapomniałem kodu PIN',
       alertMessage:
@@ -178,5 +191,24 @@ export const pl = {
       confirm: 'Tak, usuń dane',
       error: 'Nie udało się zresetować aplikacji. Spróbuj ponownie.',
     },
+  },
+  // --- a11y: screen-reader names, hints and announcements ---
+  a11y: {
+    stepOf: (current: number, total: number) => `Krok ${current} z ${total}`,
+    pinProgress: (n: number, total: number) => `Wprowadzono ${n} z ${total} cyfr`,
+    pinDelete: 'Usuń ostatnią cyfrę',
+    intensity: 'Natężenie',
+    intensityValue: (v: number) => `${v} procent`,
+    stepHintHint: 'Pokazuje lub ukrywa przykład',
+    pickerToWheel: 'Przełącz na widok koła emocji',
+    pickerToList: 'Przełącz na widok listy emocji',
+    expandCategory: 'Rozwiń kategorię emocji',
+    expandSubcategory: 'Rozwiń podkategorię emocji',
+    add: (label: string) => `Dodaj ${label}`,
+    newEntry: 'Nowy wpis',
+    comparePrev: 'Poprzednia strona porównania',
+    compareNext: 'Następna strona porównania',
+    fontSize: { sm: 'Mały', md: 'Średni', lg: 'Duży' },
+    emotionsRequired: 'Wybierz co najmniej jedną emocję, aby kontynuować.',
   },
 } as const;

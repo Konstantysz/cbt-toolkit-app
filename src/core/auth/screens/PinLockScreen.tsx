@@ -6,6 +6,7 @@ import { useColors } from '../../theme/useColors';
 import { useSettings } from '../../settings/store';
 import { verifyPin, clearPin } from '../pin';
 import { resetDatabase } from '../../db/database';
+import { clearExportFiles } from '../../data/exportFiles';
 import { PinPad } from '../components/PinPad';
 import { pl } from '../../i18n/pl';
 import { spacing } from '../../theme';
@@ -76,6 +77,7 @@ export function PinLockScreen({ onUnlock }: PinLockScreenProps) {
         onPress: async () => {
           try {
             await resetDatabase(db);
+            await clearExportFiles();
             await clearPin();
             resetSettings();
             onUnlock();
@@ -92,11 +94,19 @@ export function PinLockScreen({ onUnlock }: PinLockScreenProps) {
       <View style={s.inner}>
         <PinPad value={pin} onChange={handlePinChange} label={pl.auth.lock.title} error={error} />
         {biometricsEnabled && (
-          <TouchableOpacity style={s.biometricsButton} onPress={handleBiometrics}>
+          <TouchableOpacity
+            accessibilityRole="button"
+            style={s.biometricsButton}
+            onPress={handleBiometrics}
+          >
             <Text style={s.biometricsText}>{pl.auth.lock.useBiometrics}</Text>
           </TouchableOpacity>
         )}
-        <TouchableOpacity style={s.forgotButton} onPress={handleForgotPin}>
+        <TouchableOpacity
+          accessibilityRole="button"
+          style={s.forgotButton}
+          onPress={handleForgotPin}
+        >
           <Text style={s.forgotText}>{pl.auth.lock.forgotPin}</Text>
         </TouchableOpacity>
       </View>

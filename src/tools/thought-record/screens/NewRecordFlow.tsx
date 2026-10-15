@@ -17,6 +17,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { parseISO } from 'date-fns';
 import { useColors } from '../../../core/theme/useColors';
 import { iconRow } from '../../../core/theme';
+import { PICKER_LOCALE_PROPS, toLocalDateKey } from '../../../core/utils/date';
 import { StepProgress } from '../../../core/components/StepProgress';
 import { TextStep } from '../components/TextStep';
 import { EmotionWheelPicker } from '../../../core/components/EmotionWheelPicker';
@@ -25,6 +26,7 @@ import { StepHelper } from '../../../core/components/StepHelper';
 import { formatDate } from '../../../core/i18n/date';
 import { pl } from '../i18n/pl';
 import { pl as corePl } from '../../../core/i18n/pl';
+import { announce } from '../../../core/a11y';
 import * as repo from '../repository';
 import type { Emotion } from '../types';
 import { Ionicons } from '@expo/vector-icons';
@@ -44,7 +46,7 @@ interface FlowState {
 }
 
 function todayIso() {
-  return new Date().toISOString().split('T')[0];
+  return toLocalDateKey();
 }
 
 function useStepStyles() {
@@ -155,7 +157,11 @@ function Step1Situation({
         minHeight={150}
       />
       <StepHelper hint={pl.helper.hints.step1} />
-      <TouchableOpacity style={stepStyles.dateRow} onPress={() => setShowPicker(true)}>
+      <TouchableOpacity
+        accessibilityRole="button"
+        style={stepStyles.dateRow}
+        onPress={() => setShowPicker(true)}
+      >
         <Text style={stepStyles.dateLabel}>{pl.step1.dateLabel}</Text>
         <Text style={stepStyles.dateValue}>{dateLabel}</Text>
       </TouchableOpacity>
@@ -164,9 +170,10 @@ function Step1Situation({
           value={date}
           mode="date"
           maximumDate={new Date()}
+          {...PICKER_LOCALE_PROPS}
           onChange={(_, selected) => {
             setShowPicker(false);
-            if (selected) update('situationDate', selected.toISOString().split('T')[0]);
+            if (selected) update('situationDate', toLocalDateKey(selected));
           }}
         />
       )}
@@ -187,7 +194,15 @@ function Step2Emotions({
   return (
     <View>
       <Text style={stepStyles.prompt}>{pl.step2.prompt}</Text>
-      {error && <Text style={stepStyles.errorText}>{pl.flow.emotionRequired}</Text>}
+      {error && (
+        <Text
+          style={stepStyles.errorText}
+          accessibilityRole="alert"
+          accessibilityLiveRegion="assertive"
+        >
+          {corePl.a11y.emotionsRequired}
+        </Text>
+      )}
       <EmotionWheelPicker
         selected={state.emotions}
         onChange={(emotions) => update('emotions', emotions)}
@@ -242,6 +257,7 @@ function Step7Outcome({
       <View style={{ marginTop: 16 }}>
         <Text style={stepStyles.fieldLabel}>{pl.flow.notesLabel}</Text>
         <TextInput
+          accessibilityLabel={pl.flow.notesLabel}
           style={[stepStyles.input, { minHeight: 90 }]}
           value={state.outcome}
           onChangeText={(v) => update('outcome', v)}
@@ -404,6 +420,7 @@ export function NewRecordFlow({ existingId }: NewRecordFlowProps): React.JSX.Ele
   async function goNext() {
     if (currentStep === 2 && state.emotions.length === 0) {
       setEmotionsError(true);
+      announce(corePl.a11y.emotionsRequired);
       scrollRef.current?.scrollTo({ y: 0, animated: true });
       return;
     }
@@ -484,7 +501,7 @@ export function NewRecordFlow({ existingId }: NewRecordFlowProps): React.JSX.Ele
         {renderStep(currentStep, state, update, emotionsError)}
       </ScrollView>
       <View style={styles.nav}>
-        <TouchableOpacity style={styles.btnGhost} onPress={goBack}>
+        <TouchableOpacity accessibilityRole="button" style={styles.btnGhost} onPress={goBack}>
           {currentStep === 1 ? (
             <Text style={styles.btnGhostText}>{corePl.common.cancel}</Text>
           ) : (
@@ -495,6 +512,7 @@ export function NewRecordFlow({ existingId }: NewRecordFlowProps): React.JSX.Ele
           )}
         </TouchableOpacity>
         <TouchableOpacity
+          accessibilityRole="button"
           style={[styles.btnPrimary, currentStep === TOTAL_STEPS && styles.btnSuccess]}
           onPress={goNext}
           disabled={saving}

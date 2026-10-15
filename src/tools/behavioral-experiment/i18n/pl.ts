@@ -77,7 +77,6 @@ export const pl = {
     edit: 'Edytuj',
     delete: 'Usuń',
     notFound: 'Nie znaleziono eksperymentu.',
-    editA11y: 'Edytuj eksperyment',
     deleteConfirmTitle: 'Usuń eksperyment',
     deleteConfirmMsg: 'Czy na pewno chcesz usunąć ten eksperyment? Tej operacji nie można cofnąć.',
     deleteError: 'Nie udało się usunąć eksperymentu. Spróbuj ponownie.',

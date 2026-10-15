@@ -17,7 +17,11 @@ function BackToHome() {
     [colors]
   );
   return (
-    <TouchableOpacity style={styles.backBtn} onPress={() => router.replace('/')}>
+    <TouchableOpacity
+      accessibilityRole="button"
+      style={styles.backBtn}
+      onPress={() => router.replace('/')}
+    >
       <Ionicons name="chevron-back" size={18} color={colors.accent} />
       <Text style={styles.backLabel}>{corePl.common.tools}</Text>
     </TouchableOpacity>

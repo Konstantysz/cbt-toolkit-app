@@ -14,6 +14,7 @@ jest.mock('expo-router', () => ({
 jest.mock('../repository', () => ({
   insertSeedRecord: jest.fn().mockResolvedValue(undefined),
 }));
+jest.mock('../../../core/db/seedOnce', () => ({ seedOnce: jest.fn().mockResolvedValue(false) }));
 jest.mock('../hooks/useThoughtRecords');
 import { useFocusEffect } from 'expo-router';
 import * as hooks from '../hooks/useThoughtRecords';
@@ -61,21 +62,19 @@ describe('RecordListScreen', () => {
     expect(router.push).toHaveBeenCalledWith('/(tools)/thought-record/new');
   });
 
-  it('runs seed when getItem returns null (first launch)', async () => {
-    const AsyncStorage = require('@react-native-async-storage/async-storage');
-    (AsyncStorage.getItem as jest.Mock).mockResolvedValueOnce(null);
-    const { insertSeedRecord } = require('../repository');
+  it('runs the one-time seed when the loaded list is empty', async () => {
+    const { seedOnce } = require('../../../core/db/seedOnce');
     (hooks.useThoughtRecords as jest.Mock).mockReturnValue({
       records: [],
       loading: false,
+      error: false,
       refresh: mockRefresh,
     });
 
     render(<RecordListScreen />);
     await act(async () => {});
 
-    expect(insertSeedRecord).toHaveBeenCalled();
-    expect(AsyncStorage.setItem).toHaveBeenCalledWith('thought-record:onboarding-seeded', '1');
+    expect(seedOnce).toHaveBeenCalled();
   });
 
   it('navigates to record detail on card press', () => {

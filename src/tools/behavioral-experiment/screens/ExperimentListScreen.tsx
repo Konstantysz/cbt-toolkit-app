@@ -6,9 +6,13 @@ import { useColors } from '../../../core/theme/useColors';
 import { SearchBar } from '../../../core/components/SearchBar';
 import { useBehavioralExperiments } from '../hooks/useBehavioralExperiments';
 import { insertSeedExperiment } from '../repository';
+import { LoadError } from '../../../core/components/LoadError';
+import { seedOnce } from '../../../core/db/seedOnce';
 import { pl } from '../i18n/pl';
 import { formatDate } from '../../../core/i18n/date';
 import { matchesQuery } from '../../../core/i18n/search';
+import { pl as corePl } from '../../../core/i18n/pl';
+
 import type { BehavioralExperiment } from '../types';
 
 function useStyles() {
@@ -84,7 +88,7 @@ function useStyles() {
 
 export function ExperimentListScreen(): React.JSX.Element {
   const db = useSQLiteContext();
-  const { experiments, loading, refresh } = useBehavioralExperiments(db);
+  const { experiments, loading, error, refresh } = useBehavioralExperiments(db);
   const styles = useStyles();
   const [query, setQuery] = useState('');
 
@@ -96,16 +100,13 @@ export function ExperimentListScreen(): React.JSX.Element {
 
   // Onboarding seed — insert when list is empty on first load
   useEffect(() => {
-    if (loading || experiments.length > 0) return;
-    (async () => {
-      try {
-        await insertSeedExperiment(db);
-        refresh();
-      } catch {
-        // non-critical
-      }
-    })();
-  }, [loading, experiments.length, db, refresh]);
+    if (loading || error || experiments.length > 0) return;
+    seedOnce(db, 'behavioral-experiment', insertSeedExperiment)
+      .then((seeded) => {
+        if (seeded) refresh();
+      })
+      .catch(() => {}); // seed failure is non-critical
+  }, [loading, error, experiments.length, db, refresh]);
 
   const renderItem = useCallback(
     ({ item }: { item: BehavioralExperiment }) => {
@@ -116,6 +117,7 @@ export function ExperimentListScreen(): React.JSX.Element {
 
       return (
         <TouchableOpacity
+          accessibilityRole="button"
           style={styles.card}
           onPress={() => router.push(`/(tools)/behavioral-experiment/${item.id}`)}
           activeOpacity={0.8}
@@ -156,6 +158,7 @@ export function ExperimentListScreen(): React.JSX.Element {
   }, [experiments, query]);
 
   if (loading) return <View style={styles.container} />;
+  if (error) return <LoadError onRetry={refresh} />;
 
   const showEmpty = filtered.length === 0;
   const showNoResults = showEmpty && query.length > 0;
@@ -184,7 +187,9 @@ export function ExperimentListScreen(): React.JSX.Element {
         />
       )}
       <TouchableOpacity
+        accessibilityRole="button"
         style={styles.fab}
+        accessibilityLabel={corePl.a11y.newEntry}
         onPress={() => router.push('/(tools)/behavioral-experiment/new')}
         activeOpacity={0.85}
       >

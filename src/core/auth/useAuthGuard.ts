@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 import { useSettings } from '../settings/store';
+import { loadPinHash } from './pin';
 import { useAuthStore, type AuthPhase } from './store';
 
 export function useAuthGuard(): {
@@ -9,6 +10,7 @@ export function useAuthGuard(): {
   goToUnlocked: () => void;
 } {
   const pinEnabled = useSettings((s) => s.pinEnabled);
+  const lockTimeoutMs = useSettings((s) => s.lockTimeoutMs);
   const pinOnboardingShown = useSettings((s) => s.pinOnboardingShown);
   const authPhase = useAuthStore((s) => s.authPhase);
   const { setPhase, setBackgroundedAt, checkLockOnForeground } = useAuthStore.getState();
@@ -24,20 +26,35 @@ export function useAuthGuard(): {
     return unsub;
   }, [hydrated]);
 
-  // Initialize phase once, after settings are hydrated
+  // Initialize phase once, after settings are hydrated.
+  // PIN-enabled is derived from the presence of the stored hash; a missing
+  // hash (e.g. restored backup, cleared keystore) means no PIN.
   useEffect(() => {
     if (!hydrated) return;
-    if (pinEnabled) {
-      setPhase('locked');
-    } else if (!pinOnboardingShown) {
-      setPhase('onboarding');
-    } else {
-      setPhase('unlocked');
-    }
-
-    // Intentionally depends only on hydrated: phase is initialized once from
-    // persisted settings. Re-running on settings changes would reset the
-    // phase mid-session (e.g. switching back to 'locked' after PIN setup).
+    let cancelled = false;
+    (async () => {
+      let hash: string | null = null;
+      try {
+        hash = await loadPinHash();
+      } catch {
+        hash = null;
+      }
+      if (cancelled) return;
+      const settings = useSettings.getState();
+      settings.setPinEnabled(!!hash);
+      if (!hash) settings.setBiometricsEnabled(false);
+      if (hash) {
+        setPhase('locked');
+      } else if (!settings.pinOnboardingShown) {
+        setPhase('onboarding');
+      } else {
+        setPhase('unlocked');
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // Intentionally depends only on hydrated: phase is initialized once.
   }, [hydrated]);
 
   // AppState: track background time and lock on return.
@@ -48,11 +65,11 @@ export function useAuthGuard(): {
       if (next === 'background') {
         setBackgroundedAt(Date.now());
       } else if (next === 'active') {
-        checkLockOnForeground(pinEnabled);
+        checkLockOnForeground(pinEnabled, lockTimeoutMs);
       }
     });
     return () => subscription.remove();
-  }, [pinEnabled, setBackgroundedAt, checkLockOnForeground]);
+  }, [pinEnabled, lockTimeoutMs, setBackgroundedAt, checkLockOnForeground]);
 
   return {
     authPhase,

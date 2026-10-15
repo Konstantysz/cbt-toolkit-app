@@ -1,5 +1,8 @@
 import { readAsStringAsync } from 'expo-file-system/legacy';
 import type * as SQLite from 'expo-sqlite';
+import { isValidReminderTime } from '../notifications/time';
+import { hasPermissions } from '../notifications/permissions';
+import { applyReminder } from '../notifications/schedule';
 import { useSettings } from '../settings/store';
 import type { SettingsData } from '../settings/store';
 
@@ -249,8 +252,19 @@ export async function importData(
   if (file.settings && typeof file.settings === 'object') {
     const s = file.settings as Partial<SettingsData>;
     const patch: Partial<SettingsData> = {};
-    if (typeof s.reminderEnabled === 'boolean') patch.reminderEnabled = s.reminderEnabled;
-    if (typeof s.reminderTime === 'string') patch.reminderTime = s.reminderTime;
+    if (isValidReminderTime(s.reminderTime)) patch.reminderTime = s.reminderTime;
+    if (typeof s.reminderEnabled === 'boolean') {
+      // Never enable reminders without granted permission
+      const time = patch.reminderTime ?? useSettings.getState().reminderTime;
+      let enabled = s.reminderEnabled;
+      try {
+        if (enabled && !(await hasPermissions())) enabled = false;
+        else await applyReminder(enabled, time);
+      } catch {
+        enabled = false;
+      }
+      patch.reminderEnabled = enabled;
+    }
     if (s.fontSize === 'sm' || s.fontSize === 'md' || s.fontSize === 'lg')
       patch.fontSize = s.fontSize;
     if (typeof s.reducedMotion === 'boolean') patch.reducedMotion = s.reducedMotion;

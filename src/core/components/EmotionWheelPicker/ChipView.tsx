@@ -90,7 +90,8 @@ export function ChipView({ nodes, selected, onChange }: Props) {
               activeOpacity={0.7}
               accessibilityRole="button"
               accessibilityLabel={root.label}
-              accessibilityHint={pl.emotionPicker.expandCategory}
+              accessibilityHint={pl.a11y.expandCategory}
+              accessibilityState={{ expanded: isActive }}
             >
               <Text style={[styles.chipText, isActive && styles.chipTextActive]}>{root.label}</Text>
             </TouchableOpacity>
@@ -123,7 +124,8 @@ export function ChipView({ nodes, selected, onChange }: Props) {
                   activeOpacity={0.7}
                   accessibilityRole="button"
                   accessibilityLabel={l2.label}
-                  accessibilityHint={pl.emotionPicker.expandSubcategory}
+                  accessibilityHint={pl.a11y.expandSubcategory}
+                  accessibilityState={{ expanded: isActive }}
                 >
                   <Text style={[styles.chipText, isActive && styles.chipTextActive]}>
                     {l2.label}

@@ -59,16 +59,26 @@ export default function CreditsScreen() {
   return (
     <ScrollView style={s.container} contentContainerStyle={{ paddingBottom: 40 }}>
       <View style={s.header}>
-        <TouchableOpacity onPress={() => router.back()}>
+        <TouchableOpacity
+          accessibilityRole="button"
+          accessibilityLabel={pl.common.back}
+          onPress={() => router.back()}
+        >
           <Text style={s.backText}>{pl.common.backWithChevron}</Text>
         </TouchableOpacity>
-        <Text style={s.headerTitle}>{pl.settings.about.credits}</Text>
+        <Text style={s.headerTitle} accessibilityRole="header">
+          {pl.settings.about.credits}
+        </Text>
       </View>
       <View style={s.card}>
-        <Text style={s.sectionTitle}>{pl.settings.credits.authors}</Text>
+        <Text style={s.sectionTitle} accessibilityRole="header">
+          {pl.settings.credits.authors}
+        </Text>
         <Text style={s.body}>{pl.settings.credits.authorsBody}</Text>
         <View style={s.divider} />
-        <Text style={s.sectionTitle}>{pl.settings.credits.libraries}</Text>
+        <Text style={s.sectionTitle} accessibilityRole="header">
+          {pl.settings.credits.libraries}
+        </Text>
         {packages.map(([name, desc]) => (
           <View key={name} style={s.packageRow}>
             <Text style={s.packageName}>{name}</Text>

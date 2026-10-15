@@ -61,12 +61,8 @@ export const pl = {
     deleteConfirmTitle: 'Usuń wpis',
     deleteConfirmMsg: 'Czy na pewno chcesz usunąć ten zapis? Tej operacji nie można cofnąć.',
     deleteError: 'Nie udało się usunąć wpisu. Spróbuj ponownie.',
-    compareA11y: 'Porównaj zapisy',
-    formA11y: 'Formularz papierowy',
-    editA11y: 'Edytuj wpis',
   },
   flow: {
-    emotionRequired: 'Wybierz co najmniej jedną emocję, aby kontynuować.',
     notesLabel: 'Notatki końcowe (opcjonalne)',
     notesPlaceholder: 'Dodatkowe przemyślenia...',
     finish: 'Zakończ',

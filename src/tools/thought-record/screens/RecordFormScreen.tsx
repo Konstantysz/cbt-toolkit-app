@@ -2,7 +2,6 @@
 import React, { useRef, useCallback, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   ScrollView,
   StyleSheet,
   Text,
@@ -10,11 +9,17 @@ import {
   View,
 } from 'react-native';
 import * as Print from 'expo-print';
-import * as Sharing from 'expo-sharing';
 import { captureRef } from 'react-native-view-shot';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useColors } from '../../../core/theme/useColors';
+import {
+  moveToExportDir,
+  reportExportError,
+  shareExportFile,
+} from '../../../core/data/exportFiles';
+import { useProtectedExport } from '../../../core/data/useProtectedExport';
 import { useThoughtRecord } from '../hooks/useThoughtRecords';
+import { LoadError } from '../../../core/components/LoadError';
 import { pl } from '../i18n/pl';
 import type { Emotion } from '../types';
 
@@ -89,40 +94,52 @@ function useStyles() {
 
 export function RecordFormScreen({ id }: Props): React.JSX.Element {
   const db = useSQLiteContext();
-  const { record, loading } = useThoughtRecord(db, id);
+  const { record, loading, error, refresh } = useThoughtRecord(db, id);
   const formRef = useRef<View>(null);
   const [isExporting, setIsExporting] = useState(false);
   const colors = useColors();
   const styles = useStyles();
 
-  const handleExportPdf = useCallback(async () => {
-    if (!record || isExporting) return;
+  const { guard, modal: exportModal } = useProtectedExport();
+
+  const runPdfExport = useCallback(async () => {
+    if (!record) return;
     setIsExporting(true);
     try {
       const html = buildHtml(record, colors.accent);
       const { uri } = await Print.printToFileAsync({ html });
-      await Sharing.shareAsync(uri, { mimeType: 'application/pdf', UTI: 'com.adobe.pdf' });
+      const fileUri = await moveToExportDir(uri, `cbt-formularz-${Date.now()}.pdf`);
+      await shareExportFile(fileUri, { mimeType: 'application/pdf', UTI: 'com.adobe.pdf' });
     } catch (err) {
-      console.error('[RecordFormScreen] PDF export failed:', err);
-      Alert.alert(pl.form.export.errorTitle, pl.form.export.errorMsg);
+      reportExportError(err, pl.form.export.errorTitle, pl.form.export.errorMsg);
     } finally {
       setIsExporting(false);
     }
-  }, [record, isExporting, colors.accent]);
+  }, [record, colors.accent]);
 
-  const handleExportPng = useCallback(async () => {
-    if (!formRef.current || isExporting) return;
+  const runPngExport = useCallback(async () => {
+    if (!formRef.current) return;
     setIsExporting(true);
     try {
       const uri = await captureRef(formRef, { format: 'png', quality: 0.85 });
-      await Sharing.shareAsync(uri, { mimeType: 'image/png' });
+      const fileUri = await moveToExportDir(uri, `cbt-formularz-${Date.now()}.png`);
+      await shareExportFile(fileUri, { mimeType: 'image/png' });
     } catch (err) {
-      console.error('[RecordFormScreen] PNG export failed:', err);
-      Alert.alert(pl.form.export.errorTitle, pl.form.export.errorMsg);
+      reportExportError(err, pl.form.export.errorTitle, pl.form.export.errorMsg);
     } finally {
       setIsExporting(false);
     }
-  }, [isExporting]);
+  }, []);
+
+  const handleExportPdf = useCallback(() => {
+    if (!record || isExporting) return;
+    guard(runPdfExport);
+  }, [record, isExporting, guard, runPdfExport]);
+
+  const handleExportPng = useCallback(() => {
+    if (!formRef.current || isExporting) return;
+    guard(runPngExport);
+  }, [isExporting, guard, runPngExport]);
 
   if (loading) {
     return (
@@ -131,6 +148,8 @@ export function RecordFormScreen({ id }: Props): React.JSX.Element {
       </View>
     );
   }
+
+  if (error) return <LoadError onRetry={refresh} />;
 
   if (!record) {
     return (
@@ -206,6 +225,7 @@ export function RecordFormScreen({ id }: Props): React.JSX.Element {
       {/* Przyciski eksportu */}
       <View style={styles.exportRow}>
         <TouchableOpacity
+          accessibilityRole="button"
           style={[styles.exportBtn, isExporting && styles.exportBtnDisabled]}
           onPress={handleExportPdf}
           activeOpacity={0.8}
@@ -218,6 +238,7 @@ export function RecordFormScreen({ id }: Props): React.JSX.Element {
           )}
         </TouchableOpacity>
         <TouchableOpacity
+          accessibilityRole="button"
           style={[styles.exportBtn, isExporting && styles.exportBtnDisabled]}
           onPress={handleExportPng}
           activeOpacity={0.8}
@@ -230,6 +251,7 @@ export function RecordFormScreen({ id }: Props): React.JSX.Element {
           )}
         </TouchableOpacity>
       </View>
+      {exportModal}
     </ScrollView>
   );
 }
@@ -249,7 +271,9 @@ function FormSection({
 }) {
   return (
     <View style={[styles.section, last && styles.sectionLast]}>
-      <Text style={styles.sectionLabel}>{label}</Text>
+      <Text style={styles.sectionLabel} accessibilityRole="header">
+        {label}
+      </Text>
       {children}
     </View>
   );

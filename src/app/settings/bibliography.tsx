@@ -80,10 +80,16 @@ export default function BibliographyScreen() {
   return (
     <ScrollView style={s.container} contentContainerStyle={{ paddingBottom: 40 }}>
       <View style={s.header}>
-        <TouchableOpacity onPress={() => router.back()}>
+        <TouchableOpacity
+          accessibilityRole="button"
+          accessibilityLabel={pl.common.back}
+          onPress={() => router.back()}
+        >
           <Text style={s.backText}>{pl.common.backWithChevron}</Text>
         </TouchableOpacity>
-        <Text style={s.headerTitle}>{pl.settings.about.bibliography}</Text>
+        <Text style={s.headerTitle} accessibilityRole="header">
+          {pl.settings.about.bibliography}
+        </Text>
       </View>
       <View style={s.card}>
         {REFERENCES.map((ref, i) => (

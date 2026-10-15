@@ -13,6 +13,7 @@ import { useSQLiteContext } from 'expo-sqlite';
 import { useColors } from '../../../core/theme/useColors';
 import { iconRow } from '../../../core/theme';
 import { useThoughtRecord } from '../hooks/useThoughtRecords';
+import { LoadError } from '../../../core/components/LoadError';
 import * as repo from '../repository';
 import type { Emotion } from '../types';
 import { pl } from '../i18n/pl';
@@ -214,7 +215,7 @@ function EmotionRow({ emotion }: { emotion: Emotion }) {
 
 export function RecordDetailScreen({ id }: Props): React.JSX.Element {
   const db = useSQLiteContext();
-  const { record, loading } = useThoughtRecord(db, id);
+  const { record, loading, error, refresh } = useThoughtRecord(db, id);
   const colors = useColors();
   const styles = useStyles();
 
@@ -243,6 +244,8 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
       </View>
     );
   }
+
+  if (error) return <LoadError onRetry={refresh} />;
 
   if (!record) {
     return (
@@ -283,9 +286,9 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
           </View>
           <View style={styles.metaActions}>
             <TouchableOpacity
+              accessibilityRole="button"
               style={styles.actionBtn}
               onPress={() => router.push(`/(tools)/thought-record/${id}/compare`)}
-              accessibilityLabel={pl.detail.compareA11y}
             >
               <View style={iconRow}>
                 <Ionicons
@@ -298,9 +301,9 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
               </View>
             </TouchableOpacity>
             <TouchableOpacity
+              accessibilityRole="button"
               style={styles.actionBtn}
               onPress={() => router.push(`/(tools)/thought-record/${id}/form`)}
-              accessibilityLabel={pl.detail.formA11y}
             >
               <View style={iconRow}>
                 <Ionicons
@@ -318,7 +321,9 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
         {/* Emotions (step 02) */}
         <View style={styles.section}>
           <Text style={styles.stepNum}>{pl.detail.stepLabel('02')}</Text>
-          <Text style={styles.stepTitle}>{pl.step2.title}</Text>
+          <Text style={styles.stepTitle} accessibilityRole="header">
+            {pl.step2.title}
+          </Text>
           {record.emotions.length === 0 ? (
             <Text style={styles.emptyField}>—</Text>
           ) : (
@@ -332,7 +337,9 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
           <React.Fragment key={sec.step}>
             <View style={styles.section}>
               <Text style={styles.stepNum}>{pl.detail.stepLabel(sec.step)}</Text>
-              <Text style={styles.stepTitle}>{sec.title}</Text>
+              <Text style={styles.stepTitle} accessibilityRole="header">
+                {sec.title}
+              </Text>
               <Text style={sec.text ? styles.bodyText : styles.bodyTextEmpty}>
                 {sec.text || '—'}
               </Text>
@@ -343,17 +350,22 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
 
         <View style={styles.actionRow}>
           <TouchableOpacity
+            accessibilityRole="button"
             style={styles.editBtn}
             onPress={() => router.push(`/(tools)/thought-record/${id}/edit`)}
             activeOpacity={0.8}
-            accessibilityLabel={pl.detail.editA11y}
           >
             <View style={iconRow}>
               <Ionicons name="create-outline" size={14} color={colors.accent} accessible={false} />
               <Text style={styles.editBtnText}>{pl.edit.title}</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.deleteBtn} onPress={confirmDelete} activeOpacity={0.8}>
+          <TouchableOpacity
+            accessibilityRole="button"
+            style={styles.deleteBtn}
+            onPress={confirmDelete}
+            activeOpacity={0.8}
+          >
             <Text style={styles.deleteBtnText}>{pl.detail.deleteBtn}</Text>
           </TouchableOpacity>
         </View>
