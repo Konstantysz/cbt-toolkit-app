@@ -25,6 +25,12 @@ export const pl = {
       time: 'Godzina przypomnienia',
       permissionDenied: 'Brak uprawnień do powiadomień.',
       permissionDeniedBtn: 'Otwórz ustawienia',
+      scheduleError: 'Nie udało się ustawić przypomnienia. Spróbuj ponownie.',
+      channelName: 'Codzienny reminder',
+      content: {
+        title: 'Czas na refleksję',
+        body: 'Zapisz swoje myśli i emocje',
+      },
     },
     accessibility: {
       title: 'Dostępność',
@@ -55,6 +61,13 @@ export const pl = {
       deleteConfirmTitle: 'Usuń wszystkie dane?',
       deleteConfirmMsg: 'Ta operacja jest nieodwracalna. Wszystkie twoje wpisy zostaną usunięte.',
       importError: 'Nieprawidłowy plik. Sprawdź format i spróbuj ponownie.',
+      unencryptedTitle: 'Eksport bez szyfrowania',
+      unencryptedMessage:
+        'Eksportowany plik nie jest zaszyfrowany i zawiera wszystkie Twoje wpisy w postaci jawnej. Udostępnij go tylko osobie, której ufasz.',
+      unencryptedConfirm: 'Rozumiem, eksportuj',
+      exportErrorTitle: 'Błąd eksportu',
+      exportErrorMsg: 'Nie udało się wyeksportować danych. Spróbuj ponownie.',
+      shareUnavailable: 'Udostępnianie nie jest dostępne na tym urządzeniu.',
     },
     resources: {
       title: 'Zasoby pomocowe',
@@ -81,6 +94,9 @@ export const pl = {
     },
   },
   auth: {
+    confirm: {
+      title: 'Potwierdź kod PIN',
+    },
     onboarding: {
       title: 'Zabezpiecz aplikację kodem PIN',
       description: 'Twoje wpisy zawierają prywatne informacje.',

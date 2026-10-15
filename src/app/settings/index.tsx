@@ -24,8 +24,10 @@ import { useAuthStore } from '../../core/auth/store';
 import { useColors } from '../../core/theme/useColors';
 import { scaledFont } from '../../core/settings/fontScale';
 import { requestPermissions } from '../../core/notifications/permissions';
-import { scheduleReminder, cancelReminder } from '../../core/notifications/schedule';
+import { applyReminder } from '../../core/notifications/schedule';
 import { exportData } from '../../core/data/export';
+import { clearExportFiles, reportExportError } from '../../core/data/exportFiles';
+import { useProtectedExport } from '../../core/data/useProtectedExport';
 import { importData } from '../../core/data/import';
 import * as ThoughtRecordRepo from '../../tools/thought-record/repository';
 import * as ExperimentRepo from '../../tools/behavioral-experiment/repository';
@@ -79,6 +81,19 @@ export default function SettingsScreen() {
 
   const fs = (base: number) => scaledFont(base, fontSize);
 
+  async function commitReminder(enabled: boolean, time: string) {
+    const prev = { enabled: reminderEnabled, time: reminderTime };
+    setReminderEnabled(enabled);
+    setReminderTime(time);
+    try {
+      await applyReminder(enabled, time);
+    } catch {
+      setReminderEnabled(prev.enabled);
+      setReminderTime(prev.time);
+      Alert.alert(pl.settings.notifications.scheduleError);
+    }
+  }
+
   async function handleToggleReminder(value: boolean) {
     if (value) {
       const granted = await requestPermissions();
@@ -92,12 +107,8 @@ export default function SettingsScreen() {
         ]);
         return;
       }
-      await scheduleReminder(reminderTime);
-      setReminderEnabled(true);
-    } else {
-      await cancelReminder();
-      setReminderEnabled(false);
     }
+    await commitReminder(value, reminderTime);
   }
 
   function handlePickerChange(_event: unknown, date?: Date) {
@@ -108,10 +119,7 @@ export default function SettingsScreen() {
       // Android closes picker on selection — commit immediately
       setShowTimePicker(false);
       const newTime = `${h}:${m}`;
-      setReminderTime(newTime);
-      if (reminderEnabled) {
-        cancelReminder().then(() => scheduleReminder(newTime));
-      }
+      void commitReminder(reminderEnabled, newTime);
     } else {
       // iOS fires continuously while spinning — only update local state
       setTempTime(`${h}:${m}`);
@@ -120,18 +128,16 @@ export default function SettingsScreen() {
 
   async function commitTimeChange() {
     setShowTimePicker(false);
-    setReminderTime(tempTime);
-    if (reminderEnabled) {
-      await cancelReminder();
-      await scheduleReminder(tempTime);
-    }
+    await commitReminder(reminderEnabled, tempTime);
   }
 
-  async function handleExport() {
+  const exportGuard = useProtectedExport();
+
+  async function runExport() {
     try {
       await exportData(db);
-    } catch {
-      Alert.alert('Błąd', 'Nie udało się wyeksportować danych.');
+    } catch (err) {
+      reportExportError(err, pl.settings.data.exportErrorTitle, pl.settings.data.exportErrorMsg);
     }
   }
 
@@ -165,6 +171,7 @@ export default function SettingsScreen() {
         onPress: async () => {
           await ThoughtRecordRepo.deleteAll(db);
           await ExperimentRepo.deleteAll(db);
+          await clearExportFiles();
           Alert.alert('Gotowe', 'Wszystkie dane zostały usunięte.');
         },
       },
@@ -432,7 +439,7 @@ export default function SettingsScreen() {
         <Text style={s.sectionTitle}>{pl.settings.data.title}</Text>
       </View>
       <View style={s.card}>
-        <TouchableOpacity style={s.row} onPress={handleExport}>
+        <TouchableOpacity style={s.row} onPress={() => exportGuard.guard(runExport)}>
           <View style={s.rowLabel}>
             <Text style={s.rowLabelText}>{pl.settings.data.export}</Text>
             <Text style={s.rowSubText}>{pl.settings.data.exportSub}</Text>
@@ -575,6 +582,7 @@ export default function SettingsScreen() {
           />
         )
       )}
+      {exportGuard.modal}
     </ScrollView>
   );
 }

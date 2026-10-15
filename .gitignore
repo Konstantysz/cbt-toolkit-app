@@ -46,12 +46,11 @@ yarn-error.*
 /ios
 /android
 
-.worktrees/
-
-# Claude Code local settings
+# Claude Code local settings and agent worktrees
 .claude/settings.local.json
+.claude/worktrees/
 
-# Planning artifacts (live in cbt-toolkit-brain/02_Engineering/Plans/superpowers/)
+# Planning artifacts (live in ~/brains/cbt-toolkit-app/Engineering/Plans/superpowers/)
 docs/superpowers/
 
 # IDE
