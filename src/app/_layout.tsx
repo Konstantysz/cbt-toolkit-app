@@ -1,5 +1,5 @@
 import React, { Suspense, useEffect, useMemo } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, Alert, View } from 'react-native';
 import { Tabs } from 'expo-router';
 import { SQLiteProvider } from 'expo-sqlite';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -9,7 +9,7 @@ import { getAllMigrations } from '../tools/registry';
 import { pl } from '../core/i18n/pl';
 import { useColors } from '../core/theme/useColors';
 import { useSettings } from '../core/settings/store';
-import { scheduleReminder, cancelReminder } from '../core/notifications/schedule';
+import { applyReminder, configureNotifications } from '../core/notifications/schedule';
 import { useAuthGuard } from '../core/auth/useAuthGuard';
 import { useAuthStore } from '../core/auth/store';
 import { clearPin } from '../core/auth/pin';
@@ -51,9 +51,12 @@ function AppContent() {
   }, []);
 
   useEffect(() => {
-    if (!reminderEnabled) return;
-    cancelReminder().then(() => scheduleReminder(reminderTime));
-  }, [reminderEnabled, reminderTime]);
+    // Re-sync on app start only; Settings and import apply their own changes.
+    configureNotifications()
+      .then(() => applyReminder(reminderEnabled, reminderTime))
+      .catch(() => Alert.alert(pl.settings.notifications.scheduleError));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const tabScreenOptions = useMemo(
     () => ({
