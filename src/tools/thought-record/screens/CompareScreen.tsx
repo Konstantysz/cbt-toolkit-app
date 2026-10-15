@@ -10,6 +10,7 @@ import {
 import { useSQLiteContext } from 'expo-sqlite';
 import { useColors } from '../../../core/theme/useColors';
 import { useThoughtRecord } from '../hooks/useThoughtRecords';
+import { LoadError } from '../../../core/components/LoadError';
 import { pl } from '../i18n/pl';
 import { pl as corePl } from '../../../core/i18n/pl';
 import { useAnnounceChange } from '../../../core/a11y';
@@ -95,7 +96,7 @@ function useStyles() {
 
 export function CompareScreen({ id }: CompareScreenProps): React.JSX.Element {
   const db = useSQLiteContext();
-  const { record, loading } = useThoughtRecord(db, id);
+  const { record, loading, error, refresh } = useThoughtRecord(db, id);
   const [page, setPage] = useState(0);
   useAnnounceChange(page, `${PAGE_LABELS[page]}. ${page + 1} / ${TOTAL_PAGES}`);
   const styles = useStyles();
@@ -108,6 +109,8 @@ export function CompareScreen({ id }: CompareScreenProps): React.JSX.Element {
       </View>
     );
   }
+  if (error) return <LoadError onRetry={refresh} />;
+
   if (!record) {
     return (
       <View style={styles.centered}>

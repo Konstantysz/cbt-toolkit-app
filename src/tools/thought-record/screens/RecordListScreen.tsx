@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router, useFocusEffect } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { format, parseISO } from 'date-fns';
@@ -9,10 +8,10 @@ import { useColors } from '../../../core/theme/useColors';
 import { SearchBar } from '../../../core/components/SearchBar';
 import { useThoughtRecords } from '../hooks/useThoughtRecords';
 import { insertSeedRecord } from '../repository';
+import { LoadError } from '../../../core/components/LoadError';
+import { seedOnce } from '../../../core/db/seedOnce';
 import { pl } from '../i18n/pl';
 import type { ThoughtRecord } from '../types';
-
-const ONBOARDING_KEY = 'thought-record:onboarding-seeded';
 
 function useStyles() {
   const colors = useColors();
@@ -112,7 +111,7 @@ function useStyles() {
 
 export function RecordListScreen(): React.JSX.Element {
   const db = useSQLiteContext();
-  const { records, loading, refresh } = useThoughtRecords(db);
+  const { records, loading, error, refresh } = useThoughtRecords(db);
   const styles = useStyles();
   const [query, setQuery] = useState('');
 
@@ -124,19 +123,13 @@ export function RecordListScreen(): React.JSX.Element {
 
   // Onboarding seed
   useEffect(() => {
-    if (records.length > 0) return;
-    (async () => {
-      try {
-        const val = await AsyncStorage.getItem(ONBOARDING_KEY);
-        if (val !== null) return;
-        await insertSeedRecord(db);
-        await AsyncStorage.setItem(ONBOARDING_KEY, '1');
-        refresh();
-      } catch {
-        // seed failure is non-critical — user can still add records manually
-      }
-    })();
-  }, [records.length, db, refresh]);
+    if (loading || error || records.length > 0) return;
+    seedOnce(db, 'thought-record', insertSeedRecord)
+      .then((seeded) => {
+        if (seeded) refresh();
+      })
+      .catch(() => {}); // seed failure is non-critical
+  }, [loading, error, records.length, db, refresh]);
 
   // Search filter — OR logic, case-insensitive
   const filtered = useMemo(() => {
@@ -210,6 +203,7 @@ export function RecordListScreen(): React.JSX.Element {
   );
 
   if (loading) return <View style={styles.container} />;
+  if (error) return <LoadError onRetry={refresh} />;
 
   const showEmpty = filtered.length === 0;
   const showNoResults = showEmpty && query.length > 0;

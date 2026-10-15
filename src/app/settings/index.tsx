@@ -20,12 +20,15 @@ import * as DocumentPicker from 'expo-document-picker';
 import { Ionicons } from '@expo/vector-icons';
 
 import { useSettings } from '../../core/settings/store';
-import { useAuthStore } from '../../core/auth/store';
+import { useAuthStore, LOCK_TIMEOUT_OPTIONS_MS } from '../../core/auth/store';
 import { useColors } from '../../core/theme/useColors';
 import { scaledFont } from '../../core/settings/fontScale';
+import { PICKER_LOCALE_PROPS } from '../../core/utils/date';
 import { requestPermissions } from '../../core/notifications/permissions';
-import { scheduleReminder, cancelReminder } from '../../core/notifications/schedule';
+import { applyReminder } from '../../core/notifications/schedule';
 import { exportData } from '../../core/data/export';
+import { clearExportFiles, reportExportError } from '../../core/data/exportFiles';
+import { useProtectedExport } from '../../core/data/useProtectedExport';
 import { importData } from '../../core/data/import';
 import * as ThoughtRecordRepo from '../../tools/thought-record/repository';
 import * as ExperimentRepo from '../../tools/behavioral-experiment/repository';
@@ -57,6 +60,14 @@ export default function SettingsScreen() {
   } = useSettings();
 
   const pinEnabled = useSettings((s) => s.pinEnabled);
+  const lockTimeoutMs = useSettings((s) => s.lockTimeoutMs);
+  const setLockTimeoutMs = useSettings((s) => s.setLockTimeoutMs);
+  const lockTimeoutLabels: Record<number, string> = {
+    0: pl.settings.privacy.lockTimeoutImmediately,
+    30_000: pl.settings.privacy.lockTimeoutSeconds,
+    60_000: pl.settings.privacy.lockTimeoutMinute,
+    300_000: pl.settings.privacy.lockTimeoutMinutes,
+  };
   const { setPinEnabled, setBiometricsEnabled } = useSettings.getState();
   const authPhase = useAuthStore((s) => s.authPhase);
 
@@ -79,6 +90,19 @@ export default function SettingsScreen() {
 
   const fs = (base: number) => scaledFont(base, fontSize);
 
+  async function commitReminder(enabled: boolean, time: string) {
+    const prev = { enabled: reminderEnabled, time: reminderTime };
+    setReminderEnabled(enabled);
+    setReminderTime(time);
+    try {
+      await applyReminder(enabled, time);
+    } catch {
+      setReminderEnabled(prev.enabled);
+      setReminderTime(prev.time);
+      Alert.alert(pl.settings.notifications.scheduleError);
+    }
+  }
+
   async function handleToggleReminder(value: boolean) {
     if (value) {
       const granted = await requestPermissions();
@@ -92,12 +116,8 @@ export default function SettingsScreen() {
         ]);
         return;
       }
-      await scheduleReminder(reminderTime);
-      setReminderEnabled(true);
-    } else {
-      await cancelReminder();
-      setReminderEnabled(false);
     }
+    await commitReminder(value, reminderTime);
   }
 
   function handlePickerChange(_event: unknown, date?: Date) {
@@ -108,10 +128,7 @@ export default function SettingsScreen() {
       // Android closes picker on selection — commit immediately
       setShowTimePicker(false);
       const newTime = `${h}:${m}`;
-      setReminderTime(newTime);
-      if (reminderEnabled) {
-        cancelReminder().then(() => scheduleReminder(newTime));
-      }
+      void commitReminder(reminderEnabled, newTime);
     } else {
       // iOS fires continuously while spinning — only update local state
       setTempTime(`${h}:${m}`);
@@ -120,18 +137,16 @@ export default function SettingsScreen() {
 
   async function commitTimeChange() {
     setShowTimePicker(false);
-    setReminderTime(tempTime);
-    if (reminderEnabled) {
-      await cancelReminder();
-      await scheduleReminder(tempTime);
-    }
+    await commitReminder(reminderEnabled, tempTime);
   }
 
-  async function handleExport() {
+  const exportGuard = useProtectedExport();
+
+  async function runExport() {
     try {
       await exportData(db);
-    } catch {
-      Alert.alert('Błąd', 'Nie udało się wyeksportować danych.');
+    } catch (err) {
+      reportExportError(err, pl.settings.data.exportErrorTitle, pl.settings.data.exportErrorMsg);
     }
   }
 
@@ -165,6 +180,7 @@ export default function SettingsScreen() {
         onPress: async () => {
           await ThoughtRecordRepo.deleteAll(db);
           await ExperimentRepo.deleteAll(db);
+          await clearExportFiles();
           Alert.alert('Gotowe', 'Wszystkie dane zostały usunięte.');
         },
       },
@@ -452,6 +468,21 @@ export default function SettingsScreen() {
             </Text>
           </TouchableOpacity>
         )}
+        {pinEnabled && (
+          <TouchableOpacity
+            style={[s.row, s.rowBorder]}
+            onPress={() => {
+              const opts: readonly number[] = LOCK_TIMEOUT_OPTIONS_MS;
+              setLockTimeoutMs(opts[(opts.indexOf(lockTimeoutMs) + 1) % opts.length]);
+            }}
+          >
+            <View style={s.rowLabel}>
+              <Text style={s.rowLabelText}>{pl.settings.privacy.lockTimeout}</Text>
+            </View>
+            <Text style={s.rowValue}>{lockTimeoutLabels[lockTimeoutMs] ?? ''}</Text>
+            <Text style={s.chevron}>›</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       {/* Dane */}
@@ -461,7 +492,11 @@ export default function SettingsScreen() {
         </Text>
       </View>
       <View style={s.card}>
+<<<<<<< HEAD
         <TouchableOpacity accessibilityRole="button" style={s.row} onPress={handleExport}>
+=======
+        <TouchableOpacity style={s.row} onPress={() => exportGuard.guard(runExport)}>
+>>>>>>> origin/develop
           <View style={s.rowLabel}>
             <Text style={s.rowLabelText}>{pl.settings.data.export}</Text>
             <Text style={s.rowSubText}>{pl.settings.data.exportSub}</Text>
@@ -620,6 +655,7 @@ export default function SettingsScreen() {
                 value={tempDate}
                 mode="time"
                 display="spinner"
+                {...PICKER_LOCALE_PROPS}
                 onChange={handlePickerChange}
                 textColor={colors.text}
               />
@@ -641,10 +677,12 @@ export default function SettingsScreen() {
             value={reminderDate}
             mode="time"
             display="default"
+            {...PICKER_LOCALE_PROPS}
             onChange={handlePickerChange}
           />
         )
       )}
+      {exportGuard.modal}
     </ScrollView>
   );
 }

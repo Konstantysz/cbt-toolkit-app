@@ -1,38 +1,21 @@
-import { useState, useEffect, useCallback } from 'react';
 import * as SQLite from 'expo-sqlite';
 import type { ThoughtRecord } from '../types';
 import * as repo from '../repository';
+import { useLoad } from '../../../core/db/useLoad';
+
+const NONE: ThoughtRecord[] = [];
 
 export function useThoughtRecords(db: SQLite.SQLiteDatabase | null) {
-  const [records, setRecords] = useState<ThoughtRecord[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const refresh = useCallback(async () => {
-    if (!db) return;
-    if (records.length === 0) setLoading(true);
-    try {
-      const data = await repo.getRecords(db);
-      setRecords(data);
-    } finally {
-      setLoading(false);
-    }
-  }, [db, records.length]);
-
-  return { records, loading, refresh };
+  const { data, loading, error, refresh } = useLoad(db, (d) => repo.getRecords(d), NONE);
+  return { records: data, loading, error, refresh };
 }
 
 export function useThoughtRecord(db: SQLite.SQLiteDatabase | null, id: string) {
-  const [record, setRecord] = useState<ThoughtRecord | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!db) return;
-    setLoading(true);
-    repo
-      .getRecordById(db, id)
-      .then(setRecord)
-      .finally(() => setLoading(false));
-  }, [db, id]);
-
-  return { record, loading };
+  const { data, loading, error, refresh } = useLoad<ThoughtRecord | null>(
+    db,
+    (d) => repo.getRecordById(d, id),
+    null,
+    id
+  );
+  return { record: data, loading, error, refresh };
 }

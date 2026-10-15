@@ -1,11 +1,24 @@
 #!/bin/bash
-# Enforces single-line commit messages (no body, no blank lines)
+# Enforces a single-line `type: description` (or `type(scope): description`) commit message.
 
 msg_file="$1"
-lines=$(grep -c '' "$msg_file" 2>/dev/null || echo 0)
+# Ignore comment lines and trailing blank lines git may add
+msg=$(grep -v '^#' "$msg_file" | sed -e :a -e '/^\n*$/{$d;N;ba' -e '}')
+lines=$(printf '%s\n' "$msg" | grep -c '')
+
+if [ -z "$(printf '%s' "$msg" | tr -d '[:space:]')" ]; then
+  echo "ERROR: Empty commit message."
+  exit 1
+fi
 
 if [ "$lines" -gt 1 ]; then
-  echo "ERROR: Commit message must be a single line (no body, no blank lines)."
+  echo "ERROR: Commit message must be a single line (no body, no blank lines, no trailers)."
   echo "Got $lines lines. Fix and try again."
+  exit 1
+fi
+
+# Allow git-generated Merge/Revert messages; otherwise require `type: description`
+if ! printf '%s' "$msg" | grep -qE '^(Merge |Revert )|^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|release|revert)(\([a-z0-9._/-]+\))?!?: .*[^[:space:]]'; then
+  echo "ERROR: Use 'type: short description' (types: feat fix docs style refactor perf test build ci chore release revert)."
   exit 1
 fi
