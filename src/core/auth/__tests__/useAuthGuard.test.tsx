@@ -11,6 +11,7 @@ import { renderHook, act, waitFor } from '@testing-library/react-native';
 import { useAuthGuard } from '../useAuthGuard';
 import { useSettings } from '../../settings/store';
 import { useAuthStore } from '../store';
+import * as SecureStore from 'expo-secure-store';
 
 beforeEach(() => {
   useSettings.setState({
@@ -25,6 +26,7 @@ beforeEach(() => {
 
 afterEach(() => {
   jest.restoreAllMocks();
+  (SecureStore as unknown as { __reset: () => void }).__reset();
 });
 
 describe('useAuthGuard — initial phase', () => {
@@ -34,7 +36,8 @@ describe('useAuthGuard — initial phase', () => {
   });
 
   it('sets locked when pinEnabled=true', async () => {
-    useSettings.setState({ pinEnabled: true, pinOnboardingShown: true });
+    await SecureStore.setItemAsync('cbt-pin-hash', 'x'.repeat(64));
+    useSettings.setState({ pinOnboardingShown: true });
     renderHook(() => useAuthGuard());
     await waitFor(() => expect(useAuthStore.getState().authPhase).toBe('locked'));
   });
@@ -67,5 +70,14 @@ describe('useAuthGuard — goToSetup / goToUnlocked', () => {
     await waitFor(() => expect(useAuthStore.getState().authPhase).not.toBe('loading'));
     act(() => result.current.goToUnlocked());
     expect(useAuthStore.getState().authPhase).toBe('unlocked');
+  });
+});
+
+describe('useAuthGuard — missing hash', () => {
+  it('disables PIN when flag says enabled but hash is gone', async () => {
+    useSettings.setState({ pinEnabled: true, pinOnboardingShown: true });
+    renderHook(() => useAuthGuard());
+    await waitFor(() => expect(useAuthStore.getState().authPhase).toBe('unlocked'));
+    expect(useSettings.getState().pinEnabled).toBe(false);
   });
 });

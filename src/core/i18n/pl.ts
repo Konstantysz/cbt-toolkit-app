@@ -91,6 +91,11 @@ export const pl = {
       disablePinTitle: 'Wyłączyć kod PIN?',
       disablePinMessage: 'Aplikacja nie będzie już chroniona kodem PIN.',
       disablePinButton: 'Wyłącz',
+      lockTimeout: 'Blokuj po',
+      lockTimeoutImmediately: 'Natychmiast',
+      lockTimeoutSeconds: '30 sekundach',
+      lockTimeoutMinute: '1 minucie',
+      lockTimeoutMinutes: '5 minutach',
     },
   },
   auth: {
