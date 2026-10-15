@@ -110,12 +110,16 @@ export default function HomeScreen(): React.JSX.Element {
       <StatusBar barStyle="light-content" backgroundColor={colors.bg} />
 
       <View style={styles.header}>
-        <Text style={styles.appTitle}>CBT Toolkit</Text>
+        <Text style={styles.appTitle} accessibilityRole="header">
+          CBT Toolkit
+        </Text>
         <Text style={styles.appSubtitle}>Narzędzia terapii poznawczo-behawioralnej</Text>
       </View>
 
       <View style={styles.sectionHeader}>
-        <Text style={styles.sectionLabel}>NARZĘDZIA</Text>
+        <Text style={styles.sectionLabel} accessibilityRole="header">
+          NARZĘDZIA
+        </Text>
         <View style={styles.sectionLine} />
       </View>
 
@@ -124,6 +128,7 @@ export default function HomeScreen(): React.JSX.Element {
       >
         {tools.map((tool: ToolDefinition) => (
           <TouchableOpacity
+            accessibilityRole="button"
             key={tool.id}
             style={styles.card}
             activeOpacity={0.75}

@@ -183,6 +183,7 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
             <Text style={styles.sliderSideLabel}>{pl.detail.beliefStrengthBefore}</Text>
             <IntensitySlider
               value={experiment.beliefStrengthBefore}
+              a11yLabel={pl.detail.beliefStrengthBefore}
               onChange={() => {}}
               label=""
               readOnly
@@ -193,6 +194,7 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
               <Text style={styles.sliderSideLabel}>{pl.detail.beliefStrengthAfter}</Text>
               <IntensitySlider
                 value={experiment.beliefStrengthAfter}
+                a11yLabel={pl.detail.beliefStrengthAfter}
                 onChange={() => {}}
                 label=""
                 readOnly
@@ -203,7 +205,9 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
       </View>
 
       {/* Plan section */}
-      <Text style={styles.sectionHeader}>{pl.detail.planSection}</Text>
+      <Text style={styles.sectionHeader} accessibilityRole="header">
+        {pl.detail.planSection}
+      </Text>
       <DetailRow label={pl.detail.plan} value={experiment.plan || '—'} styles={styles} />
       <DetailRow
         label={pl.detail.predictedOutcome}
@@ -224,6 +228,7 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
       {/* Add result button */}
       {experiment.status === 'planned' && (
         <TouchableOpacity
+          accessibilityRole="button"
           style={styles.addResultBtn}
           onPress={() => router.push(`/(tools)/behavioral-experiment/${id}/result`)}
           activeOpacity={0.85}
@@ -235,7 +240,9 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
       {/* Result section */}
       {experiment.status === 'completed' && (
         <>
-          <Text style={styles.sectionHeader}>{pl.detail.resultSection}</Text>
+          <Text style={styles.sectionHeader} accessibilityRole="header">
+            {pl.detail.resultSection}
+          </Text>
           {experiment.executionDate && (
             <DetailRow
               label={pl.detail.executionDate}
@@ -275,10 +282,10 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
       {/* Edit / Delete */}
       <View style={styles.actionRow}>
         <TouchableOpacity
+          accessibilityRole="button"
           style={styles.editBtn}
           onPress={() => router.push(`/(tools)/behavioral-experiment/${id}/edit`)}
           activeOpacity={0.8}
-          accessibilityLabel="Edytuj eksperyment"
         >
           <View style={iconRow}>
             <Ionicons
@@ -290,7 +297,12 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
             <Text style={styles.editBtnText}>{pl.detail.edit}</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.deleteBtn} onPress={confirmDelete} activeOpacity={0.8}>
+        <TouchableOpacity
+          accessibilityRole="button"
+          style={styles.deleteBtn}
+          onPress={confirmDelete}
+          activeOpacity={0.8}
+        >
           <Text style={styles.deleteBtnText}>{pl.detail.delete}</Text>
         </TouchableOpacity>
       </View>

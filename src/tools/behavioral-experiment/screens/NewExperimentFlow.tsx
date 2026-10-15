@@ -290,11 +290,12 @@ export function NewExperimentFlow({ phase, experimentId }: Props): React.JSX.Ele
 
       <View style={styles.navRow}>
         {currentStep > 1 && (
-          <TouchableOpacity style={styles.btnBack} onPress={handleBack}>
+          <TouchableOpacity accessibilityRole="button" style={styles.btnBack} onPress={handleBack}>
             <Text style={styles.btnBackText}>{pl.nav.back}</Text>
           </TouchableOpacity>
         )}
         <TouchableOpacity
+          accessibilityRole="button"
           style={[styles.btnNext, !nextEnabled && styles.btnDisabled, isLast && styles.btnFinish]}
           onPress={handleNext}
           disabled={!nextEnabled}
@@ -321,10 +322,13 @@ function renderPlanStep(
   if (step === 1)
     return (
       <View>
-        <Text style={styles.stepTitle}>{pl.step1.title}</Text>
+        <Text style={styles.stepTitle} accessibilityRole="header">
+          {pl.step1.title}
+        </Text>
         <TextInput
           style={styles.input}
           value={state.belief}
+          accessibilityLabel={pl.step1.title}
           onChangeText={(v) => update('belief', v)}
           placeholder={pl.step1.placeholder}
           placeholderTextColor={styles.placeholderColor.color}
@@ -342,10 +346,13 @@ function renderPlanStep(
   if (step === 2)
     return (
       <View>
-        <Text style={styles.stepTitle}>{pl.step2.title}</Text>
+        <Text style={styles.stepTitle} accessibilityRole="header">
+          {pl.step2.title}
+        </Text>
         <TextInput
           style={styles.input}
           value={state.plan}
+          accessibilityLabel={pl.step2.title}
           onChangeText={(v) => update('plan', v)}
           placeholder={pl.step2.placeholder}
           placeholderTextColor={styles.placeholderColor.color}
@@ -358,10 +365,13 @@ function renderPlanStep(
   if (step === 3)
     return (
       <View>
-        <Text style={styles.stepTitle}>{pl.step3.title}</Text>
+        <Text style={styles.stepTitle} accessibilityRole="header">
+          {pl.step3.title}
+        </Text>
         <TextInput
           style={styles.input}
           value={state.predictedOutcome}
+          accessibilityLabel={pl.step3.title}
           onChangeText={(v) => update('predictedOutcome', v)}
           placeholder={pl.step3.placeholder}
           placeholderTextColor={styles.placeholderColor.color}
@@ -374,10 +384,13 @@ function renderPlanStep(
   if (step === 4)
     return (
       <View>
-        <Text style={styles.stepTitle}>{pl.step4.title}</Text>
+        <Text style={styles.stepTitle} accessibilityRole="header">
+          {pl.step4.title}
+        </Text>
         <TextInput
           style={styles.input}
           value={state.potentialProblems}
+          accessibilityLabel={pl.step4.title}
           onChangeText={(v) => update('potentialProblems', v)}
           placeholder={pl.step4.placeholder}
           placeholderTextColor={styles.placeholderColor.color}
@@ -389,10 +402,13 @@ function renderPlanStep(
     );
   return (
     <View>
-      <Text style={styles.stepTitle}>{pl.step5.title}</Text>
+      <Text style={styles.stepTitle} accessibilityRole="header">
+        {pl.step5.title}
+      </Text>
       <TextInput
         style={styles.input}
         value={state.problemStrategies}
+        accessibilityLabel={pl.step5.title}
         onChangeText={(v) => update('problemStrategies', v)}
         placeholder={pl.step5.placeholder}
         placeholderTextColor={styles.placeholderColor.color}
@@ -414,9 +430,12 @@ function renderResultStep(
     const dateObj = parseISO(state.executionDate);
     return (
       <View>
-        <Text style={styles.stepTitle}>{pl.step6.title}</Text>
+        <Text style={styles.stepTitle} accessibilityRole="header">
+          {pl.step6.title}
+        </Text>
         <Text style={styles.fieldLabel}>{pl.step6.dateLabel}</Text>
         <TouchableOpacity
+          accessibilityRole="button"
           style={styles.datePicker}
           onPress={() => update('showDatePicker', true)}
           activeOpacity={0.8}
@@ -440,6 +459,7 @@ function renderResultStep(
         <TextInput
           style={[styles.input, styles.inputTop]}
           value={state.actualOutcome}
+          accessibilityLabel={pl.step6.title}
           onChangeText={(v) => update('actualOutcome', v)}
           placeholder={pl.step6.placeholder}
           placeholderTextColor={styles.placeholderColor.color}
@@ -453,7 +473,9 @@ function renderResultStep(
   if (step === 2)
     return (
       <View>
-        <Text style={styles.stepTitle}>{pl.step7.title}</Text>
+        <Text style={styles.stepTitle} accessibilityRole="header">
+          {pl.step7.title}
+        </Text>
         <StepHelper hint={pl.step7.hint} />
         <IntensitySlider
           label={pl.step7.confirmationLabel}
@@ -469,10 +491,13 @@ function renderResultStep(
     );
   return (
     <View>
-      <Text style={styles.stepTitle}>{pl.step8.title}</Text>
+      <Text style={styles.stepTitle} accessibilityRole="header">
+        {pl.step8.title}
+      </Text>
       <TextInput
         style={styles.input}
         value={state.conclusion}
+        accessibilityLabel={pl.step8.title}
         onChangeText={(v) => update('conclusion', v)}
         placeholder={pl.step8.placeholder}
         placeholderTextColor={styles.placeholderColor.color}

@@ -185,7 +185,9 @@ export function AbcDetailScreen({ id }: Props): React.JSX.Element {
         {textSections.map((sec, i) => (
           <React.Fragment key={sec.label}>
             <View style={styles.section}>
-              <Text style={styles.sectionLabel}>{sec.label}</Text>
+              <Text style={styles.sectionLabel} accessibilityRole="header">
+                {sec.label}
+              </Text>
               <Text style={[styles.sectionBody, !sec.text && styles.emptyField]}>
                 {sec.text || '—'}
               </Text>
@@ -198,10 +200,10 @@ export function AbcDetailScreen({ id }: Props): React.JSX.Element {
       {/* Action row */}
       <View style={styles.actionRow}>
         <TouchableOpacity
+          accessibilityRole="button"
           style={styles.editBtn}
           onPress={() => router.push(`/(tools)/abc-model/${id}/edit`)}
           activeOpacity={0.8}
-          accessibilityLabel="Edytuj wpis"
         >
           <View style={iconRow}>
             <Ionicons
@@ -213,7 +215,12 @@ export function AbcDetailScreen({ id }: Props): React.JSX.Element {
             <Text style={styles.editBtnText}>{pl.detail.editBtn}</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.deleteBtn} onPress={confirmDelete} activeOpacity={0.8}>
+        <TouchableOpacity
+          accessibilityRole="button"
+          style={styles.deleteBtn}
+          onPress={confirmDelete}
+          activeOpacity={0.8}
+        >
           <Text style={styles.deleteBtnText}>{pl.detail.deleteBtn}</Text>
         </TouchableOpacity>
       </View>

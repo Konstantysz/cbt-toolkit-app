@@ -1,5 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
+import { useAnnounceChange } from '../a11y';
+import { pl } from '../i18n/pl';
 import { useColors } from '../theme/useColors';
 
 interface Props {
@@ -17,8 +19,16 @@ function useStyles() {
 export function StepProgress({ totalSteps, currentStep }: Props) {
   const styles = useStyles();
   const colors = useColors();
+  const text = pl.a11y.stepOf(currentStep, totalSteps);
+  useAnnounceChange(currentStep, text);
   return (
-    <View style={styles.row}>
+    <View
+      style={styles.row}
+      accessible
+      accessibilityRole="progressbar"
+      accessibilityLabel={text}
+      accessibilityValue={{ min: 1, max: totalSteps, now: currentStep }}
+    >
       {Array.from({ length: totalSteps }, (_, i) => {
         const stepNum = i + 1;
         let bg: string = colors.border;

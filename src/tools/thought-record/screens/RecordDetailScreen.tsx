@@ -287,9 +287,9 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
           </View>
           <View style={styles.metaActions}>
             <TouchableOpacity
+              accessibilityRole="button"
               style={styles.actionBtn}
               onPress={() => router.push(`/(tools)/thought-record/${id}/compare`)}
-              accessibilityLabel="Porównaj zapisy"
             >
               <View style={iconRow}>
                 <Ionicons
@@ -302,9 +302,9 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
               </View>
             </TouchableOpacity>
             <TouchableOpacity
+              accessibilityRole="button"
               style={styles.actionBtn}
               onPress={() => router.push(`/(tools)/thought-record/${id}/form`)}
-              accessibilityLabel="Formularz papierowy"
             >
               <View style={iconRow}>
                 <Ionicons
@@ -322,7 +322,9 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
         {/* Emotions (step 02) */}
         <View style={styles.section}>
           <Text style={styles.stepNum}>Krok 02</Text>
-          <Text style={styles.stepTitle}>Emocje</Text>
+          <Text style={styles.stepTitle} accessibilityRole="header">
+            Emocje
+          </Text>
           {record.emotions.length === 0 ? (
             <Text style={styles.emptyField}>—</Text>
           ) : (
@@ -336,7 +338,9 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
           <React.Fragment key={sec.step}>
             <View style={styles.section}>
               <Text style={styles.stepNum}>Krok {sec.step}</Text>
-              <Text style={styles.stepTitle}>{sec.title}</Text>
+              <Text style={styles.stepTitle} accessibilityRole="header">
+                {sec.title}
+              </Text>
               <Text style={sec.text ? styles.bodyText : styles.bodyTextEmpty}>
                 {sec.text || '—'}
               </Text>
@@ -347,17 +351,22 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
 
         <View style={styles.actionRow}>
           <TouchableOpacity
+            accessibilityRole="button"
             style={styles.editBtn}
             onPress={() => router.push(`/(tools)/thought-record/${id}/edit`)}
             activeOpacity={0.8}
-            accessibilityLabel="Edytuj wpis"
           >
             <View style={iconRow}>
               <Ionicons name="create-outline" size={14} color={colors.accent} accessible={false} />
               <Text style={styles.editBtnText}>{pl.edit.title}</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.deleteBtn} onPress={confirmDelete} activeOpacity={0.8}>
+          <TouchableOpacity
+            accessibilityRole="button"
+            style={styles.deleteBtn}
+            onPress={confirmDelete}
+            activeOpacity={0.8}
+          >
             <Text style={styles.deleteBtnText}>Usuń wpis</Text>
           </TouchableOpacity>
         </View>

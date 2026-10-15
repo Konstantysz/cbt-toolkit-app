@@ -57,6 +57,7 @@ export function SearchBar({
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
+        accessibilityLabel={placeholder}
         placeholderTextColor={colors.textDim}
         clearButtonMode="while-editing"
         returnKeyType="search"

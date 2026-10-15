@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useColors } from '../../theme/useColors';
 import { spacing } from '../../theme';
+import { pl } from '../../i18n/pl';
 import type { EmotionNode } from '../../data/feelingsWheel';
 import type { Emotion } from '../../types';
 
@@ -89,7 +90,8 @@ export function ChipView({ nodes, selected, onChange }: Props) {
               activeOpacity={0.7}
               accessibilityRole="button"
               accessibilityLabel={root.label}
-              accessibilityHint="Rozwiń kategorię emocji"
+              accessibilityHint={pl.a11y.expandCategory}
+              accessibilityState={{ expanded: isActive }}
             >
               <Text style={[styles.chipText, isActive && styles.chipTextActive]}>{root.label}</Text>
             </TouchableOpacity>
@@ -122,7 +124,8 @@ export function ChipView({ nodes, selected, onChange }: Props) {
                   activeOpacity={0.7}
                   accessibilityRole="button"
                   accessibilityLabel={l2.label}
-                  accessibilityHint="Rozwiń podkategorię emocji"
+                  accessibilityHint={pl.a11y.expandSubcategory}
+                  accessibilityState={{ expanded: isActive }}
                 >
                   <Text style={[styles.chipText, isActive && styles.chipTextActive]}>
                     {l2.label}

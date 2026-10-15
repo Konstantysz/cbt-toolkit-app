@@ -58,19 +58,29 @@ export default function CreditsScreen() {
   return (
     <ScrollView style={s.container} contentContainerStyle={{ paddingBottom: 40 }}>
       <View style={s.header}>
-        <TouchableOpacity onPress={() => router.back()}>
+        <TouchableOpacity
+          accessibilityRole="button"
+          accessibilityLabel="Wstecz"
+          onPress={() => router.back()}
+        >
           <Text style={s.backText}>‹ Wstecz</Text>
         </TouchableOpacity>
-        <Text style={s.headerTitle}>Twórcy i podziękowania</Text>
+        <Text style={s.headerTitle} accessibilityRole="header">
+          Twórcy i podziękowania
+        </Text>
       </View>
       <View style={s.card}>
-        <Text style={s.sectionTitle}>Autorzy</Text>
+        <Text style={s.sectionTitle} accessibilityRole="header">
+          Autorzy
+        </Text>
         <Text style={s.body}>
           Aplikacja Zestaw Narzędzi TPB jest projektem open-source stworzonym z myślą o osobach
           korzystających z terapii poznawczo-behawioralnej. Kod źródłowy dostępny na GitHub.
         </Text>
         <View style={s.divider} />
-        <Text style={s.sectionTitle}>Biblioteki open-source</Text>
+        <Text style={s.sectionTitle} accessibilityRole="header">
+          Biblioteki open-source
+        </Text>
         {packages.map(([name, desc]) => (
           <View key={name} style={s.packageRow}>
             <Text style={s.packageName}>{name}</Text>

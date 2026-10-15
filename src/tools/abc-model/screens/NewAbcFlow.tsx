@@ -193,6 +193,7 @@ export function NewAbcFlow({ existingId }: Props): React.JSX.Element {
       <View style={styles.footer}>
         {step === 1 ? (
           <TouchableOpacity
+            accessibilityRole="button"
             style={[styles.btn, saving && styles.btnDisabled]}
             onPress={handleNext}
             disabled={saving}
@@ -210,6 +211,7 @@ export function NewAbcFlow({ existingId }: Props): React.JSX.Element {
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
+            accessibilityRole="button"
             style={[styles.btn, saving && styles.btnDisabled]}
             onPress={handleSave}
             disabled={saving}
@@ -233,20 +235,26 @@ function Step1({
   const styles = useStepStyles();
   return (
     <View style={styles.stepBody}>
-      <Text style={styles.fieldTitle}>{pl.step1.situationLabel}</Text>
+      <Text style={styles.fieldTitle} accessibilityRole="header">
+        {pl.step1.situationLabel}
+      </Text>
       <TextInput
         style={styles.input}
         value={state.situation}
+        accessibilityLabel={pl.step1.situationLabel}
         onChangeText={(v) => update('situation', v)}
         placeholder={pl.step1.situationPlaceholder}
         placeholderTextColor={styles.placeholderColor.color}
         multiline
         textAlignVertical="top"
       />
-      <Text style={styles.fieldTitleSpaced}>{pl.step1.thoughtsLabel}</Text>
+      <Text style={styles.fieldTitleSpaced} accessibilityRole="header">
+        {pl.step1.thoughtsLabel}
+      </Text>
       <TextInput
         style={styles.input}
         value={state.thoughts}
+        accessibilityLabel={pl.step1.thoughtsLabel}
         onChangeText={(v) => update('thoughts', v)}
         placeholder={pl.step1.thoughtsPlaceholder}
         placeholderTextColor={styles.placeholderColor.color}
@@ -272,30 +280,39 @@ function Step2({
   const styles = useStepStyles();
   return (
     <View style={styles.stepBody}>
-      <Text style={styles.fieldTitle}>{pl.step2.behaviorsLabel}</Text>
+      <Text style={styles.fieldTitle} accessibilityRole="header">
+        {pl.step2.behaviorsLabel}
+      </Text>
       <TextInput
         style={styles.input}
         value={state.behaviors}
+        accessibilityLabel={pl.step2.behaviorsLabel}
         onChangeText={(v) => update('behaviors', v)}
         placeholder={pl.step2.behaviorsPlaceholder}
         placeholderTextColor={styles.placeholderColor.color}
         multiline
         textAlignVertical="top"
       />
-      <Text style={styles.fieldTitleSpaced}>{pl.step2.emotionsLabel}</Text>
+      <Text style={styles.fieldTitleSpaced} accessibilityRole="header">
+        {pl.step2.emotionsLabel}
+      </Text>
       <TextInput
         style={styles.input}
         value={state.emotions}
+        accessibilityLabel={pl.step2.emotionsLabel}
         onChangeText={(v) => update('emotions', v)}
         placeholder={pl.step2.emotionsPlaceholder}
         placeholderTextColor={styles.placeholderColor.color}
         multiline
         textAlignVertical="top"
       />
-      <Text style={styles.fieldTitleSpaced}>{pl.step2.physicalLabel}</Text>
+      <Text style={styles.fieldTitleSpaced} accessibilityRole="header">
+        {pl.step2.physicalLabel}
+      </Text>
       <TextInput
         style={styles.input}
         value={state.physicalSymptoms}
+        accessibilityLabel={pl.step2.physicalLabel}
         onChangeText={(v) => update('physicalSymptoms', v)}
         placeholder={pl.step2.physicalPlaceholder}
         placeholderTextColor={styles.placeholderColor.color}

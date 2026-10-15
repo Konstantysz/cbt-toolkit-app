@@ -58,10 +58,10 @@ export function PinOnboardingScreen({ onSetup, onSkip }: PinOnboardingScreenProp
       <Text style={s.title}>{pl.auth.onboarding.title}</Text>
       <Text style={s.description}>{pl.auth.onboarding.description}</Text>
       <Text style={s.warning}>{pl.auth.onboarding.warning}</Text>
-      <TouchableOpacity style={s.setupButton} onPress={onSetup}>
+      <TouchableOpacity accessibilityRole="button" style={s.setupButton} onPress={onSetup}>
         <Text style={s.setupButtonText}>{pl.auth.onboarding.setupButton}</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={s.skipButton} onPress={handleSkip}>
+      <TouchableOpacity accessibilityRole="button" style={s.skipButton} onPress={handleSkip}>
         <Text style={s.skipButtonText}>{pl.auth.onboarding.skipButton}</Text>
       </TouchableOpacity>
     </ScrollView>

@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useScreenReaderEnabled } from '../../a11y';
+import { pl } from '../../i18n/pl';
 import { useColors } from '../../theme/useColors';
 import { spacing } from '../../theme';
 import { feelingsWheel } from '../../data/feelingsWheel';
@@ -39,8 +41,11 @@ function useStyles() {
 export function EmotionWheelPicker({ selected, onChange }: Props) {
   const styles = useStyles();
   const colors = useColors();
-  const { mode, isLoading, setMode } = usePickerMode();
+  const { mode: storedMode, isLoading, setMode } = usePickerMode();
+  const screenReader = useScreenReaderEnabled();
   if (isLoading) return null;
+  // The wheel is purely visual: screen-reader users always get the chip list.
+  const mode = screenReader ? 'chips' : storedMode;
 
   function toggleMode() {
     setMode(mode === 'chips' ? 'wheel' : 'chips');
@@ -48,16 +53,25 @@ export function EmotionWheelPicker({ selected, onChange }: Props) {
 
   return (
     <View>
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.toggleBtn} onPress={toggleMode} activeOpacity={0.7}>
-          <Ionicons
-            name={mode === 'chips' ? 'radio-button-on' : 'apps'}
-            size={14}
-            color={colors.textMuted}
-          />
-          <Text style={styles.toggleText}>{mode === 'chips' ? 'Koło' : 'Lista'}</Text>
-        </TouchableOpacity>
-      </View>
+      {!screenReader && (
+        <View style={styles.header}>
+          <TouchableOpacity
+            accessibilityRole="button"
+            style={styles.toggleBtn}
+            onPress={toggleMode}
+            activeOpacity={0.7}
+            accessibilityLabel={mode === 'chips' ? 'Koło' : 'Lista'}
+            accessibilityHint={mode === 'chips' ? pl.a11y.pickerToWheel : pl.a11y.pickerToList}
+          >
+            <Ionicons
+              name={mode === 'chips' ? 'radio-button-on' : 'apps'}
+              size={14}
+              color={colors.textMuted}
+            />
+            <Text style={styles.toggleText}>{mode === 'chips' ? 'Koło' : 'Lista'}</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       {mode === 'chips' ? (
         <ChipView nodes={feelingsWheel} selected={selected} onChange={onChange} />

@@ -206,6 +206,7 @@ export function RecordFormScreen({ id }: Props): React.JSX.Element {
       {/* Przyciski eksportu */}
       <View style={styles.exportRow}>
         <TouchableOpacity
+          accessibilityRole="button"
           style={[styles.exportBtn, isExporting && styles.exportBtnDisabled]}
           onPress={handleExportPdf}
           activeOpacity={0.8}
@@ -218,6 +219,7 @@ export function RecordFormScreen({ id }: Props): React.JSX.Element {
           )}
         </TouchableOpacity>
         <TouchableOpacity
+          accessibilityRole="button"
           style={[styles.exportBtn, isExporting && styles.exportBtnDisabled]}
           onPress={handleExportPng}
           activeOpacity={0.8}
@@ -249,7 +251,9 @@ function FormSection({
 }) {
   return (
     <View style={[styles.section, last && styles.sectionLast]}>
-      <Text style={styles.sectionLabel}>{label}</Text>
+      <Text style={styles.sectionLabel} accessibilityRole="header">
+        {label}
+      </Text>
       {children}
     </View>
   );
