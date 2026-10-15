@@ -492,11 +492,11 @@ export default function SettingsScreen() {
         </Text>
       </View>
       <View style={s.card}>
-<<<<<<< HEAD
-        <TouchableOpacity accessibilityRole="button" style={s.row} onPress={handleExport}>
-=======
-        <TouchableOpacity style={s.row} onPress={() => exportGuard.guard(runExport)}>
->>>>>>> origin/develop
+        <TouchableOpacity
+          accessibilityRole="button"
+          style={s.row}
+          onPress={() => exportGuard.guard(runExport)}
+        >
           <View style={s.rowLabel}>
             <Text style={s.rowLabelText}>{pl.settings.data.export}</Text>
             <Text style={s.rowSubText}>{pl.settings.data.exportSub}</Text>
