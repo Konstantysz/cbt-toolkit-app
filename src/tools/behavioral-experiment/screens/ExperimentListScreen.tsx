@@ -8,6 +8,8 @@ import { useColors } from '../../../core/theme/useColors';
 import { SearchBar } from '../../../core/components/SearchBar';
 import { useBehavioralExperiments } from '../hooks/useBehavioralExperiments';
 import { insertSeedExperiment } from '../repository';
+import { LoadError } from '../../../core/components/LoadError';
+import { seedOnce } from '../../../core/db/seedOnce';
 import { pl } from '../i18n/pl';
 import type { BehavioralExperiment } from '../types';
 
@@ -84,7 +86,7 @@ function useStyles() {
 
 export function ExperimentListScreen(): React.JSX.Element {
   const db = useSQLiteContext();
-  const { experiments, loading, refresh } = useBehavioralExperiments(db);
+  const { experiments, loading, error, refresh } = useBehavioralExperiments(db);
   const styles = useStyles();
   const [query, setQuery] = useState('');
 
@@ -96,16 +98,13 @@ export function ExperimentListScreen(): React.JSX.Element {
 
   // Onboarding seed — insert when list is empty on first load
   useEffect(() => {
-    if (loading || experiments.length > 0) return;
-    (async () => {
-      try {
-        await insertSeedExperiment(db);
-        refresh();
-      } catch {
-        // non-critical
-      }
-    })();
-  }, [loading, experiments.length, db, refresh]);
+    if (loading || error || experiments.length > 0) return;
+    seedOnce(db, 'behavioral-experiment', insertSeedExperiment)
+      .then((seeded) => {
+        if (seeded) refresh();
+      })
+      .catch(() => {}); // seed failure is non-critical
+  }, [loading, error, experiments.length, db, refresh]);
 
   const formatDate = useCallback(
     (iso: string) => format(parseISO(iso), 'd MMM yyyy', { locale: dateFnsPl }),
@@ -162,6 +161,7 @@ export function ExperimentListScreen(): React.JSX.Element {
   }, [experiments, query]);
 
   if (loading) return <View style={styles.container} />;
+  if (error) return <LoadError onRetry={refresh} />;
 
   const showEmpty = filtered.length === 0;
   const showNoResults = showEmpty && query.length > 0;
