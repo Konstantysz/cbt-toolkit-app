@@ -49,7 +49,7 @@ describe('RecordDetailScreen — emotion bars', () => {
     });
 
     const { getByText } = render(<RecordDetailScreen id="test-id" />);
-    expect(getByText('↓')).toBeTruthy();
+    expect(getByText('↓ spadek')).toBeTruthy();
   });
 
   it('does not render ↓ when intensityAfter is undefined', () => {
@@ -62,7 +62,7 @@ describe('RecordDetailScreen — emotion bars', () => {
     });
 
     const { queryByText } = render(<RecordDetailScreen id="test-id" />);
-    expect(queryByText('↓')).toBeNull();
+    expect(queryByText('↓ spadek')).toBeNull();
   });
 
   it('does not render "po" bar row when intensityAfter is undefined', () => {

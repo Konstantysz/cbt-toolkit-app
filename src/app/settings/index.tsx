@@ -22,7 +22,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSettings } from '../../core/settings/store';
 import { useAuthStore, LOCK_TIMEOUT_OPTIONS_MS } from '../../core/auth/store';
 import { useColors } from '../../core/theme/useColors';
-import { scaledFont } from '../../core/settings/fontScale';
 import { PICKER_LOCALE_PROPS } from '../../core/utils/date';
 import { requestPermissions } from '../../core/notifications/permissions';
 import { applyReminder } from '../../core/notifications/schedule';
@@ -87,8 +86,6 @@ export default function SettingsScreen() {
     d.setHours(h, m, 0, 0);
     return d;
   }, [tempTime]);
-
-  const fs = (base: number) => scaledFont(base, fontSize);
 
   async function commitReminder(enabled: boolean, time: string) {
     const prev = { enabled: reminderEnabled, time: reminderTime };
@@ -196,14 +193,14 @@ export default function SettingsScreen() {
   const s = StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.bg },
     header: { paddingTop: 56, paddingHorizontal: spacing.md, paddingBottom: spacing.sm },
-    headerTitle: { fontSize: fs(22), fontWeight: '700', color: colors.text },
+    headerTitle: { fontSize: 22, fontWeight: '700', color: colors.text },
     sectionHeader: {
       paddingHorizontal: spacing.md,
       paddingTop: spacing.lg,
       paddingBottom: spacing.xs,
     },
     sectionTitle: {
-      fontSize: fs(11),
+      fontSize: 11,
       fontWeight: '600',
       color: colors.textMuted,
       textTransform: 'uppercase',
@@ -225,11 +222,11 @@ export default function SettingsScreen() {
     },
     rowBorder: { borderTopWidth: 1, borderTopColor: colors.border },
     rowLabel: { flex: 1 },
-    rowLabelText: { fontSize: fs(15), color: colors.text, fontWeight: '500' },
-    rowSubText: { fontSize: fs(12), color: colors.textMuted, marginTop: 2 },
-    rowValue: { fontSize: fs(15), color: colors.textMuted, marginRight: spacing.xs },
+    rowLabelText: { fontSize: 15, color: colors.text, fontWeight: '500' },
+    rowSubText: { fontSize: 12, color: colors.textMuted, marginTop: 2 },
+    rowValue: { fontSize: 15, color: colors.textMuted, marginRight: spacing.xs },
     chevron: { fontSize: 18, color: colors.textDim },
-    dangerText: { fontSize: fs(15), color: colors.danger, fontWeight: '500' },
+    dangerText: { fontSize: 15, color: colors.danger, fontWeight: '500' },
     fontSelector: { flexDirection: 'row', gap: spacing.xs },
     fontOption: {
       width: 36,
@@ -245,8 +242,8 @@ export default function SettingsScreen() {
     fontOptionText: { color: colors.textMuted, fontWeight: '600' },
     fontOptionTextActive: { color: colors.accent },
     appBlock: { paddingHorizontal: spacing.md, paddingVertical: 14 },
-    appName: { fontSize: fs(16), fontWeight: '700', color: colors.text },
-    appVersion: { fontSize: fs(12), color: colors.textMuted, marginTop: 2 },
+    appName: { fontSize: 16, fontWeight: '700', color: colors.text },
+    appVersion: { fontSize: 12, color: colors.textMuted, marginTop: 2 },
     paletteRow: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -650,7 +647,11 @@ export default function SettingsScreen() {
 
       {/* Time picker */}
       {Platform.OS === 'ios' ? (
-        <Modal visible={showTimePicker} transparent animationType="slide">
+        <Modal
+          visible={showTimePicker}
+          transparent
+          animationType={reducedMotion ? 'none' : 'slide'}
+        >
           <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' }}>
             <View
               style={{
@@ -672,7 +673,7 @@ export default function SettingsScreen() {
                 style={{ alignItems: 'center', paddingVertical: spacing.sm }}
                 onPress={commitTimeChange}
               >
-                <Text style={{ color: colors.accent, fontSize: fs(16), fontWeight: '600' }}>
+                <Text style={{ color: colors.accent, fontSize: 16, fontWeight: '600' }}>
                   {pl.common.done}
                 </Text>
               </TouchableOpacity>

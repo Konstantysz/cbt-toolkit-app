@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { pl } from '../i18n/pl';
 import { useColors } from '../theme/useColors';
+import { HIT_SLOP } from '../theme';
 
 interface StepHelperProps {
   hint: string;
@@ -75,6 +76,7 @@ export function StepHelper({
         accessibilityRole="button"
         style={[styles.toggle, open && styles.toggleActive]}
         onPress={() => setOpen((o) => !o)}
+        hitSlop={HIT_SLOP}
         activeOpacity={0.7}
         accessibilityLabel={toggleLabel}
         accessibilityHint={pl.a11y.stepHintHint}

@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useScreenReaderEnabled } from '../../a11y';
 import { pl } from '../../i18n/pl';
 import { useColors } from '../../theme/useColors';
-import { spacing } from '../../theme';
+import { spacing, HIT_SLOP } from '../../theme';
 import { feelingsWheel } from '../../data/feelingsWheel';
 import { ChipView } from './ChipView';
 import { WheelView } from './WheelView';
@@ -60,6 +60,7 @@ export function EmotionWheelPicker({ selected, onChange }: Props) {
             style={styles.toggleBtn}
             onPress={toggleMode}
             activeOpacity={0.7}
+            hitSlop={HIT_SLOP}
             accessibilityLabel={
               mode === 'chips' ? pl.emotionPicker.modeWheel : pl.emotionPicker.modeList
             }

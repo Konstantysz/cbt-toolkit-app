@@ -35,6 +35,7 @@ export const pl = {
   compare: {
     title: 'Widok porównawczy',
     btnLabel: 'Porównaj',
+    decreased: 'spadek',
     page1: 'Sytuacja + Emocje',
     page2: 'Emocje + Myśli automatyczne',
     page3: 'Myśli + Argumenty za i przeciw',

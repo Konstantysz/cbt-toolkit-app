@@ -2,16 +2,12 @@ import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useColors } from '../../core/theme/useColors';
-import { useSettings } from '../../core/settings/store';
-import { scaledFont } from '../../core/settings/fontScale';
 import { spacing, radius } from '../../core/theme';
 import { pl } from '../../core/i18n/pl';
 
 export default function CreditsScreen() {
   const router = useRouter();
   const colors = useColors();
-  const { fontSize } = useSettings();
-  const fs = (base: number) => scaledFont(base, fontSize);
 
   const s = StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.bg },
@@ -22,8 +18,8 @@ export default function CreditsScreen() {
       paddingHorizontal: spacing.md,
       paddingBottom: spacing.md,
     },
-    backText: { fontSize: fs(16), color: colors.accent, marginRight: spacing.sm },
-    headerTitle: { fontSize: fs(20), fontWeight: '700', color: colors.text },
+    backText: { fontSize: 16, color: colors.accent, marginRight: spacing.sm },
+    headerTitle: { fontSize: 20, fontWeight: '700', color: colors.text },
     card: {
       margin: spacing.md,
       backgroundColor: colors.surface,
@@ -33,18 +29,18 @@ export default function CreditsScreen() {
       padding: spacing.md,
     },
     sectionTitle: {
-      fontSize: fs(12),
+      fontSize: 12,
       fontWeight: '700',
       color: colors.accent,
       marginBottom: spacing.xs,
       textTransform: 'uppercase',
       letterSpacing: 0.5,
     },
-    body: { fontSize: fs(14), color: colors.text, lineHeight: 22 },
+    body: { fontSize: 14, color: colors.text, lineHeight: 22 },
     divider: { height: 1, backgroundColor: colors.border, marginVertical: spacing.md },
     packageRow: { flexDirection: 'row', marginBottom: spacing.xs },
-    packageName: { fontSize: fs(13), color: colors.accent, width: 180 },
-    packageDesc: { fontSize: fs(13), color: colors.textMuted, flex: 1 },
+    packageName: { fontSize: 13, color: colors.accent, width: 180 },
+    packageDesc: { fontSize: 13, color: colors.textMuted, flex: 1 },
   });
 
   const packages: [string, string][] = [

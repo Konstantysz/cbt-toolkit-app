@@ -11,7 +11,7 @@ import {
 import { router } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useColors } from '../../../core/theme/useColors';
-import { iconRow } from '../../../core/theme';
+import { iconRow, HIT_SLOP } from '../../../core/theme';
 import { useThoughtRecord } from '../hooks/useThoughtRecords';
 import { LoadError } from '../../../core/components/LoadError';
 import * as repo from '../repository';
@@ -203,7 +203,7 @@ function EmotionRow({ emotion }: { emotion: Emotion }) {
     <View style={styles.emotionRow}>
       <View style={styles.emotionNameRow}>
         <Text style={styles.emotionName}>{emotion.name}</Text>
-        {improved && <Text style={styles.emotionDrop}>↓</Text>}
+        {improved && <Text style={styles.emotionDrop}>↓ {pl.compare.decreased}</Text>}
       </View>
       <View style={styles.intensityBars}>
         <IntensityBar label={pl.detail.before} value={before} />
@@ -288,6 +288,7 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
             <TouchableOpacity
               accessibilityRole="button"
               style={styles.actionBtn}
+              hitSlop={HIT_SLOP}
               onPress={() => router.push(`/(tools)/thought-record/${id}/compare`)}
             >
               <View style={iconRow}>
@@ -303,6 +304,7 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
             <TouchableOpacity
               accessibilityRole="button"
               style={styles.actionBtn}
+              hitSlop={HIT_SLOP}
               onPress={() => router.push(`/(tools)/thought-record/${id}/form`)}
             >
               <View style={iconRow}>
