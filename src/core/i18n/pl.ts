@@ -131,4 +131,23 @@ export const pl = {
       confirm: 'Tak, usuń dane',
     },
   },
+  // --- a11y: screen-reader names, hints and announcements ---
+  a11y: {
+    stepOf: (current: number, total: number) => `Krok ${current} z ${total}`,
+    pinProgress: (n: number, total: number) => `Wprowadzono ${n} z ${total} cyfr`,
+    pinDelete: 'Usuń ostatnią cyfrę',
+    intensity: 'Natężenie',
+    intensityValue: (v: number) => `${v} procent`,
+    stepHintHint: 'Pokazuje lub ukrywa przykład',
+    pickerToWheel: 'Przełącz na widok koła emocji',
+    pickerToList: 'Przełącz na widok listy emocji',
+    expandCategory: 'Rozwiń kategorię emocji',
+    expandSubcategory: 'Rozwiń podkategorię emocji',
+    add: (label: string) => `Dodaj ${label}`,
+    newEntry: 'Nowy wpis',
+    comparePrev: 'Poprzednia strona porównania',
+    compareNext: 'Następna strona porównania',
+    fontSize: { sm: 'Mały', md: 'Średni', lg: 'Duży' },
+    emotionsRequired: 'Wybierz co najmniej jedną emocję, aby kontynuować.',
+  },
 } as const;

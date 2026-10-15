@@ -12,6 +12,8 @@ import { useColors } from '../../../core/theme/useColors';
 import { useThoughtRecord } from '../hooks/useThoughtRecords';
 import { LoadError } from '../../../core/components/LoadError';
 import { pl } from '../i18n/pl';
+import { pl as corePl } from '../../../core/i18n/pl';
+import { useAnnounceChange } from '../../../core/a11y';
 import type { Emotion } from '../../../core/types';
 
 interface CompareScreenProps {
@@ -96,6 +98,7 @@ export function CompareScreen({ id }: CompareScreenProps): React.JSX.Element {
   const db = useSQLiteContext();
   const { record, loading, error, refresh } = useThoughtRecord(db, id);
   const [page, setPage] = useState(0);
+  useAnnounceChange(page, `${PAGE_LABELS[page]}. ${page + 1} / ${TOTAL_PAGES}`);
   const styles = useStyles();
   const colors = useColors();
 
@@ -120,12 +123,18 @@ export function CompareScreen({ id }: CompareScreenProps): React.JSX.Element {
     <View style={styles.container}>
       {/* Dots + label */}
       <View style={styles.topBar}>
-        <View style={styles.dots}>
+        <View
+          style={styles.dots}
+          accessibilityElementsHidden
+          importantForAccessibility="no-hide-descendants"
+        >
           {Array.from({ length: TOTAL_PAGES }).map((_, i) => (
             <View key={i} style={[styles.dot, i === page && styles.dotActive]} />
           ))}
         </View>
-        <Text style={styles.pageLabel}>{PAGE_LABELS[page]}</Text>
+        <Text style={styles.pageLabel} accessibilityRole="header">
+          {PAGE_LABELS[page]}
+        </Text>
       </View>
 
       {/* Columns */}
@@ -137,9 +146,11 @@ export function CompareScreen({ id }: CompareScreenProps): React.JSX.Element {
       {/* Navigation */}
       <View style={styles.navRow}>
         <TouchableOpacity
+          accessibilityRole="button"
           style={[styles.arrowBtn, page === 0 && styles.arrowBtnDisabled]}
           onPress={() => setPage((p) => Math.max(0, p - 1))}
           disabled={page === 0}
+          accessibilityLabel={corePl.a11y.comparePrev}
         >
           <Text style={styles.arrowText}>‹</Text>
         </TouchableOpacity>
@@ -147,9 +158,11 @@ export function CompareScreen({ id }: CompareScreenProps): React.JSX.Element {
           {page + 1} / {TOTAL_PAGES}
         </Text>
         <TouchableOpacity
+          accessibilityRole="button"
           style={[styles.arrowBtn, page === TOTAL_PAGES - 1 && styles.arrowBtnDisabled]}
           onPress={() => setPage((p) => Math.min(TOTAL_PAGES - 1, p + 1))}
           disabled={page === TOTAL_PAGES - 1}
+          accessibilityLabel={corePl.a11y.compareNext}
         >
           <Text style={styles.arrowText}>›</Text>
         </TouchableOpacity>
@@ -164,7 +177,9 @@ function ColPanel({ title, children }: { title: string; children: React.ReactNod
   const styles = useStyles();
   return (
     <ScrollView style={styles.col} contentContainerStyle={styles.colContent}>
-      <Text style={styles.colTitle}>{title}</Text>
+      <Text style={styles.colTitle} accessibilityRole="header">
+        {title}
+      </Text>
       {children}
     </ScrollView>
   );
@@ -250,10 +265,14 @@ function LeftColumn({ page, record }: { page: number; record: RecordType }) {
     case 3:
       return (
         <ColPanel title="">
-          <Text style={styles.colTitleSuccess}>Argumenty za</Text>
+          <Text style={styles.colTitleSuccess} accessibilityRole="header">
+            Argumenty za
+          </Text>
           <ColText text={record.evidenceFor} />
           <View style={styles.subDivider} />
-          <Text style={styles.colTitleDanger}>Argumenty przeciw</Text>
+          <Text style={styles.colTitleDanger} accessibilityRole="header">
+            Argumenty przeciw
+          </Text>
           <ColText text={record.evidenceAgainst} />
         </ColPanel>
       );
@@ -280,10 +299,14 @@ function RightColumn({ page, record }: { page: number; record: RecordType }) {
     case 2:
       return (
         <ColPanel title="">
-          <Text style={styles.colTitleSuccess}>Argumenty za</Text>
+          <Text style={styles.colTitleSuccess} accessibilityRole="header">
+            Argumenty za
+          </Text>
           <ColText text={record.evidenceFor} />
           <View style={styles.subDivider} />
-          <Text style={styles.colTitleDanger}>Argumenty przeciw</Text>
+          <Text style={styles.colTitleDanger} accessibilityRole="header">
+            Argumenty przeciw
+          </Text>
           <ColText text={record.evidenceAgainst} />
         </ColPanel>
       );

@@ -11,6 +11,8 @@ import { insertSeedExperiment } from '../repository';
 import { LoadError } from '../../../core/components/LoadError';
 import { seedOnce } from '../../../core/db/seedOnce';
 import { pl } from '../i18n/pl';
+import { pl as corePl } from '../../../core/i18n/pl';
+
 import type { BehavioralExperiment } from '../types';
 
 function useStyles() {
@@ -120,6 +122,7 @@ export function ExperimentListScreen(): React.JSX.Element {
 
       return (
         <TouchableOpacity
+          accessibilityRole="button"
           style={styles.card}
           onPress={() => router.push(`/(tools)/behavioral-experiment/${item.id}`)}
           activeOpacity={0.8}
@@ -190,7 +193,9 @@ export function ExperimentListScreen(): React.JSX.Element {
         />
       )}
       <TouchableOpacity
+        accessibilityRole="button"
         style={styles.fab}
+        accessibilityLabel={corePl.a11y.newEntry}
         onPress={() => router.push('/(tools)/behavioral-experiment/new')}
         activeOpacity={0.85}
       >

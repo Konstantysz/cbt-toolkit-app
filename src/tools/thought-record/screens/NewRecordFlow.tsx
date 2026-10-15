@@ -25,6 +25,8 @@ import { EmotionWheelPicker } from '../../../core/components/EmotionWheelPicker'
 import { IntensitySlider } from '../../../core/components/IntensitySlider';
 import { StepHelper } from '../../../core/components/StepHelper';
 import { pl } from '../i18n/pl';
+import { pl as corePl } from '../../../core/i18n/pl';
+import { announce } from '../../../core/a11y';
 import * as repo from '../repository';
 import type { Emotion } from '../types';
 import { Ionicons } from '@expo/vector-icons';
@@ -155,7 +157,11 @@ function Step1Situation({
         minHeight={150}
       />
       <StepHelper hint={pl.helper.hints.step1} />
-      <TouchableOpacity style={stepStyles.dateRow} onPress={() => setShowPicker(true)}>
+      <TouchableOpacity
+        accessibilityRole="button"
+        style={stepStyles.dateRow}
+        onPress={() => setShowPicker(true)}
+      >
         <Text style={stepStyles.dateLabel}>{pl.step1.dateLabel}</Text>
         <Text style={stepStyles.dateValue}>{dateLabel}</Text>
       </TouchableOpacity>
@@ -189,7 +195,13 @@ function Step2Emotions({
     <View>
       <Text style={stepStyles.prompt}>{pl.step2.prompt}</Text>
       {error && (
-        <Text style={stepStyles.errorText}>Wybierz co najmniej jedną emocję, aby kontynuować.</Text>
+        <Text
+          style={stepStyles.errorText}
+          accessibilityRole="alert"
+          accessibilityLiveRegion="assertive"
+        >
+          {corePl.a11y.emotionsRequired}
+        </Text>
       )}
       <EmotionWheelPicker
         selected={state.emotions}
@@ -245,6 +257,7 @@ function Step7Outcome({
       <View style={{ marginTop: 16 }}>
         <Text style={stepStyles.fieldLabel}>Notatki końcowe (opcjonalne)</Text>
         <TextInput
+          accessibilityLabel="Notatki końcowe (opcjonalne)"
           style={[stepStyles.input, { minHeight: 90 }]}
           value={state.outcome}
           onChangeText={(v) => update('outcome', v)}
@@ -407,6 +420,7 @@ export function NewRecordFlow({ existingId }: NewRecordFlowProps): React.JSX.Ele
   async function goNext() {
     if (currentStep === 2 && state.emotions.length === 0) {
       setEmotionsError(true);
+      announce(corePl.a11y.emotionsRequired);
       scrollRef.current?.scrollTo({ y: 0, animated: true });
       return;
     }
@@ -487,7 +501,7 @@ export function NewRecordFlow({ existingId }: NewRecordFlowProps): React.JSX.Ele
         {renderStep(currentStep, state, update, emotionsError)}
       </ScrollView>
       <View style={styles.nav}>
-        <TouchableOpacity style={styles.btnGhost} onPress={goBack}>
+        <TouchableOpacity accessibilityRole="button" style={styles.btnGhost} onPress={goBack}>
           {currentStep === 1 ? (
             <Text style={styles.btnGhostText}>Anuluj</Text>
           ) : (
@@ -498,6 +512,7 @@ export function NewRecordFlow({ existingId }: NewRecordFlowProps): React.JSX.Ele
           )}
         </TouchableOpacity>
         <TouchableOpacity
+          accessibilityRole="button"
           style={[styles.btnPrimary, currentStep === TOTAL_STEPS && styles.btnSuccess]}
           onPress={goNext}
           disabled={saving}

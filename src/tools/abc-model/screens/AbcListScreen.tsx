@@ -12,6 +12,8 @@ import { insertSeedEntry } from '../repository';
 import { LoadError } from '../../../core/components/LoadError';
 import { seedOnce } from '../../../core/db/seedOnce';
 import { pl } from '../i18n/pl';
+import { pl as corePl } from '../../../core/i18n/pl';
+
 import type { AbcEntry } from '../types';
 
 function useStyles() {
@@ -120,6 +122,7 @@ export function AbcListScreen(): React.JSX.Element {
   const renderItem = useCallback(
     ({ item }: { item: AbcEntry }) => (
       <TouchableOpacity
+        accessibilityRole="button"
         style={styles.card}
         onPress={() => router.push(`/(tools)/abc-model/${item.id}`)}
         activeOpacity={0.8}
@@ -184,7 +187,9 @@ export function AbcListScreen(): React.JSX.Element {
         />
       )}
       <TouchableOpacity
+        accessibilityRole="button"
         style={styles.fab}
+        accessibilityLabel={corePl.a11y.newEntry}
         onPress={() => router.push('/(tools)/abc-model/new')}
         activeOpacity={0.85}
       >

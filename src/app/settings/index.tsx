@@ -274,12 +274,16 @@ export default function SettingsScreen() {
   return (
     <ScrollView style={s.container} contentContainerStyle={{ paddingBottom: 40 }}>
       <View style={s.header}>
-        <Text style={s.headerTitle}>{pl.nav.settings}</Text>
+        <Text style={s.headerTitle} accessibilityRole="header">
+          {pl.nav.settings}
+        </Text>
       </View>
 
       {/* Powiadomienia */}
       <View style={s.sectionHeader}>
-        <Text style={s.sectionTitle}>{pl.settings.notifications.title}</Text>
+        <Text style={s.sectionTitle} accessibilityRole="header">
+          {pl.settings.notifications.title}
+        </Text>
       </View>
       <View style={s.card}>
         <View style={s.row}>
@@ -288,6 +292,7 @@ export default function SettingsScreen() {
             <Text style={s.rowSubText}>{pl.settings.notifications.reminderSub}</Text>
           </View>
           <Switch
+            accessibilityLabel={pl.settings.notifications.reminder}
             value={reminderEnabled}
             onValueChange={handleToggleReminder}
             trackColor={{ false: colors.border, true: colors.accent }}
@@ -296,6 +301,7 @@ export default function SettingsScreen() {
         </View>
         {reminderEnabled && (
           <TouchableOpacity
+            accessibilityRole="button"
             style={[s.row, s.rowBorder]}
             onPress={() => {
               setTempTime(reminderTime);
@@ -306,14 +312,18 @@ export default function SettingsScreen() {
               <Text style={s.rowLabelText}>{pl.settings.notifications.time}</Text>
             </View>
             <Text style={s.rowValue}>{reminderTime}</Text>
-            <Text style={s.chevron}>›</Text>
+            <Text style={s.chevron} importantForAccessibility="no" accessibilityElementsHidden>
+              ›
+            </Text>
           </TouchableOpacity>
         )}
       </View>
 
       {/* Wygląd */}
       <View style={s.sectionHeader}>
-        <Text style={s.sectionTitle}>{pl.settings.appearance.title}</Text>
+        <Text style={s.sectionTitle} accessibilityRole="header">
+          {pl.settings.appearance.title}
+        </Text>
       </View>
       <View style={s.card}>
         <View style={s.row}>
@@ -322,6 +332,7 @@ export default function SettingsScreen() {
             <Text style={s.rowSubText}>{pl.settings.appearance.darkModeSub}</Text>
           </View>
           <Switch
+            accessibilityLabel={pl.settings.appearance.darkMode}
             value={darkMode}
             onValueChange={setDarkMode}
             trackColor={{ false: colors.border, true: colors.accent }}
@@ -341,6 +352,9 @@ export default function SettingsScreen() {
               key={id}
               style={[s.paletteRow, s.rowBorder]}
               onPress={() => setPalette(id)}
+              accessibilityRole="radio"
+              accessibilityLabel={pl.settings.appearance.palettes[id]}
+              accessibilityState={{ selected: isSelected }}
             >
               <View style={[s.paletteSwatchOuter, { backgroundColor: p.dark.surface }]}>
                 <View style={[s.paletteSwatchInner, { backgroundColor: p.dark.accent }]} />
@@ -360,7 +374,9 @@ export default function SettingsScreen() {
 
       {/* Dostępność */}
       <View style={s.sectionHeader}>
-        <Text style={s.sectionTitle}>{pl.settings.accessibility.title}</Text>
+        <Text style={s.sectionTitle} accessibilityRole="header">
+          {pl.settings.accessibility.title}
+        </Text>
       </View>
       <View style={s.card}>
         <View style={s.row}>
@@ -373,6 +389,9 @@ export default function SettingsScreen() {
                 key={key}
                 style={[s.fontOption, fontSize === key && s.fontOptionActive]}
                 onPress={() => setFontSize(key)}
+                accessibilityRole="radio"
+                accessibilityLabel={`${pl.settings.accessibility.fontSize}: ${pl.a11y.fontSize[key]}`}
+                accessibilityState={{ selected: fontSize === key }}
               >
                 <Text
                   style={[
@@ -393,6 +412,7 @@ export default function SettingsScreen() {
             <Text style={s.rowSubText}>{pl.settings.accessibility.reducedMotionSub}</Text>
           </View>
           <Switch
+            accessibilityLabel={pl.settings.accessibility.reducedMotion}
             value={reducedMotion}
             onValueChange={setReducedMotion}
             trackColor={{ false: colors.border, true: colors.accent }}
@@ -405,6 +425,7 @@ export default function SettingsScreen() {
             <Text style={s.rowSubText}>{pl.settings.accessibility.highContrastSub}</Text>
           </View>
           <Switch
+            accessibilityLabel={pl.settings.accessibility.highContrast}
             value={highContrast}
             onValueChange={setHighContrast}
             trackColor={{ false: colors.border, true: colors.accent }}
@@ -415,7 +436,9 @@ export default function SettingsScreen() {
 
       {/* Prywatność */}
       <View style={s.sectionHeader}>
-        <Text style={s.sectionTitle}>{pl.settings.privacy.title}</Text>
+        <Text style={s.sectionTitle} accessibilityRole="header">
+          {pl.settings.privacy.title}
+        </Text>
       </View>
       <View style={s.card}>
         <View style={s.row}>
@@ -423,6 +446,7 @@ export default function SettingsScreen() {
             <Text style={s.rowLabelText}>{pl.settings.privacy.pinEnabled}</Text>
           </View>
           <Switch
+            accessibilityLabel={pl.settings.privacy.pinEnabled}
             value={pinEnabled}
             onValueChange={handlePinToggle}
             disabled={authPhase === 'setup'}
@@ -432,13 +456,16 @@ export default function SettingsScreen() {
         </View>
         {pinEnabled && (
           <TouchableOpacity
+            accessibilityRole="button"
             style={[s.row, s.rowBorder]}
             onPress={() => useAuthStore.getState().requestVerify('change-pin')}
           >
             <View style={s.rowLabel}>
               <Text style={s.rowLabelText}>{pl.settings.privacy.changePin}</Text>
             </View>
-            <Text style={s.chevron}>›</Text>
+            <Text style={s.chevron} importantForAccessibility="no" accessibilityElementsHidden>
+              ›
+            </Text>
           </TouchableOpacity>
         )}
         {pinEnabled && (
@@ -460,24 +487,42 @@ export default function SettingsScreen() {
 
       {/* Dane */}
       <View style={s.sectionHeader}>
-        <Text style={s.sectionTitle}>{pl.settings.data.title}</Text>
+        <Text style={s.sectionTitle} accessibilityRole="header">
+          {pl.settings.data.title}
+        </Text>
       </View>
       <View style={s.card}>
-        <TouchableOpacity style={s.row} onPress={() => exportGuard.guard(runExport)}>
+        <TouchableOpacity
+          accessibilityRole="button"
+          style={s.row}
+          onPress={() => exportGuard.guard(runExport)}
+        >
           <View style={s.rowLabel}>
             <Text style={s.rowLabelText}>{pl.settings.data.export}</Text>
             <Text style={s.rowSubText}>{pl.settings.data.exportSub}</Text>
           </View>
-          <Text style={s.chevron}>›</Text>
+          <Text style={s.chevron} importantForAccessibility="no" accessibilityElementsHidden>
+            ›
+          </Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[s.row, s.rowBorder]} onPress={handleImport}>
+        <TouchableOpacity
+          accessibilityRole="button"
+          style={[s.row, s.rowBorder]}
+          onPress={handleImport}
+        >
           <View style={s.rowLabel}>
             <Text style={s.rowLabelText}>{pl.settings.data.import}</Text>
             <Text style={s.rowSubText}>{pl.settings.data.importSub}</Text>
           </View>
-          <Text style={s.chevron}>›</Text>
+          <Text style={s.chevron} importantForAccessibility="no" accessibilityElementsHidden>
+            ›
+          </Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[s.row, s.rowBorder]} onPress={handleDeleteAll}>
+        <TouchableOpacity
+          accessibilityRole="button"
+          style={[s.row, s.rowBorder]}
+          onPress={handleDeleteAll}
+        >
           <View style={s.rowLabel}>
             <Text style={s.dangerText}>{pl.settings.data.deleteAll}</Text>
             <Text style={s.rowSubText}>{pl.settings.data.deleteAllSub}</Text>
@@ -487,17 +532,26 @@ export default function SettingsScreen() {
 
       {/* Zasoby pomocowe */}
       <View style={s.sectionHeader}>
-        <Text style={s.sectionTitle}>{pl.settings.resources.title}</Text>
+        <Text style={s.sectionTitle} accessibilityRole="header">
+          {pl.settings.resources.title}
+        </Text>
       </View>
       <View style={s.card}>
-        <TouchableOpacity style={s.row} onPress={() => Linking.openURL('tel:116123')}>
+        <TouchableOpacity
+          accessibilityRole="button"
+          style={s.row}
+          onPress={() => Linking.openURL('tel:116123')}
+        >
           <View style={s.rowLabel}>
             <Text style={s.rowLabelText}>{pl.settings.resources.adults}</Text>
             <Text style={s.rowSubText}>116 123</Text>
           </View>
-          <Text style={s.chevron}>›</Text>
+          <Text style={s.chevron} importantForAccessibility="no" accessibilityElementsHidden>
+            ›
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
+          accessibilityRole="button"
           style={[s.row, s.rowBorder]}
           onPress={() => Linking.openURL('tel:116111')}
         >
@@ -505,9 +559,12 @@ export default function SettingsScreen() {
             <Text style={s.rowLabelText}>{pl.settings.resources.children}</Text>
             <Text style={s.rowSubText}>116 111</Text>
           </View>
-          <Text style={s.chevron}>›</Text>
+          <Text style={s.chevron} importantForAccessibility="no" accessibilityElementsHidden>
+            ›
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
+          accessibilityRole="button"
           style={[s.row, s.rowBorder]}
           onPress={() => Linking.openURL('https://centrumwsparcia.pl')}
         >
@@ -515,13 +572,17 @@ export default function SettingsScreen() {
             <Text style={s.rowLabelText}>{pl.settings.resources.centrum}</Text>
             <Text style={s.rowSubText}>centrumwsparcia.pl</Text>
           </View>
-          <Text style={s.chevron}>›</Text>
+          <Text style={s.chevron} importantForAccessibility="no" accessibilityElementsHidden>
+            ›
+          </Text>
         </TouchableOpacity>
       </View>
 
       {/* O aplikacji */}
       <View style={s.sectionHeader}>
-        <Text style={s.sectionTitle}>{pl.settings.about.title}</Text>
+        <Text style={s.sectionTitle} accessibilityRole="header">
+          {pl.settings.about.title}
+        </Text>
       </View>
       <View style={s.card}>
         <View style={s.appBlock}>
@@ -529,24 +590,31 @@ export default function SettingsScreen() {
           <Text style={s.appVersion}>v{Constants.expoConfig?.version ?? '—'}</Text>
         </View>
         <TouchableOpacity
+          accessibilityRole="button"
           style={[s.row, s.rowBorder]}
           onPress={() => router.push('/settings/credits')}
         >
           <View style={s.rowLabel}>
             <Text style={s.rowLabelText}>{pl.settings.about.credits}</Text>
           </View>
-          <Text style={s.chevron}>›</Text>
+          <Text style={s.chevron} importantForAccessibility="no" accessibilityElementsHidden>
+            ›
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
+          accessibilityRole="button"
           style={[s.row, s.rowBorder]}
           onPress={() => router.push('/settings/bibliography')}
         >
           <View style={s.rowLabel}>
             <Text style={s.rowLabelText}>{pl.settings.about.bibliography}</Text>
           </View>
-          <Text style={s.chevron}>›</Text>
+          <Text style={s.chevron} importantForAccessibility="no" accessibilityElementsHidden>
+            ›
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
+          accessibilityRole="button"
           style={[s.row, s.rowBorder]}
           onPress={() => Linking.openURL(GITHUB_RELEASES)}
         >
@@ -554,16 +622,21 @@ export default function SettingsScreen() {
             <Text style={s.rowLabelText}>{pl.settings.about.changelog}</Text>
             <Text style={s.rowSubText}>{pl.settings.about.changelogSub}</Text>
           </View>
-          <Text style={s.chevron}>›</Text>
+          <Text style={s.chevron} importantForAccessibility="no" accessibilityElementsHidden>
+            ›
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
+          accessibilityRole="button"
           style={[s.row, s.rowBorder]}
           onPress={() => Linking.openURL(GITHUB_ISSUES)}
         >
           <View style={s.rowLabel}>
             <Text style={s.rowLabelText}>{pl.settings.about.report}</Text>
           </View>
-          <Text style={s.chevron}>›</Text>
+          <Text style={s.chevron} importantForAccessibility="no" accessibilityElementsHidden>
+            ›
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -587,6 +660,7 @@ export default function SettingsScreen() {
                 textColor={colors.text}
               />
               <TouchableOpacity
+                accessibilityRole="button"
                 style={{ alignItems: 'center', paddingVertical: spacing.sm }}
                 onPress={commitTimeChange}
               >

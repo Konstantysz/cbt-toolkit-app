@@ -1,6 +1,8 @@
 import React, { useMemo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useColors } from '../../theme/useColors';
+import { useAnnounce } from '../../a11y';
+import { pl } from '../../i18n/pl';
 
 const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', '⌫'] as const;
 const PIN_LENGTH = 4;
@@ -55,13 +57,26 @@ export function PinPad({ value, onChange, label, error }: PinPadProps) {
     }
   }
 
+  useAnnounce(error);
+
   const rows = [KEYS.slice(0, 3), KEYS.slice(3, 6), KEYS.slice(6, 9), KEYS.slice(9, 12)];
 
   return (
     <View style={s.container}>
-      <Text style={s.label}>{label}</Text>
-      {error ? <Text style={s.error}>{error}</Text> : null}
-      <View style={s.dots}>
+      <Text style={s.label} accessibilityRole="header">
+        {label}
+      </Text>
+      {error ? (
+        <Text style={s.error} accessibilityRole="alert" accessibilityLiveRegion="assertive">
+          {error}
+        </Text>
+      ) : null}
+      <View
+        style={s.dots}
+        accessible
+        accessibilityLabel={pl.a11y.pinProgress(value.length, PIN_LENGTH)}
+        accessibilityLiveRegion="polite"
+      >
         {Array.from({ length: PIN_LENGTH }).map((_, i) => (
           <View key={i} style={[s.dot, i < value.length && s.dotFilled]} />
         ))}
@@ -71,11 +86,13 @@ export function PinPad({ value, onChange, label, error }: PinPadProps) {
           <View key={ri} style={s.row}>
             {row.map((k, ki) => (
               <TouchableOpacity
+                accessibilityRole="button"
                 key={ki}
                 style={[s.key, k === '' && s.keyEmpty]}
                 onPress={() => handleKey(k)}
                 disabled={k === ''}
-                accessibilityLabel={k === '⌫' ? 'usuń' : k}
+                accessibilityLabel={k === '⌫' ? pl.a11y.pinDelete : k}
+                importantForAccessibility={k === '' ? 'no-hide-descendants' : 'auto'}
               >
                 {k !== '' && <Text style={s.keyText}>{k}</Text>}
               </TouchableOpacity>

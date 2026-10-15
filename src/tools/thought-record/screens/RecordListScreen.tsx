@@ -152,6 +152,7 @@ export function RecordListScreen(): React.JSX.Element {
       const emotionNames = item.emotions.map((e) => e.name);
       return (
         <TouchableOpacity
+          accessibilityRole="button"
           style={styles.card}
           onPress={() => router.push(`/(tools)/thought-record/${item.id}`)}
           activeOpacity={0.8}
@@ -233,6 +234,7 @@ export function RecordListScreen(): React.JSX.Element {
       )}
 
       <TouchableOpacity
+        accessibilityRole="button"
         style={styles.fab}
         onPress={() => router.push('/(tools)/thought-record/new')}
         activeOpacity={0.85}

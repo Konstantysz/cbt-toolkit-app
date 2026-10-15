@@ -94,11 +94,19 @@ export function PinLockScreen({ onUnlock }: PinLockScreenProps) {
       <View style={s.inner}>
         <PinPad value={pin} onChange={handlePinChange} label={pl.auth.lock.title} error={error} />
         {biometricsEnabled && (
-          <TouchableOpacity style={s.biometricsButton} onPress={handleBiometrics}>
+          <TouchableOpacity
+            accessibilityRole="button"
+            style={s.biometricsButton}
+            onPress={handleBiometrics}
+          >
             <Text style={s.biometricsText}>{pl.auth.lock.useBiometrics}</Text>
           </TouchableOpacity>
         )}
-        <TouchableOpacity style={s.forgotButton} onPress={handleForgotPin}>
+        <TouchableOpacity
+          accessibilityRole="button"
+          style={s.forgotButton}
+          onPress={handleForgotPin}
+        >
           <Text style={s.forgotText}>{pl.auth.lock.forgotPin}</Text>
         </TouchableOpacity>
       </View>

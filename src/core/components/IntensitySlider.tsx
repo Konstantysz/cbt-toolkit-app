@@ -2,12 +2,14 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { useColors } from '../theme/useColors';
+import { pl } from '../i18n/pl';
 import { spacing, radius, typography } from '../theme';
 
 interface Props {
   value: number; // 0-100
   onChange: (v: number) => void;
   label?: string;
+  a11yLabel?: string;
   readOnly?: boolean;
 }
 
@@ -43,7 +45,7 @@ function useStyles() {
   });
 }
 
-export function IntensitySlider({ value, onChange, label, readOnly }: Props) {
+export function IntensitySlider({ value, onChange, label, a11yLabel, readOnly }: Props) {
   const styles = useStyles();
   const colors = useColors();
   return (
@@ -54,6 +56,8 @@ export function IntensitySlider({ value, onChange, label, readOnly }: Props) {
       </View>
       <Slider
         testID="intensity-slider"
+        accessibilityLabel={a11yLabel || label || pl.a11y.intensity}
+        accessibilityValue={{ min: 0, max: 100, now: value, text: pl.a11y.intensityValue(value) }}
         style={styles.slider}
         minimumValue={0}
         maximumValue={100}
