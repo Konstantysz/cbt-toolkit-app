@@ -1,10 +1,11 @@
 import type { ToolDefinition } from '../../core/types/tool';
+import { pl } from './i18n/pl';
 import { migration001 } from './migrations/001-create-abc-entries';
 
 export const abcModelTool: ToolDefinition = {
   id: 'abc-model',
-  name: 'Model ABC',
-  description: 'Zrozum powiązania między sytuacją, myślami i konsekwencjami',
+  name: pl.toolName,
+  description: pl.toolDescription,
   icon: 'git-network-outline',
   routePrefix: '/abc-model',
   migrations: [migration001],

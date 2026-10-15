@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, TextInput, Text, StyleSheet } from 'react-native';
 import { useColors } from '../theme/useColors';
+import { pl } from '../i18n/pl';
 import { spacing, radius, typography } from '../theme';
 
 interface SearchBarProps {
@@ -43,7 +44,7 @@ function useStyles() {
 export function SearchBar({
   value,
   onChangeText,
-  placeholder = 'Szukaj...',
+  placeholder = pl.common.searchPlaceholder,
 }: SearchBarProps): React.JSX.Element {
   const styles = useStyles();
   const colors = useColors();

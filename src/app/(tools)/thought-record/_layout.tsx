@@ -3,6 +3,7 @@ import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { Stack, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { pl } from '../../../tools/thought-record/i18n/pl';
+import { pl as corePl } from '../../../core/i18n/pl';
 import { useColors } from '../../../core/theme/useColors';
 
 function BackToHome() {
@@ -22,7 +23,7 @@ function BackToHome() {
       onPress={() => router.replace('/')}
     >
       <Ionicons name="chevron-back" size={18} color={colors.accent} />
-      <Text style={styles.backLabel}>Narzędzia</Text>
+      <Text style={styles.backLabel}>{corePl.common.tools}</Text>
     </TouchableOpacity>
   );
 }
@@ -45,10 +46,10 @@ export default function ThoughtRecordLayout(): React.JSX.Element {
         name="index"
         options={{ title: pl.toolName, headerLeft: () => <BackToHome /> }}
       />
-      <Stack.Screen name="new" options={{ title: 'Nowy wpis' }} />
-      <Stack.Screen name="[id]/index" options={{ title: 'Szczegóły' }} />
-      <Stack.Screen name="[id]/compare" options={{ title: 'Porównanie' }} />
-      <Stack.Screen name="[id]/edit" options={{ title: 'Edytuj wpis' }} />
+      <Stack.Screen name="new" options={{ title: pl.nav.newTitle }} />
+      <Stack.Screen name="[id]/index" options={{ title: pl.nav.detailTitle }} />
+      <Stack.Screen name="[id]/compare" options={{ title: pl.nav.compareTitle }} />
+      <Stack.Screen name="[id]/edit" options={{ title: pl.nav.editTitle }} />
       <Stack.Screen name="[id]/form" options={{ title: pl.form.title }} />
     </Stack>
   );

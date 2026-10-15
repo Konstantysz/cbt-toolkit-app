@@ -114,7 +114,7 @@ export function CompareScreen({ id }: CompareScreenProps): React.JSX.Element {
   if (!record) {
     return (
       <View style={styles.centered}>
-        <Text style={styles.errorText}>Nie znaleziono wpisu.</Text>
+        <Text style={styles.errorText}>{pl.detail.notFound}</Text>
       </View>
     );
   }
@@ -203,7 +203,7 @@ function CompactEmotionBars({ emotions }: { emotions: Emotion[] }) {
           </Text>
           <View style={styles.compactBars}>
             <View style={styles.compactBarRow}>
-              <Text style={styles.compactBarLabel}>przed</Text>
+              <Text style={styles.compactBarLabel}>{pl.detail.before}</Text>
               <View style={styles.compactTrack}>
                 <View
                   style={[
@@ -219,7 +219,7 @@ function CompactEmotionBars({ emotions }: { emotions: Emotion[] }) {
             </View>
             {em.intensityAfter !== undefined && (
               <View style={styles.compactBarRow}>
-                <Text style={styles.compactBarLabel}>po</Text>
+                <Text style={styles.compactBarLabel}>{pl.detail.after}</Text>
                 <View style={styles.compactTrack}>
                   <View
                     style={[
@@ -246,19 +246,19 @@ function LeftColumn({ page, record }: { page: number; record: RecordType }) {
   switch (page) {
     case 0:
       return (
-        <ColPanel title="Sytuacja">
+        <ColPanel title={pl.step1.title}>
           <ColText text={record.situation} />
         </ColPanel>
       );
     case 1:
       return (
-        <ColPanel title="Emocje">
+        <ColPanel title={pl.step2.title}>
           <CompactEmotionBars emotions={record.emotions} />
         </ColPanel>
       );
     case 2:
       return (
-        <ColPanel title="Myśli automatyczne">
+        <ColPanel title={pl.step3.title}>
           <ColText text={record.automaticThoughts} />
         </ColPanel>
       );
@@ -266,12 +266,12 @@ function LeftColumn({ page, record }: { page: number; record: RecordType }) {
       return (
         <ColPanel title="">
           <Text style={styles.colTitleSuccess} accessibilityRole="header">
-            Argumenty za
+            {pl.step4.title}
           </Text>
           <ColText text={record.evidenceFor} />
           <View style={styles.subDivider} />
           <Text style={styles.colTitleDanger} accessibilityRole="header">
-            Argumenty przeciw
+            {pl.step5.title}
           </Text>
           <ColText text={record.evidenceAgainst} />
         </ColPanel>
@@ -286,13 +286,13 @@ function RightColumn({ page, record }: { page: number; record: RecordType }) {
   switch (page) {
     case 0:
       return (
-        <ColPanel title="Emocje">
+        <ColPanel title={pl.step2.title}>
           <CompactEmotionBars emotions={record.emotions} />
         </ColPanel>
       );
     case 1:
       return (
-        <ColPanel title="Myśli automatyczne">
+        <ColPanel title={pl.step3.title}>
           <ColText text={record.automaticThoughts} />
         </ColPanel>
       );
@@ -300,19 +300,19 @@ function RightColumn({ page, record }: { page: number; record: RecordType }) {
       return (
         <ColPanel title="">
           <Text style={styles.colTitleSuccess} accessibilityRole="header">
-            Argumenty za
+            {pl.step4.title}
           </Text>
           <ColText text={record.evidenceFor} />
           <View style={styles.subDivider} />
           <Text style={styles.colTitleDanger} accessibilityRole="header">
-            Argumenty przeciw
+            {pl.step5.title}
           </Text>
           <ColText text={record.evidenceAgainst} />
         </ColPanel>
       );
     case 3:
       return (
-        <ColPanel title="Myśl alternatywna">
+        <ColPanel title={pl.step6.title}>
           <ColText text={record.alternativeThought} />
         </ColPanel>
       );

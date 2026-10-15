@@ -82,7 +82,7 @@ export function PinLockScreen({ onUnlock }: PinLockScreenProps) {
             resetSettings();
             onUnlock();
           } catch {
-            Alert.alert('Błąd', 'Nie udało się zresetować aplikacji. Spróbuj ponownie.');
+            Alert.alert(pl.common.error, pl.auth.reset.error);
           }
         },
       },

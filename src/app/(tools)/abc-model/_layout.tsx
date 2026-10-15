@@ -4,6 +4,7 @@ import { Stack, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useColors } from '../../../core/theme/useColors';
 import { pl } from '../../../tools/abc-model/i18n/pl';
+import { pl as corePl } from '../../../core/i18n/pl';
 
 function BackToHome() {
   const colors = useColors();
@@ -22,7 +23,7 @@ function BackToHome() {
       onPress={() => router.replace('/')}
     >
       <Ionicons name="chevron-back" size={18} color={colors.accent} />
-      <Text style={styles.backLabel}>Narzędzia</Text>
+      <Text style={styles.backLabel}>{corePl.common.tools}</Text>
     </TouchableOpacity>
   );
 }
@@ -46,7 +47,7 @@ export default function AbcModelLayout(): React.JSX.Element {
         options={{ title: pl.toolName, headerLeft: () => <BackToHome /> }}
       />
       <Stack.Screen name="new" options={{ title: pl.flow.newTitle }} />
-      <Stack.Screen name="[id]/index" options={{ title: 'Szczegóły' }} />
+      <Stack.Screen name="[id]/index" options={{ title: pl.flow.detailTitle }} />
       <Stack.Screen name="[id]/edit" options={{ title: pl.flow.editTitle }} />
     </Stack>
   );

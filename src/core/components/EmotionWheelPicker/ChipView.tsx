@@ -107,9 +107,9 @@ export function ChipView({ nodes, selected, onChange }: Props) {
             style={styles.addButton}
             onPress={() => addEmotion(expandedRoot.label)}
             accessibilityRole="button"
-            accessibilityLabel={`Dodaj ${expandedRoot.label}`}
+            accessibilityLabel={pl.emotionPicker.add(expandedRoot.label)}
           >
-            <Text style={styles.addText}>Dodaj {expandedRoot.label}</Text>
+            <Text style={styles.addText}>{pl.emotionPicker.add(expandedRoot.label)}</Text>
           </TouchableOpacity>
 
           {/* Level 2 chips */}
@@ -143,9 +143,9 @@ export function ChipView({ nodes, selected, onChange }: Props) {
                 style={styles.addButton}
                 onPress={() => addEmotion(expandedL2Node.label)}
                 accessibilityRole="button"
-                accessibilityLabel={`Dodaj ${expandedL2Node.label}`}
+                accessibilityLabel={pl.emotionPicker.add(expandedL2Node.label)}
               >
-                <Text style={styles.addText}>Dodaj {expandedL2Node.label}</Text>
+                <Text style={styles.addText}>{pl.emotionPicker.add(expandedL2Node.label)}</Text>
               </TouchableOpacity>
 
               {/* Level 3 chips */}

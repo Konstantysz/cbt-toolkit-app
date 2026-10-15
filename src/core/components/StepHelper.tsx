@@ -55,8 +55,8 @@ function useStyles() {
 
 export function StepHelper({
   hint,
-  toggleLabel = 'Wskazówka',
-  exampleLabel = 'Przykład',
+  toggleLabel = pl.common.helperToggle,
+  exampleLabel = pl.common.helperExample,
 }: StepHelperProps): React.JSX.Element {
   const styles = useStyles();
   const [open, setOpen] = useState(false);

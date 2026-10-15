@@ -2,8 +2,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
-import { format, parseISO } from 'date-fns';
-import { pl as dateFnsPl } from 'date-fns/locale';
 import { useColors } from '../../../core/theme/useColors';
 import { SearchBar } from '../../../core/components/SearchBar';
 import { useBehavioralExperiments } from '../hooks/useBehavioralExperiments';
@@ -11,6 +9,8 @@ import { insertSeedExperiment } from '../repository';
 import { LoadError } from '../../../core/components/LoadError';
 import { seedOnce } from '../../../core/db/seedOnce';
 import { pl } from '../i18n/pl';
+import { formatDate } from '../../../core/i18n/date';
+import { matchesQuery } from '../../../core/i18n/search';
 import { pl as corePl } from '../../../core/i18n/pl';
 
 import type { BehavioralExperiment } from '../types';
@@ -108,11 +108,6 @@ export function ExperimentListScreen(): React.JSX.Element {
       .catch(() => {}); // seed failure is non-critical
   }, [loading, error, experiments.length, db, refresh]);
 
-  const formatDate = useCallback(
-    (iso: string) => format(parseISO(iso), 'd MMM yyyy', { locale: dateFnsPl }),
-    []
-  );
-
   const renderItem = useCallback(
     ({ item }: { item: BehavioralExperiment }) => {
       const confirmStr =
@@ -128,7 +123,7 @@ export function ExperimentListScreen(): React.JSX.Element {
           activeOpacity={0.8}
         >
           <View style={styles.cardTop}>
-            <Text style={styles.date}>{formatDate(item.createdAt)}</Text>
+            <Text style={styles.date}>{formatDate(item.createdAt, 'short')}</Text>
             {item.isExample ? (
               <View style={[styles.badge, styles.badgeExample]}>
                 <Text style={[styles.badgeText, styles.badgeExampleText]}>
@@ -154,13 +149,12 @@ export function ExperimentListScreen(): React.JSX.Element {
         </TouchableOpacity>
       );
     },
-    [formatDate, styles]
+    [styles]
   );
 
   const filtered = useMemo(() => {
     if (!query) return experiments;
-    const q = query.toLowerCase();
-    return experiments.filter((e) => e.belief.toLowerCase().includes(q));
+    return experiments.filter((e) => matchesQuery(e.belief, query));
   }, [experiments, query]);
 
   if (loading) return <View style={styles.container} />;

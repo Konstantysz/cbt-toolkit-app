@@ -1,5 +1,8 @@
+import type { ImportErrorCode } from '../data/import';
+import { plural } from './plural';
+
 export const pl = {
-  app: { title: 'Zestaw Narzędzi TPB' },
+  app: { name: 'CBT Toolkit', title: 'Zestaw Narzędzi TPB' },
   nav: { home: 'Narzędzia', settings: 'Ustawienia' },
   common: {
     newEntry: 'Nowy wpis',
@@ -14,10 +17,30 @@ export const pl = {
     search: 'Szukaj',
     noEntries: 'Brak wpisów',
     confirmDelete: 'Czy na pewno chcesz usunąć?',
+    error: 'Błąd',
+    tools: 'Narzędzia',
+    details: 'Szczegóły',
+    searchPlaceholder: 'Szukaj...',
+    helperToggle: 'Wskazówka',
+    helperExample: 'Przykład',
+    backWithChevron: '‹ Wstecz',
     loadError: 'Nie udało się wczytać danych.',
     retry: 'Spróbuj ponownie',
   },
+  home: {
+    subtitle: 'Narzędzia terapii poznawczo-behawioralnej',
+    sectionLabel: 'NARZĘDZIA',
+  },
+  emotionPicker: {
+    modeWheel: 'Koło',
+    modeList: 'Lista',
+    add: (label: string) => `Dodaj ${label}`,
+  },
   settings: {
+    links: {
+      releases: 'https://github.com/Konstantysz/cbt-toolkit-app/releases',
+      issues: 'https://github.com/Konstantysz/cbt-toolkit-app/issues',
+    },
     notifications: {
       title: 'Powiadomienia',
       reminder: 'Codzienny reminder',
@@ -60,7 +83,28 @@ export const pl = {
       deleteAllSub: 'Nieodwracalne — usuwa wszystkie wpisy',
       deleteConfirmTitle: 'Usuń wszystkie dane?',
       deleteConfirmMsg: 'Ta operacja jest nieodwracalna. Wszystkie twoje wpisy zostaną usunięte.',
+      deleteDoneTitle: 'Gotowe',
+      deleteDone: 'Wszystkie dane zostały usunięte.',
       importError: 'Nieprawidłowy plik. Sprawdź format i spróbuj ponownie.',
+      importErrorTitle: 'Błąd importu',
+      importDoneTitle: 'Importowano',
+      importResult: (imported: number, skipped: number) =>
+        `Dodano: ${imported} ${plural(imported, 'wpis', 'wpisy', 'wpisów')}, pominięto: ${skipped}`,
+      importErrors: {
+        invalidJson: 'Plik nie zawiera poprawnego JSON.',
+        notObject: 'Plik nie jest obiektem JSON.',
+        unknownVersion: 'Nieznana wersja pliku (oczekiwano 1).',
+        missingThoughtRecords: 'W pliku brakuje zapisów myśli.',
+        missingExperiments: 'W pliku brakuje eksperymentów behawioralnych.',
+        invalidAbcEntries: 'Nieprawidłowy format wpisów modelu ABC.',
+        tooManyRecords: 'Plik zawiera zbyt wiele wpisów (maksymalnie 5000).',
+        recordInvalidId: 'Zapis myśli bez poprawnego identyfikatora.',
+        recordMissingSituation: 'Zapis myśli bez opisu sytuacji.',
+        recordMissingCreatedAt: 'Zapis myśli bez daty utworzenia.',
+        experimentInvalidId: 'Eksperyment bez poprawnego identyfikatora.',
+        experimentMissingBelief: 'Eksperyment bez weryfikowanej myśli.',
+        experimentMissingCreatedAt: 'Eksperyment bez daty utworzenia.',
+      } satisfies Record<ImportErrorCode, string>,
       unencryptedTitle: 'Eksport bez szyfrowania',
       unencryptedMessage:
         'Eksportowany plik nie jest zaszyfrowany i zawiera wszystkie Twoje wpisy w postaci jawnej. Udostępnij go tylko osobie, której ufasz.',
@@ -74,6 +118,7 @@ export const pl = {
       adults: 'Telefon Zaufania dla Dorosłych',
       children: 'Telefon Zaufania dla Dzieci',
       centrum: 'Centrum Wsparcia',
+      centrumDomain: 'centrumwsparcia.pl',
     },
     about: {
       title: 'O aplikacji',
@@ -82,6 +127,21 @@ export const pl = {
       changelog: 'Historia zmian',
       changelogSub: 'Co nowego w tej wersji',
       report: 'Zgłoś problem',
+      version: (v: string) => `v${v}`,
+    },
+    credits: {
+      authors: 'Autorzy',
+      authorsBody:
+        'Aplikacja Zestaw Narzędzi TPB jest projektem open-source stworzonym z myślą o osobach korzystających z terapii poznawczo-behawioralnej. Kod źródłowy dostępny na GitHub.',
+      libraries: 'Biblioteki open-source',
+      packages: {
+        reactNative: 'Interfejs użytkownika',
+        expo: 'Platforma mobilna',
+        zustand: 'Zarządzanie stanem',
+        sqlite: 'Lokalna baza danych',
+        notifications: 'Powiadomienia lokalne',
+        datetimepicker: 'Picker czasu',
+      },
     },
     privacy: {
       title: 'Prywatność',
@@ -129,6 +189,7 @@ export const pl = {
       alertMessage:
         'Zresetowanie aplikacji usunie wszystkie Twoje wpisy. Tej operacji nie można cofnąć.',
       confirm: 'Tak, usuń dane',
+      error: 'Nie udało się zresetować aplikacji. Spróbuj ponownie.',
     },
   },
   // --- a11y: screen-reader names, hints and announcements ---

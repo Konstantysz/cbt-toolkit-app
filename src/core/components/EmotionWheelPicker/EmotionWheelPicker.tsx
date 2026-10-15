@@ -60,7 +60,9 @@ export function EmotionWheelPicker({ selected, onChange }: Props) {
             style={styles.toggleBtn}
             onPress={toggleMode}
             activeOpacity={0.7}
-            accessibilityLabel={mode === 'chips' ? 'Koło' : 'Lista'}
+            accessibilityLabel={
+              mode === 'chips' ? pl.emotionPicker.modeWheel : pl.emotionPicker.modeList
+            }
             accessibilityHint={mode === 'chips' ? pl.a11y.pickerToWheel : pl.a11y.pickerToList}
           >
             <Ionicons
@@ -68,7 +70,9 @@ export function EmotionWheelPicker({ selected, onChange }: Props) {
               size={14}
               color={colors.textMuted}
             />
-            <Text style={styles.toggleText}>{mode === 'chips' ? 'Koło' : 'Lista'}</Text>
+            <Text style={styles.toggleText}>
+              {mode === 'chips' ? pl.emotionPicker.modeWheel : pl.emotionPicker.modeList}
+            </Text>
           </TouchableOpacity>
         </View>
       )}

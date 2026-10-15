@@ -10,14 +10,14 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
-import { format, parseISO } from 'date-fns';
-import { pl as dateFnsPl } from 'date-fns/locale';
 import { useColors } from '../../../core/theme/useColors';
 import { iconRow } from '../../../core/theme';
 import { IntensitySlider } from '../../../core/components/IntensitySlider';
 import { useBehavioralExperiment } from '../hooks/useBehavioralExperiments';
 import { LoadError } from '../../../core/components/LoadError';
 import { pl } from '../i18n/pl';
+import { pl as corePl } from '../../../core/i18n/pl';
+import { formatDate } from '../../../core/i18n/date';
 import * as repo from '../repository';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -135,25 +135,21 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
   const styles = useStyles();
 
   const confirmDelete = useCallback(() => {
-    Alert.alert(
-      'Usuń eksperyment',
-      'Czy na pewno chcesz usunąć ten eksperyment? Tej operacji nie można cofnąć.',
-      [
-        { text: 'Anuluj', style: 'cancel' },
-        {
-          text: 'Usuń',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await repo.deleteExperiment(db, id);
-              router.back();
-            } catch {
-              Alert.alert('Błąd', 'Nie udało się usunąć eksperymentu. Spróbuj ponownie.');
-            }
-          },
+    Alert.alert(pl.detail.deleteConfirmTitle, pl.detail.deleteConfirmMsg, [
+      { text: corePl.common.cancel, style: 'cancel' },
+      {
+        text: corePl.common.delete,
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await repo.deleteExperiment(db, id);
+            router.back();
+          } catch {
+            Alert.alert(corePl.common.error, pl.detail.deleteError);
+          }
         },
-      ]
-    );
+      },
+    ]);
   }, [db, id]);
 
   if (loading)
@@ -166,7 +162,7 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
   if (!experiment)
     return (
       <View style={styles.centered}>
-        <Text style={styles.missing}>Nie znaleziono eksperymentu.</Text>
+        <Text style={styles.missing}>{pl.detail.notFound}</Text>
       </View>
     );
 
@@ -248,9 +244,7 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
           {experiment.executionDate && (
             <DetailRow
               label={pl.detail.executionDate}
-              value={format(parseISO(experiment.executionDate), 'd MMMM yyyy', {
-                locale: dateFnsPl,
-              })}
+              value={formatDate(experiment.executionDate, 'long')}
               styles={styles}
             />
           )}

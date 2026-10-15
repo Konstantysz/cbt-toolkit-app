@@ -29,14 +29,14 @@ import { applyReminder } from '../../core/notifications/schedule';
 import { exportData } from '../../core/data/export';
 import { clearExportFiles, reportExportError } from '../../core/data/exportFiles';
 import { useProtectedExport } from '../../core/data/useProtectedExport';
-import { importData } from '../../core/data/import';
+import { importData, ImportError } from '../../core/data/import';
 import * as ThoughtRecordRepo from '../../tools/thought-record/repository';
 import * as ExperimentRepo from '../../tools/behavioral-experiment/repository';
 import { pl } from '../../core/i18n/pl';
 import { spacing, radius, PALETTES, type PaletteId } from '../../core/theme';
 
-const GITHUB_RELEASES = 'https://github.com/your-org/cbt-toolkit/releases';
-const GITHUB_ISSUES = 'https://github.com/your-org/cbt-toolkit/issues';
+const GITHUB_RELEASES = pl.settings.links.releases;
+const GITHUB_ISSUES = pl.settings.links.issues;
 
 export default function SettingsScreen() {
   const db = useSQLiteContext();
@@ -155,10 +155,16 @@ export default function SettingsScreen() {
       const result = await DocumentPicker.getDocumentAsync({ type: 'application/json' });
       if (result.canceled || !result.assets?.[0]) return;
       const { imported, skipped } = await importData(db, result.assets[0].uri);
-      Alert.alert('Importowano', `Dodano: ${imported}, pominięto: ${skipped}`);
+      Alert.alert(
+        pl.settings.data.importDoneTitle,
+        pl.settings.data.importResult(imported, skipped)
+      );
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : pl.settings.data.importError;
-      Alert.alert('Błąd importu', msg);
+      const msg =
+        e instanceof ImportError
+          ? pl.settings.data.importErrors[e.code]
+          : pl.settings.data.importError;
+      Alert.alert(pl.settings.data.importErrorTitle, msg);
     }
   }
 
@@ -181,7 +187,7 @@ export default function SettingsScreen() {
           await ThoughtRecordRepo.deleteAll(db);
           await ExperimentRepo.deleteAll(db);
           await clearExportFiles();
-          Alert.alert('Gotowe', 'Wszystkie dane zostały usunięte.');
+          Alert.alert(pl.settings.data.deleteDoneTitle, pl.settings.data.deleteDone);
         },
       },
     ]);
@@ -570,7 +576,7 @@ export default function SettingsScreen() {
         >
           <View style={s.rowLabel}>
             <Text style={s.rowLabelText}>{pl.settings.resources.centrum}</Text>
-            <Text style={s.rowSubText}>centrumwsparcia.pl</Text>
+            <Text style={s.rowSubText}>{pl.settings.resources.centrumDomain}</Text>
           </View>
           <Text style={s.chevron} importantForAccessibility="no" accessibilityElementsHidden>
             ›
@@ -587,7 +593,9 @@ export default function SettingsScreen() {
       <View style={s.card}>
         <View style={s.appBlock}>
           <Text style={s.appName}>{pl.app.title}</Text>
-          <Text style={s.appVersion}>v{Constants.expoConfig?.version ?? '—'}</Text>
+          <Text style={s.appVersion}>
+            {pl.settings.about.version(Constants.expoConfig?.version ?? '—')}
+          </Text>
         </View>
         <TouchableOpacity
           accessibilityRole="button"
