@@ -1,15 +1,15 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
-import { CompareScreen } from '../../../src/tools/thought-record/screens/CompareScreen';
-import type { ThoughtRecord } from '../../../src/tools/thought-record/types';
+import { CompareScreen } from '../screens/CompareScreen';
+import type { ThoughtRecord } from '../types';
 
-jest.mock('../../../src/tools/thought-record/hooks/useThoughtRecords', () => ({
+jest.mock('../hooks/useThoughtRecords', () => ({
   useThoughtRecord: jest.fn(),
 }));
 jest.mock('expo-sqlite', () => ({ useSQLiteContext: jest.fn(() => ({})) }));
 jest.mock('expo-router', () => ({ router: { back: jest.fn() } }));
 
-import { useThoughtRecord } from '../../../src/tools/thought-record/hooks/useThoughtRecords';
+import { useThoughtRecord } from '../hooks/useThoughtRecords';
 const mockHook = useThoughtRecord as jest.Mock;
 
 const record: ThoughtRecord = {

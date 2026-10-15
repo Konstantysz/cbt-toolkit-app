@@ -1,17 +1,19 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react-native';
-import { NewRecordFlow } from '../../../src/tools/thought-record/screens/NewRecordFlow';
+import { NewRecordFlow } from '../screens/NewRecordFlow';
 
 jest.mock('expo-sqlite', () => ({ useSQLiteContext: jest.fn(() => ({})) }));
-jest.mock('expo-router', () => ({ router: { back: jest.fn(), push: jest.fn(), replace: jest.fn() } }));
-jest.mock('../../../src/tools/thought-record/repository', () => ({
+jest.mock('expo-router', () => ({
+  router: { back: jest.fn(), push: jest.fn(), replace: jest.fn() },
+}));
+jest.mock('../repository', () => ({
   createRecord: jest.fn(),
   getRecordById: jest.fn(),
   updateRecord: jest.fn(),
   deleteRecord: jest.fn(),
 }));
 
-import * as repo from '../../../src/tools/thought-record/repository';
+import * as repo from '../repository';
 
 const mockGetRecordById = repo.getRecordById as jest.Mock;
 const mockCreateRecord = repo.createRecord as jest.Mock;
@@ -39,7 +41,9 @@ describe('NewRecordFlow — edit mode', () => {
 
   it('does NOT call createRecord when existingId is provided', async () => {
     render(<NewRecordFlow existingId="existing-id" />);
-    await waitFor(() => expect(mockGetRecordById).toHaveBeenCalledWith(expect.anything(), 'existing-id'));
+    await waitFor(() =>
+      expect(mockGetRecordById).toHaveBeenCalledWith(expect.anything(), 'existing-id')
+    );
     expect(mockCreateRecord).not.toHaveBeenCalled();
   });
 

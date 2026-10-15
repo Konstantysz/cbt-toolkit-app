@@ -1,10 +1,10 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
-import { RecordDetailScreen } from '../../../src/tools/thought-record/screens/RecordDetailScreen';
-import type { ThoughtRecord } from '../../../src/tools/thought-record/types';
+import { RecordDetailScreen } from '../screens/RecordDetailScreen';
+import type { ThoughtRecord } from '../types';
 
 // Mock the hook so we don't need a real SQLite database
-jest.mock('../../../src/tools/thought-record/hooks/useThoughtRecords', () => ({
+jest.mock('../hooks/useThoughtRecords', () => ({
   useThoughtRecord: jest.fn(),
 }));
 
@@ -18,7 +18,7 @@ jest.mock('expo-router', () => ({
   router: { back: jest.fn() },
 }));
 
-import { useThoughtRecord } from '../../../src/tools/thought-record/hooks/useThoughtRecords';
+import { useThoughtRecord } from '../hooks/useThoughtRecords';
 const mockUseThoughtRecord = useThoughtRecord as jest.Mock;
 
 const baseRecord: ThoughtRecord = {

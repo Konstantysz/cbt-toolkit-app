@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
-import { StepHelper } from '../../../src/core/components/StepHelper';
+import { StepHelper } from '../StepHelper';
 
 describe('StepHelper', () => {
   const hint = 'np. Przykładowy tekst wskazówki';
