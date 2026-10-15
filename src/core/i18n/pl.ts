@@ -23,6 +23,12 @@ export const pl = {
       time: 'Godzina przypomnienia',
       permissionDenied: 'Brak uprawnień do powiadomień.',
       permissionDeniedBtn: 'Otwórz ustawienia',
+      scheduleError: 'Nie udało się ustawić przypomnienia. Spróbuj ponownie.',
+      channelName: 'Codzienny reminder',
+      content: {
+        title: 'Czas na refleksję',
+        body: 'Zapisz swoje myśli i emocje',
+      },
     },
     accessibility: {
       title: 'Dostępność',
