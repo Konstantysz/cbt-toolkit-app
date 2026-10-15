@@ -23,6 +23,7 @@ import { useSettings } from '../../core/settings/store';
 import { useAuthStore } from '../../core/auth/store';
 import { useColors } from '../../core/theme/useColors';
 import { scaledFont } from '../../core/settings/fontScale';
+import { PICKER_LOCALE_PROPS } from '../../core/utils/date';
 import { requestPermissions } from '../../core/notifications/permissions';
 import { applyReminder } from '../../core/notifications/schedule';
 import { exportData } from '../../core/data/export';
@@ -558,6 +559,7 @@ export default function SettingsScreen() {
                 value={tempDate}
                 mode="time"
                 display="spinner"
+                {...PICKER_LOCALE_PROPS}
                 onChange={handlePickerChange}
                 textColor={colors.text}
               />
@@ -578,6 +580,7 @@ export default function SettingsScreen() {
             value={reminderDate}
             mode="time"
             display="default"
+            {...PICKER_LOCALE_PROPS}
             onChange={handlePickerChange}
           />
         )

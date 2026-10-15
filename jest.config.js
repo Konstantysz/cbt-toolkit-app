@@ -13,6 +13,7 @@ module.exports = {
     '^expo-crypto$': '<rootDir>/__mocks__/expo-crypto.js',
     '^expo-local-authentication$': '<rootDir>/__mocks__/expo-local-authentication.js',
   },
+  globalSetup: '<rootDir>/jest.global-setup.js',
   testMatch: ['**/__tests__/**/*.test.[jt]s?(x)'],
   testPathIgnorePatterns: ['/node_modules/', '<rootDir>/.worktrees/', '<rootDir>/.claude/'],
   modulePathIgnorePatterns: ['<rootDir>/.worktrees/', '<rootDir>/.claude/'],
