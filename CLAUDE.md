@@ -34,7 +34,7 @@ Modular plugin system — see brain's Engineering/Architecture.md
 
 ## Git conventions
 - Commit messages: **single line only**, no body, no blank lines, **no trailers** (no `Co-Authored-By` etc.); this overrides default attribution. Enforced by `.husky/commit-msg`.
-- Format: `type: short description` (e.g. `feat: add login screen`)
+- Format: `type: short description` (e.g. `feat: add login screen`); types: feat fix docs style refactor perf test build ci chore release revert. Merging develop into a branch is `chore: merge develop into <branch>`.
 - Squash merges use the PR title only (repo setting), so PR titles follow the same format
 
 ## Git workflow
@@ -48,6 +48,9 @@ Defined in `.claude/commands/`. Each checks the brain directory exists and confi
 - `/spec <id>` — create or update a tool specification
 - `/adr <title>` — create an Architecture Decision Record
 - `/copy` — compare in-repo Polish strings with the brain's Copy.md mirror
+- `/sync-develop <branch>` — merge `origin/develop` into a branch, resolve conflicts, verify, push (no brain needed)
+
+Before pushing, run `npm run check` (typecheck, lint, format, tests, import cycles: what CI runs).
 
 ## Agent skills
 
@@ -65,3 +68,5 @@ Single-context: one `GLOSSARY.md` + `docs/adr/` at the repo root. See `docs/agen
 
 ## Worktrees
 A fresh worktree has no `node_modules` and no git hooks. Run `npm ci` first; its `prepare` step installs the husky hooks.
+- `git checkout` failing with "already used by worktree" means a stale entry: run `git worktree prune`.
+- `GLOSSARY.md` and `docs/adr` are committed symlinks. Windows without Developer Mode cannot create them and shows them as type-changed (`T`): run `git config --local core.symlinks false`, never `git checkout --` them.
