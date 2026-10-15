@@ -10,14 +10,14 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
-import { format, parseISO } from 'date-fns';
-import { pl as dateFnsPl } from 'date-fns/locale';
 import { useColors } from '../../../core/theme/useColors';
 import { iconRow } from '../../../core/theme';
 import { AbcGraph } from '../components/AbcGraph';
 import { useAbcEntry } from '../hooks/useAbcEntries';
 import * as repo from '../repository';
 import { pl } from '../i18n/pl';
+import { pl as corePl } from '../../../core/i18n/pl';
+import { formatDate } from '../../../core/i18n/date';
 import { Ionicons } from '@expo/vector-icons';
 
 interface Props {
@@ -116,7 +116,7 @@ export function AbcDetailScreen({ id }: Props): React.JSX.Element {
             await repo.deleteEntry(db, id);
             router.back();
           } catch {
-            Alert.alert('Błąd', pl.detail.deleteError);
+            Alert.alert(corePl.common.error, pl.detail.deleteError);
           }
         },
       },
@@ -139,9 +139,7 @@ export function AbcDetailScreen({ id }: Props): React.JSX.Element {
     );
   }
 
-  const formattedDate = format(parseISO(entry.createdAt), 'd MMMM yyyy · HH:mm', {
-    locale: dateFnsPl,
-  });
+  const formattedDate = formatDate(entry.createdAt, 'longTime');
 
   const textSections = [
     { label: pl.detail.sectionA, text: entry.situation },
@@ -201,7 +199,7 @@ export function AbcDetailScreen({ id }: Props): React.JSX.Element {
           style={styles.editBtn}
           onPress={() => router.push(`/(tools)/abc-model/${id}/edit`)}
           activeOpacity={0.8}
-          accessibilityLabel="Edytuj wpis"
+          accessibilityLabel={pl.detail.editA11y}
         >
           <View style={iconRow}>
             <Ionicons

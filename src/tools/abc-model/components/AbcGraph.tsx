@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Svg, Path, Line, Rect, Text as SvgText } from 'react-native-svg';
 import { useColors } from '../../../core/theme/useColors';
+import { pl } from '../i18n/pl';
 
 export interface AbcGraphProps {
   situation: string;
@@ -153,7 +154,7 @@ export function AbcGraph({
           fontWeight="700"
           letterSpacing="0.8"
         >
-          SYTUACJA
+          {pl.graph.nodeA}
         </SvgText>
         <SvgText x={A.x} y={A.y + 8} textAnchor="middle" fontSize="8.5" fill="#8a7a6a">
           {truncateNodeText(situation)}
@@ -170,7 +171,7 @@ export function AbcGraph({
           fontWeight="700"
           letterSpacing="0.8"
         >
-          MYŚLI
+          {pl.graph.nodeB}
         </SvgText>
         <SvgText x={B.x} y={B.y + 8} textAnchor="middle" fontSize="8.5" fill="#6a8a6a">
           {truncateNodeText(thoughts)}
@@ -187,7 +188,7 @@ export function AbcGraph({
           fontWeight="700"
           letterSpacing="0.8"
         >
-          ZACHOWANIE
+          {pl.graph.nodeC1}
         </SvgText>
         <SvgText x={C1.x} y={C1.y + 8} textAnchor="middle" fontSize="8" fill="#7a6a8a">
           {truncateNodeText(behaviors)}
@@ -204,7 +205,7 @@ export function AbcGraph({
           fontWeight="700"
           letterSpacing="0.8"
         >
-          EMOCJE
+          {pl.graph.nodeC2}
         </SvgText>
         <SvgText x={C2.x} y={C2.y + 8} textAnchor="middle" fontSize="8.5" fill="#8a6a7a">
           {truncateNodeText(emotions)}
@@ -221,7 +222,7 @@ export function AbcGraph({
           fontWeight="700"
           letterSpacing="0.8"
         >
-          OBJAWY FIZJOLOGICZNE
+          {pl.graph.nodeC3}
         </SvgText>
         <SvgText x={C3.x} y={C3.y + 8} textAnchor="middle" fontSize="8" fill="#8a6a7a">
           {truncateNodeText(physicalSymptoms)}

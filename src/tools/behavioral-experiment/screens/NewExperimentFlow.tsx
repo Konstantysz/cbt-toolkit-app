@@ -13,13 +13,13 @@ import {
 import { router } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { format, parseISO } from 'date-fns';
-import { pl as dateFnsPl } from 'date-fns/locale';
+import { parseISO } from 'date-fns';
 import { useColors } from '../../../core/theme/useColors';
 import { StepProgress } from '../../../core/components/StepProgress';
 import { StepHelper } from '../../../core/components/StepHelper';
 import { IntensitySlider } from '../../../core/components/IntensitySlider';
 import { pl } from '../i18n/pl';
+import { formatDate } from '../../../core/i18n/date';
 import * as repo from '../repository';
 
 interface Props {
@@ -421,9 +421,7 @@ function renderResultStep(
           onPress={() => update('showDatePicker', true)}
           activeOpacity={0.8}
         >
-          <Text style={styles.datePickerText}>
-            {format(dateObj, 'd MMMM yyyy', { locale: dateFnsPl })}
-          </Text>
+          <Text style={styles.datePickerText}>{formatDate(dateObj, 'long')}</Text>
         </TouchableOpacity>
         {state.showDatePicker && (
           <DateTimePicker

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useColors } from '../../theme/useColors';
 import { spacing } from '../../theme';
+import { pl } from '../../i18n/pl';
 import type { EmotionNode } from '../../data/feelingsWheel';
 import type { Emotion } from '../../types';
 
@@ -89,7 +90,7 @@ export function ChipView({ nodes, selected, onChange }: Props) {
               activeOpacity={0.7}
               accessibilityRole="button"
               accessibilityLabel={root.label}
-              accessibilityHint="Rozwiń kategorię emocji"
+              accessibilityHint={pl.emotionPicker.expandCategory}
             >
               <Text style={[styles.chipText, isActive && styles.chipTextActive]}>{root.label}</Text>
             </TouchableOpacity>
@@ -105,9 +106,9 @@ export function ChipView({ nodes, selected, onChange }: Props) {
             style={styles.addButton}
             onPress={() => addEmotion(expandedRoot.label)}
             accessibilityRole="button"
-            accessibilityLabel={`Dodaj ${expandedRoot.label}`}
+            accessibilityLabel={pl.emotionPicker.add(expandedRoot.label)}
           >
-            <Text style={styles.addText}>Dodaj {expandedRoot.label}</Text>
+            <Text style={styles.addText}>{pl.emotionPicker.add(expandedRoot.label)}</Text>
           </TouchableOpacity>
 
           {/* Level 2 chips */}
@@ -122,7 +123,7 @@ export function ChipView({ nodes, selected, onChange }: Props) {
                   activeOpacity={0.7}
                   accessibilityRole="button"
                   accessibilityLabel={l2.label}
-                  accessibilityHint="Rozwiń podkategorię emocji"
+                  accessibilityHint={pl.emotionPicker.expandSubcategory}
                 >
                   <Text style={[styles.chipText, isActive && styles.chipTextActive]}>
                     {l2.label}
@@ -140,9 +141,9 @@ export function ChipView({ nodes, selected, onChange }: Props) {
                 style={styles.addButton}
                 onPress={() => addEmotion(expandedL2Node.label)}
                 accessibilityRole="button"
-                accessibilityLabel={`Dodaj ${expandedL2Node.label}`}
+                accessibilityLabel={pl.emotionPicker.add(expandedL2Node.label)}
               >
-                <Text style={styles.addText}>Dodaj {expandedL2Node.label}</Text>
+                <Text style={styles.addText}>{pl.emotionPicker.add(expandedL2Node.label)}</Text>
               </TouchableOpacity>
 
               {/* Level 3 chips */}

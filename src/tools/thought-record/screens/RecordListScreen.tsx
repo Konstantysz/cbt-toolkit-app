@@ -3,10 +3,10 @@ import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router, useFocusEffect } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
-import { format, parseISO } from 'date-fns';
-import { pl as dateFnsPl } from 'date-fns/locale';
 import { useColors } from '../../../core/theme/useColors';
 import { SearchBar } from '../../../core/components/SearchBar';
+import { formatDate } from '../../../core/i18n/date';
+import { matchesQuery } from '../../../core/i18n/search';
 import { useThoughtRecords } from '../hooks/useThoughtRecords';
 import { insertSeedRecord } from '../repository';
 import { pl } from '../i18n/pl';
@@ -138,21 +138,13 @@ export function RecordListScreen(): React.JSX.Element {
     })();
   }, [records.length, db, refresh]);
 
-  // Search filter — OR logic, case-insensitive
+  // Search filter — OR logic, case- and diacritic-insensitive
   const filtered = useMemo(() => {
     if (!query) return records;
-    const q = query.toLowerCase();
     return records.filter(
-      (r) =>
-        r.situation.toLowerCase().includes(q) ||
-        r.emotions.some((e) => e.name.toLowerCase().includes(q))
+      (r) => matchesQuery(r.situation, query) || r.emotions.some((e) => matchesQuery(e.name, query))
     );
   }, [records, query]);
-
-  const formatDate = useCallback(
-    (iso: string) => format(parseISO(iso), 'd MMM yyyy · HH:mm', { locale: dateFnsPl }),
-    []
-  );
 
   const renderItem = useCallback(
     ({ item }: { item: ThoughtRecord }) => {
@@ -164,18 +156,18 @@ export function RecordListScreen(): React.JSX.Element {
           activeOpacity={0.8}
         >
           <View style={styles.cardTop}>
-            <Text style={styles.date}>{formatDate(item.createdAt)}</Text>
+            <Text style={styles.date}>{formatDate(item.createdAt, 'shortTime')}</Text>
             {item.isExample ? (
               <View style={[styles.badge, styles.badgeExample]}>
                 <Text style={styles.badgeTextInProgress}>{pl.onboarding.badge}</Text>
               </View>
             ) : item.isComplete ? (
               <View style={[styles.badge, styles.badgeComplete]}>
-                <Text style={styles.badgeTextComplete}>Kompletny</Text>
+                <Text style={styles.badgeTextComplete}>{pl.status.complete}</Text>
               </View>
             ) : (
               <View style={[styles.badge, styles.badgeInProgress]}>
-                <Text style={styles.badgeTextInProgress}>W toku</Text>
+                <Text style={styles.badgeTextInProgress}>{pl.status.inProgress}</Text>
               </View>
             )}
           </View>
@@ -184,7 +176,7 @@ export function RecordListScreen(): React.JSX.Element {
               {item.situation}
             </Text>
           ) : (
-            <Text style={[styles.situation, styles.situationEmpty]}>Brak opisu sytuacji</Text>
+            <Text style={[styles.situation, styles.situationEmpty]}>{pl.list.noSituation}</Text>
           )}
           {emotionNames.length > 0 && (
             <View style={styles.tags}>
@@ -205,7 +197,7 @@ export function RecordListScreen(): React.JSX.Element {
         </TouchableOpacity>
       );
     },
-    [formatDate, styles]
+    [styles]
   );
 
   if (loading) return <View style={styles.container} />;
@@ -224,8 +216,8 @@ export function RecordListScreen(): React.JSX.Element {
             <Text style={styles.emptyText}>{pl.search.noResults(query)}</Text>
           ) : (
             <>
-              <Text style={styles.emptyText}>Brak wpisów</Text>
-              <Text style={styles.emptySub}>Dotknij + aby dodać pierwszy zapis myśli.</Text>
+              <Text style={styles.emptyText}>{pl.list.empty}</Text>
+              <Text style={styles.emptySub}>{pl.list.emptySub}</Text>
             </>
           )}
         </View>

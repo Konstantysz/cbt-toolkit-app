@@ -5,6 +5,7 @@ import { useColors } from '../../core/theme/useColors';
 import { useSettings } from '../../core/settings/store';
 import { scaledFont } from '../../core/settings/fontScale';
 import { spacing, radius } from '../../core/theme';
+import { pl } from '../../core/i18n/pl';
 
 export default function CreditsScreen() {
   const router = useRouter();
@@ -47,30 +48,27 @@ export default function CreditsScreen() {
   });
 
   const packages: [string, string][] = [
-    ['React Native', 'Interfejs użytkownika'],
-    ['Expo', 'Platforma mobilna'],
-    ['Zustand', 'Zarządzanie stanem'],
-    ['expo-sqlite', 'Lokalna baza danych'],
-    ['expo-notifications', 'Powiadomienia lokalne'],
-    ['@react-native-community/datetimepicker', 'Picker czasu'],
+    ['React Native', pl.settings.credits.packages.reactNative],
+    ['Expo', pl.settings.credits.packages.expo],
+    ['Zustand', pl.settings.credits.packages.zustand],
+    ['expo-sqlite', pl.settings.credits.packages.sqlite],
+    ['expo-notifications', pl.settings.credits.packages.notifications],
+    ['@react-native-community/datetimepicker', pl.settings.credits.packages.datetimepicker],
   ];
 
   return (
     <ScrollView style={s.container} contentContainerStyle={{ paddingBottom: 40 }}>
       <View style={s.header}>
         <TouchableOpacity onPress={() => router.back()}>
-          <Text style={s.backText}>‹ Wstecz</Text>
+          <Text style={s.backText}>{pl.common.backWithChevron}</Text>
         </TouchableOpacity>
-        <Text style={s.headerTitle}>Twórcy i podziękowania</Text>
+        <Text style={s.headerTitle}>{pl.settings.about.credits}</Text>
       </View>
       <View style={s.card}>
-        <Text style={s.sectionTitle}>Autorzy</Text>
-        <Text style={s.body}>
-          Aplikacja Zestaw Narzędzi TPB jest projektem open-source stworzonym z myślą o osobach
-          korzystających z terapii poznawczo-behawioralnej. Kod źródłowy dostępny na GitHub.
-        </Text>
+        <Text style={s.sectionTitle}>{pl.settings.credits.authors}</Text>
+        <Text style={s.body}>{pl.settings.credits.authorsBody}</Text>
         <View style={s.divider} />
-        <Text style={s.sectionTitle}>Biblioteki open-source</Text>
+        <Text style={s.sectionTitle}>{pl.settings.credits.libraries}</Text>
         {packages.map(([name, desc]) => (
           <View key={name} style={s.packageRow}>
             <Text style={s.packageName}>{name}</Text>

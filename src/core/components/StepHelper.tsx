@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useColors } from '../theme/useColors';
+import { pl } from '../i18n/pl';
 
 interface StepHelperProps {
   hint: string;
@@ -54,8 +55,8 @@ function useStyles() {
 
 export function StepHelper({
   hint,
-  toggleLabel = 'Wskazówka',
-  exampleLabel = 'Przykład',
+  toggleLabel = pl.common.helperToggle,
+  exampleLabel = pl.common.helperExample,
 }: StepHelperProps): React.JSX.Element {
   const styles = useStyles();
   const [open, setOpen] = useState(false);

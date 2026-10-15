@@ -3,6 +3,7 @@ import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useColors } from '../../theme/useColors';
 import { spacing } from '../../theme';
+import { pl } from '../../i18n/pl';
 import { feelingsWheel } from '../../data/feelingsWheel';
 import { ChipView } from './ChipView';
 import { WheelView } from './WheelView';
@@ -55,7 +56,9 @@ export function EmotionWheelPicker({ selected, onChange }: Props) {
             size={14}
             color={colors.textMuted}
           />
-          <Text style={styles.toggleText}>{mode === 'chips' ? 'Koło' : 'Lista'}</Text>
+          <Text style={styles.toggleText}>
+            {mode === 'chips' ? pl.emotionPicker.modeWheel : pl.emotionPicker.modeList}
+          </Text>
         </TouchableOpacity>
       </View>
 

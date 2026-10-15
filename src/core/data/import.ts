@@ -36,32 +36,53 @@ interface ExportFile {
   [key: string]: unknown;
 }
 
-/** Returns null if valid, or an error string describing the problem. */
-export function validateExportFile(data: unknown): string | null {
-  if (typeof data !== 'object' || data === null) return 'Plik nie jest obiektem JSON';
+export type ImportErrorCode =
+  | 'invalidJson'
+  | 'notObject'
+  | 'unknownVersion'
+  | 'missingThoughtRecords'
+  | 'missingExperiments'
+  | 'invalidAbcEntries'
+  | 'tooManyRecords'
+  | 'recordInvalidId'
+  | 'recordMissingSituation'
+  | 'recordMissingCreatedAt'
+  | 'experimentInvalidId'
+  | 'experimentMissingBelief'
+  | 'experimentMissingCreatedAt';
+
+export class ImportError extends Error {
+  constructor(public readonly code: ImportErrorCode) {
+    super(code);
+    this.name = 'ImportError';
+  }
+}
+
+/** Returns null if valid, or an error code the UI maps to a Polish message. */
+export function validateExportFile(data: unknown): ImportErrorCode | null {
+  if (typeof data !== 'object' || data === null) return 'notObject';
   const f = data as ExportFile;
-  if (f.version !== 1) return 'Nieznana wersja pliku (oczekiwano 1)';
-  if (!Array.isArray(f.thoughtRecords)) return 'Brak tablicy thoughtRecords';
-  if (!Array.isArray(f.behavioralExperiments)) return 'Brak tablicy behavioralExperiments';
-  if (f.abcEntries !== undefined && !Array.isArray(f.abcEntries))
-    return 'Nieprawidłowy format abcEntries';
+  if (f.version !== 1) return 'unknownVersion';
+  if (!Array.isArray(f.thoughtRecords)) return 'missingThoughtRecords';
+  if (!Array.isArray(f.behavioralExperiments)) return 'missingExperiments';
+  if (f.abcEntries !== undefined && !Array.isArray(f.abcEntries)) return 'invalidAbcEntries';
   const abcCount = Array.isArray(f.abcEntries) ? (f.abcEntries as unknown[]).length : 0;
   const total =
     (f.thoughtRecords as unknown[]).length +
     (f.behavioralExperiments as unknown[]).length +
     abcCount;
-  if (total > 5000) return `Zbyt wiele rekordów (${total} > 5000)`;
+  if (total > 5000) return 'tooManyRecords';
   for (const r of f.thoughtRecords as RawRecord[]) {
-    if (typeof r.id !== 'string' || !r.id) return 'Rekord myśli bez poprawnego id';
-    if (typeof r.situation !== 'string' || !r.situation) return 'Rekord myśli bez pola situation';
+    if (typeof r.id !== 'string' || !r.id) return 'recordInvalidId';
+    if (typeof r.situation !== 'string' || !r.situation) return 'recordMissingSituation';
     const ca = r.createdAt ?? r.created_at;
-    if (typeof ca !== 'string' || !ca) return 'Rekord myśli bez createdAt';
+    if (typeof ca !== 'string' || !ca) return 'recordMissingCreatedAt';
   }
   for (const e of f.behavioralExperiments as RawExperiment[]) {
-    if (typeof e.id !== 'string' || !e.id) return 'Eksperyment bez poprawnego id';
-    if (typeof e.belief !== 'string' || !e.belief) return 'Eksperyment bez pola belief';
+    if (typeof e.id !== 'string' || !e.id) return 'experimentInvalidId';
+    if (typeof e.belief !== 'string' || !e.belief) return 'experimentMissingBelief';
     const ca = e.createdAt ?? e.created_at;
-    if (typeof ca !== 'string' || !ca) return 'Eksperyment bez createdAt';
+    if (typeof ca !== 'string' || !ca) return 'experimentMissingCreatedAt';
   }
   return null;
 }
@@ -76,11 +97,11 @@ export async function importData(
   try {
     parsed = JSON.parse(raw);
   } catch {
-    throw new Error('Nieprawidłowy JSON');
+    throw new ImportError('invalidJson');
   }
 
   const error = validateExportFile(parsed);
-  if (error) throw new Error(error);
+  if (error) throw new ImportError(error);
 
   const file = parsed as {
     thoughtRecords: RawRecord[];

@@ -5,6 +5,7 @@ import { useColors } from '../../core/theme/useColors';
 import { useSettings } from '../../core/settings/store';
 import { scaledFont } from '../../core/settings/fontScale';
 import { spacing, radius } from '../../core/theme';
+import { pl } from '../../core/i18n/pl';
 
 const REFERENCES = [
   {
@@ -80,9 +81,9 @@ export default function BibliographyScreen() {
     <ScrollView style={s.container} contentContainerStyle={{ paddingBottom: 40 }}>
       <View style={s.header}>
         <TouchableOpacity onPress={() => router.back()}>
-          <Text style={s.backText}>‹ Wstecz</Text>
+          <Text style={s.backText}>{pl.common.backWithChevron}</Text>
         </TouchableOpacity>
-        <Text style={s.headerTitle}>Źródła i bibliografia</Text>
+        <Text style={s.headerTitle}>{pl.settings.about.bibliography}</Text>
       </View>
       <View style={s.card}>
         {REFERENCES.map((ref, i) => (

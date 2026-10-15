@@ -1,4 +1,5 @@
 import * as Notifications from 'expo-notifications';
+import { pl } from '../i18n/pl';
 
 export async function scheduleReminder(time: string): Promise<void> {
   const [hourStr, minuteStr] = time.split(':');
@@ -7,8 +8,8 @@ export async function scheduleReminder(time: string): Promise<void> {
 
   await Notifications.scheduleNotificationAsync({
     content: {
-      title: 'Czas na refleksję',
-      body: 'Zapisz swoje myśli i emocje',
+      title: pl.notifications.reminderTitle,
+      body: pl.notifications.reminderBody,
     },
     trigger: {
       type: Notifications.SchedulableTriggerInputTypes.DAILY,

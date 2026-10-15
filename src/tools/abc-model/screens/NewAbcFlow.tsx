@@ -18,6 +18,7 @@ import { iconRow } from '../../../core/theme';
 import { StepProgress } from '../../../core/components/StepProgress';
 import { StepHelper } from '../../../core/components/StepHelper';
 import { pl } from '../i18n/pl';
+import { pl as corePl } from '../../../core/i18n/pl';
 import * as repo from '../repository';
 import type { AbcEntry } from '../types';
 import { Ionicons } from '@expo/vector-icons';
@@ -144,7 +145,7 @@ export function NewAbcFlow({ existingId }: Props): React.JSX.Element {
       });
       setStep(2);
     } catch {
-      Alert.alert('Błąd', 'Nie udało się zapisać danych. Spróbuj ponownie.');
+      Alert.alert(corePl.common.error, pl.flow.saveStepError);
     } finally {
       setSaving(false);
     }
@@ -163,7 +164,7 @@ export function NewAbcFlow({ existingId }: Props): React.JSX.Element {
       });
       router.navigate(`/(tools)/abc-model/${state.entryId}`);
     } catch {
-      Alert.alert('Błąd', 'Nie udało się zapisać wpisu. Spróbuj ponownie.');
+      Alert.alert(corePl.common.error, pl.flow.saveEntryError);
     } finally {
       setSaving(false);
     }

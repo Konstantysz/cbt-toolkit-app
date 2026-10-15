@@ -3,13 +3,13 @@ import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router, useFocusEffect } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
-import { format, parseISO } from 'date-fns';
-import { pl as dateFnsPl } from 'date-fns/locale';
 import { useColors } from '../../../core/theme/useColors';
 import { SearchBar } from '../../../core/components/SearchBar';
 import { useAbcEntries } from '../hooks/useAbcEntries';
 import { insertSeedEntry } from '../repository';
 import { pl } from '../i18n/pl';
+import { formatDate } from '../../../core/i18n/date';
+import { matchesQuery } from '../../../core/i18n/search';
 import type { AbcEntry } from '../types';
 
 const ONBOARDING_KEY = 'abc-model:onboarding-seeded';
@@ -114,14 +114,8 @@ export function AbcListScreen(): React.JSX.Element {
 
   const filtered = useMemo(() => {
     if (!query) return entries;
-    const q = query.toLowerCase();
-    return entries.filter((e) => e.situation.toLowerCase().includes(q));
+    return entries.filter((e) => matchesQuery(e.situation, query));
   }, [entries, query]);
-
-  const formatDate = useCallback(
-    (iso: string) => format(parseISO(iso), 'd MMM yyyy · HH:mm', { locale: dateFnsPl }),
-    []
-  );
 
   const renderItem = useCallback(
     ({ item }: { item: AbcEntry }) => (
@@ -131,7 +125,7 @@ export function AbcListScreen(): React.JSX.Element {
         activeOpacity={0.8}
       >
         <View style={styles.cardTop}>
-          <Text style={styles.date}>{formatDate(item.createdAt)}</Text>
+          <Text style={styles.date}>{formatDate(item.createdAt, 'shortTime')}</Text>
           {item.isExample ? (
             <View style={[styles.badge, styles.badgeExample]}>
               <Text style={[styles.badgeText, styles.badgeExampleText]}>{pl.onboarding.badge}</Text>
@@ -153,11 +147,11 @@ export function AbcListScreen(): React.JSX.Element {
             {item.situation}
           </Text>
         ) : (
-          <Text style={[styles.preview, styles.previewEmpty]}>Brak opisu sytuacji</Text>
+          <Text style={[styles.preview, styles.previewEmpty]}>{pl.list.noDescription}</Text>
         )}
       </TouchableOpacity>
     ),
-    [formatDate, styles]
+    [styles]
   );
 
   if (loading) return <View style={styles.container} />;

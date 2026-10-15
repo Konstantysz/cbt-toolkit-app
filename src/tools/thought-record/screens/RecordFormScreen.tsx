@@ -299,37 +299,37 @@ function buildHtml(
 </style>
 </head>
 <body>
-<h1>Formularz Zapisu Myśli</h1>
+<h1>${pl.form.title}</h1>
 <hr class="accent-line">
 <div class="outer">
   <div class="section">
-    <div class="section-label">Sytuacja</div>
+    <div class="section-label">${pl.form.sections.situation}</div>
     <div class="section-value">${escapeHtml(record.situation || '—')}</div>
   </div>
   <div class="section">
-    <div class="section-label">Emocje przed</div>
+    <div class="section-label">${pl.form.sections.emotionsBefore}</div>
     <div class="section-value">${emotionsBefore}</div>
   </div>
   <div class="three-col">
     <div class="col">
-      <div class="col-label">Myśl automatyczna</div>
+      <div class="col-label">${pl.form.sections.automaticThought}</div>
       <div class="col-value">${escapeHtml(record.automaticThoughts || '—')}</div>
     </div>
     <div class="col">
-      <div class="col-label">Dowody potwierdzające</div>
+      <div class="col-label">${pl.form.sections.evidenceFor}</div>
       <div class="col-value">${escapeHtml(record.evidenceFor || '—')}</div>
     </div>
     <div class="col">
-      <div class="col-label">Dowody przeczące</div>
+      <div class="col-label">${pl.form.sections.evidenceAgainst}</div>
       <div class="col-value">${escapeHtml(record.evidenceAgainst || '—')}</div>
     </div>
   </div>
   <div class="section">
-    <div class="section-label">Myśli alternatywne</div>
+    <div class="section-label">${pl.form.sections.alternativeThought}</div>
     <div class="section-value">${escapeHtml(record.alternativeThought || '—')}</div>
   </div>
   <div class="section">
-    <div class="section-label">Emocje po</div>
+    <div class="section-label">${pl.form.sections.emotionsAfter}</div>
     <div class="section-value" style="border-bottom:none">${emotionsAfter}</div>
   </div>
 </div>

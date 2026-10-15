@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getEnabledTools } from '../tools/registry';
 import { spacing, radius } from '../core/theme';
 import { useColors } from '../core/theme/useColors';
+import { pl } from '../core/i18n/pl';
 import type { ToolDefinition } from '../core/types/tool';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -110,12 +111,12 @@ export default function HomeScreen(): React.JSX.Element {
       <StatusBar barStyle="light-content" backgroundColor={colors.bg} />
 
       <View style={styles.header}>
-        <Text style={styles.appTitle}>CBT Toolkit</Text>
-        <Text style={styles.appSubtitle}>Narzędzia terapii poznawczo-behawioralnej</Text>
+        <Text style={styles.appTitle}>{pl.app.name}</Text>
+        <Text style={styles.appSubtitle}>{pl.home.subtitle}</Text>
       </View>
 
       <View style={styles.sectionHeader}>
-        <Text style={styles.sectionLabel}>NARZĘDZIA</Text>
+        <Text style={styles.sectionLabel}>{pl.home.sectionLabel}</Text>
         <View style={styles.sectionLine} />
       </View>
 

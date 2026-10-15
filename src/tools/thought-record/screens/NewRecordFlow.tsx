@@ -14,8 +14,7 @@ import {
 import { router } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { format, parseISO } from 'date-fns';
-import { pl as dateFnsPl } from 'date-fns/locale';
+import { parseISO } from 'date-fns';
 import { useColors } from '../../../core/theme/useColors';
 import { iconRow } from '../../../core/theme';
 import { StepProgress } from '../../../core/components/StepProgress';
@@ -23,7 +22,9 @@ import { TextStep } from '../components/TextStep';
 import { EmotionWheelPicker } from '../../../core/components/EmotionWheelPicker';
 import { IntensitySlider } from '../../../core/components/IntensitySlider';
 import { StepHelper } from '../../../core/components/StepHelper';
+import { formatDate } from '../../../core/i18n/date';
 import { pl } from '../i18n/pl';
+import { pl as corePl } from '../../../core/i18n/pl';
 import * as repo from '../repository';
 import type { Emotion } from '../types';
 import { Ionicons } from '@expo/vector-icons';
@@ -142,7 +143,7 @@ function Step1Situation({
   const stepStyles = useStepStyles();
   const [showPicker, setShowPicker] = useState(false);
   const date = parseISO(state.situationDate);
-  const dateLabel = format(date, 'd MMMM yyyy', { locale: dateFnsPl });
+  const dateLabel = formatDate(date, 'long');
 
   return (
     <View>
@@ -150,7 +151,7 @@ function Step1Situation({
         prompt={pl.step1.prompt}
         value={state.situation}
         onChange={(v) => update('situation', v)}
-        placeholder="Np. Kłótnia z partnerem o obowiązki domowe..."
+        placeholder={pl.flow.situationPlaceholder}
         minHeight={150}
       />
       <StepHelper hint={pl.helper.hints.step1} />
@@ -186,9 +187,7 @@ function Step2Emotions({
   return (
     <View>
       <Text style={stepStyles.prompt}>{pl.step2.prompt}</Text>
-      {error && (
-        <Text style={stepStyles.errorText}>Wybierz co najmniej jedną emocję, aby kontynuować.</Text>
-      )}
+      {error && <Text style={stepStyles.errorText}>{pl.flow.emotionRequired}</Text>}
       <EmotionWheelPicker
         selected={state.emotions}
         onChange={(emotions) => update('emotions', emotions)}
@@ -241,12 +240,12 @@ function Step7Outcome({
         />
       ))}
       <View style={{ marginTop: 16 }}>
-        <Text style={stepStyles.fieldLabel}>Notatki końcowe (opcjonalne)</Text>
+        <Text style={stepStyles.fieldLabel}>{pl.flow.notesLabel}</Text>
         <TextInput
           style={[stepStyles.input, { minHeight: 90 }]}
           value={state.outcome}
           onChangeText={(v) => update('outcome', v)}
-          placeholder="Dodatkowe przemyślenia..."
+          placeholder={pl.flow.notesPlaceholder}
           placeholderTextColor={colors.textDim}
           multiline
           textAlignVertical="top"
@@ -274,7 +273,7 @@ function renderStep(
             prompt={pl.step3.prompt}
             value={state.automaticThoughts}
             onChange={(v) => update('automaticThoughts', v)}
-            placeholder="Np. Zaraz coś złego się stanie..."
+            placeholder={pl.flow.step3Placeholder}
           />
           <StepHelper hint={pl.helper.hints.step3} />
         </View>
@@ -286,7 +285,7 @@ function renderStep(
             prompt={pl.step4.prompt}
             value={state.evidenceFor}
             onChange={(v) => update('evidenceFor', v)}
-            placeholder="Np. Ostatnio popełniłem błąd..."
+            placeholder={pl.flow.step4Placeholder}
           />
           <StepHelper hint={pl.helper.hints.step4} />
         </View>
@@ -298,7 +297,7 @@ function renderStep(
             prompt={pl.step5.prompt}
             value={state.evidenceAgainst}
             onChange={(v) => update('evidenceAgainst', v)}
-            placeholder="Np. Przez ostatni rok radziłem sobie dobrze..."
+            placeholder={pl.flow.step5Placeholder}
           />
           <StepHelper hint={pl.helper.hints.step5} />
         </View>
@@ -310,7 +309,7 @@ function renderStep(
             prompt={pl.step6.prompt}
             value={state.alternativeThought}
             onChange={(v) => update('alternativeThought', v)}
-            placeholder="Np. Chociaż czuję niepokój, mam wiele dowodów..."
+            placeholder={pl.flow.step6Placeholder}
           />
           <StepHelper hint={pl.helper.hints.step6} />
         </View>
@@ -441,14 +440,14 @@ export function NewRecordFlow({ existingId }: NewRecordFlowProps): React.JSX.Ele
     if (step === total) {
       return (
         <View style={iconRow}>
-          <Text style={styles.btnPrimaryText}>Zakończ</Text>
+          <Text style={styles.btnPrimaryText}>{pl.flow.finish}</Text>
           <Ionicons name="checkmark" size={15} color={colors.bg} accessible={false} />
         </View>
       );
     }
     return (
       <View style={iconRow}>
-        <Text style={styles.btnPrimaryText}>Dalej</Text>
+        <Text style={styles.btnPrimaryText}>{corePl.common.next}</Text>
         <Ionicons name="arrow-forward" size={15} color={colors.bg} accessible={false} />
       </View>
     );
@@ -487,11 +486,11 @@ export function NewRecordFlow({ existingId }: NewRecordFlowProps): React.JSX.Ele
       <View style={styles.nav}>
         <TouchableOpacity style={styles.btnGhost} onPress={goBack}>
           {currentStep === 1 ? (
-            <Text style={styles.btnGhostText}>Anuluj</Text>
+            <Text style={styles.btnGhostText}>{corePl.common.cancel}</Text>
           ) : (
             <View style={iconRow}>
               <Ionicons name="arrow-back" size={15} color={colors.textMuted} accessible={false} />
-              <Text style={styles.btnGhostText}>Wstecz</Text>
+              <Text style={styles.btnGhostText}>{corePl.common.back}</Text>
             </View>
           )}
         </TouchableOpacity>

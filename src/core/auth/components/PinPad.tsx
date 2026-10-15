@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useColors } from '../../theme/useColors';
+import { pl } from '../../i18n/pl';
 
 const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', '⌫'] as const;
 const PIN_LENGTH = 4;
@@ -75,7 +76,7 @@ export function PinPad({ value, onChange, label, error }: PinPadProps) {
                 style={[s.key, k === '' && s.keyEmpty]}
                 onPress={() => handleKey(k)}
                 disabled={k === ''}
-                accessibilityLabel={k === '⌫' ? 'usuń' : k}
+                accessibilityLabel={k === '⌫' ? pl.auth.pinPad.delete : k}
               >
                 {k !== '' && <Text style={s.keyText}>{k}</Text>}
               </TouchableOpacity>
