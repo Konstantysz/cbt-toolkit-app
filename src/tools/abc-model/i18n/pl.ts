@@ -30,6 +30,7 @@ export const pl = {
     searchPlaceholder: 'Szukaj wpisów…',
     noResults: (q: string) => `Brak wyników dla „${q}"`,
     empty: 'Brak wpisów',
+    noDescription: 'Brak opisu sytuacji',
     emptySub: 'Dotknij + aby dodać pierwszy wpis.',
     newEntry: 'Nowy wpis',
   },
@@ -53,6 +54,9 @@ export const pl = {
   flow: {
     newTitle: 'Nowy wpis',
     editTitle: 'Edytuj wpis',
+    detailTitle: 'Szczegóły',
+    saveStepError: 'Nie udało się zapisać danych. Spróbuj ponownie.',
+    saveEntryError: 'Nie udało się zapisać wpisu. Spróbuj ponownie.',
     next: 'Dalej',
     save: 'Zapisz',
     back: 'Wstecz',
@@ -65,6 +69,6 @@ export const pl = {
     nodeB: 'MYŚLI',
     nodeC1: 'ZACHOWANIE',
     nodeC2: 'EMOCJE',
-    nodeC3: 'OBJAWY\nFIZJOLOGICZNE',
+    nodeC3: 'OBJAWY FIZJOLOGICZNE',
   },
 };

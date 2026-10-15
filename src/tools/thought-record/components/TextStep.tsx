@@ -43,6 +43,7 @@ export function TextStep({ prompt, value, onChange, placeholder, minHeight = 130
       <Text style={styles.prompt}>{prompt}</Text>
       <TextInput
         style={[styles.input, { minHeight }]}
+        accessibilityLabel={prompt}
         value={value}
         onChangeText={onChange}
         placeholder={placeholder ?? ''}

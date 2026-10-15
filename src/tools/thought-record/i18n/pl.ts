@@ -35,6 +35,7 @@ export const pl = {
   compare: {
     title: 'Widok porównawczy',
     btnLabel: 'Porównaj',
+    decreased: 'spadek',
     page1: 'Sytuacja + Emocje',
     page2: 'Emocje + Myśli automatyczne',
     page3: 'Myśli + Argumenty za i przeciw',
@@ -42,6 +43,41 @@ export const pl = {
   },
   edit: {
     title: 'Edytuj zapis',
+  },
+  list: {
+    empty: 'Brak wpisów',
+    emptySub: 'Dotknij + aby dodać pierwszy zapis myśli.',
+    noSituation: 'Brak opisu sytuacji',
+  },
+  status: {
+    complete: 'Kompletny',
+    inProgress: 'W toku',
+  },
+  detail: {
+    notFound: 'Nie znaleziono wpisu.',
+    stepLabel: (step: string) => `Krok ${step}`,
+    before: 'przed',
+    after: 'po',
+    deleteBtn: 'Usuń wpis',
+    deleteConfirmTitle: 'Usuń wpis',
+    deleteConfirmMsg: 'Czy na pewno chcesz usunąć ten zapis? Tej operacji nie można cofnąć.',
+    deleteError: 'Nie udało się usunąć wpisu. Spróbuj ponownie.',
+  },
+  flow: {
+    notesLabel: 'Notatki końcowe (opcjonalne)',
+    notesPlaceholder: 'Dodatkowe przemyślenia...',
+    finish: 'Zakończ',
+    situationPlaceholder: 'Np. Kłótnia z partnerem o obowiązki domowe...',
+    step3Placeholder: 'Np. Zaraz coś złego się stanie...',
+    step4Placeholder: 'Np. Ostatnio popełniłem błąd...',
+    step5Placeholder: 'Np. Przez ostatni rok radziłem sobie dobrze...',
+    step6Placeholder: 'Np. Chociaż czuję niepokój, mam wiele dowodów...',
+  },
+  nav: {
+    newTitle: 'Nowy wpis',
+    detailTitle: 'Szczegóły',
+    compareTitle: 'Porównanie',
+    editTitle: 'Edytuj wpis',
   },
   helper: {
     toggle: 'Wskazówka',

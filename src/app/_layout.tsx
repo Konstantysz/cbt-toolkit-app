@@ -1,7 +1,9 @@
 import React, { Suspense, useEffect, useMemo } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, Alert, View } from 'react-native';
 import { Tabs } from 'expo-router';
 import { SQLiteProvider } from 'expo-sqlite';
+import { usePreventScreenCapture } from 'expo-screen-capture';
+import { PrivacyCover } from '../core/auth/components/PrivacyCover';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { initCoreTables, runMigrations } from '../core/db/database';
@@ -9,13 +11,17 @@ import { getAllMigrations } from '../tools/registry';
 import { pl } from '../core/i18n/pl';
 import { useColors } from '../core/theme/useColors';
 import { useSettings } from '../core/settings/store';
-import { scheduleReminder, cancelReminder } from '../core/notifications/schedule';
+import { applyReminder, configureNotifications } from '../core/notifications/schedule';
 import { useAuthGuard } from '../core/auth/useAuthGuard';
 import { useAuthStore } from '../core/auth/store';
 import { clearPin } from '../core/auth/pin';
+import { applyFontScale } from '../core/settings/applyFontScale';
+import { clearExportFiles } from '../core/data/exportFiles';
 import { PinOnboardingScreen } from '../core/auth/screens/PinOnboardingScreen';
 import { PinSetupScreen } from '../core/auth/screens/PinSetupScreen';
 import { PinLockScreen } from '../core/auth/screens/PinLockScreen';
+
+applyFontScale();
 
 async function onInit(db: import('expo-sqlite').SQLiteDatabase) {
   await initCoreTables(db);
@@ -39,22 +45,31 @@ function DbLoading() {
 }
 
 function AppContent() {
+  usePreventScreenCapture();
   const colors = useColors();
   const reminderEnabled = useSettings((s) => s.reminderEnabled);
   const reminderTime = useSettings((s) => s.reminderTime);
   const { authPhase, goToSetup, goToUnlocked } = useAuthGuard();
 
+  // Sweep export files left behind by a previous session (e.g. killed mid-share).
   useEffect(() => {
-    if (!reminderEnabled) return;
-    cancelReminder().then(() => scheduleReminder(reminderTime));
-  }, [reminderEnabled, reminderTime]);
+    void clearExportFiles();
+  }, []);
+
+  useEffect(() => {
+    // Re-sync on app start only; Settings and import apply their own changes.
+    configureNotifications()
+      .then(() => applyReminder(reminderEnabled, reminderTime))
+      .catch(() => Alert.alert(pl.settings.notifications.scheduleError));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const tabScreenOptions = useMemo(
     () => ({
       headerShown: false,
       tabBarStyle: { backgroundColor: colors.surface, borderTopColor: colors.border },
       tabBarActiveTintColor: colors.accent,
-      tabBarInactiveTintColor: colors.textDim,
+      tabBarInactiveTintColor: colors.textMuted,
     }),
     [colors]
   );
@@ -140,6 +155,7 @@ export default function RootLayout(): React.JSX.Element {
           <AppContent />
         </SQLiteProvider>
       </Suspense>
+      <PrivacyCover />
     </SafeAreaProvider>
   );
 }

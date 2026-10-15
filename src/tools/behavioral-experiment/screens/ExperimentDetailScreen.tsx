@@ -10,13 +10,14 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
-import { format, parseISO } from 'date-fns';
-import { pl as dateFnsPl } from 'date-fns/locale';
 import { useColors } from '../../../core/theme/useColors';
 import { iconRow } from '../../../core/theme';
 import { IntensitySlider } from '../../../core/components/IntensitySlider';
 import { useBehavioralExperiment } from '../hooks/useBehavioralExperiments';
+import { LoadError } from '../../../core/components/LoadError';
 import { pl } from '../i18n/pl';
+import { pl as corePl } from '../../../core/i18n/pl';
+import { formatDate } from '../../../core/i18n/date';
 import * as repo from '../repository';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -130,29 +131,25 @@ function useStyles() {
 
 export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
   const db = useSQLiteContext();
-  const { experiment, loading } = useBehavioralExperiment(db, id);
+  const { experiment, loading, error, refresh } = useBehavioralExperiment(db, id);
   const styles = useStyles();
 
   const confirmDelete = useCallback(() => {
-    Alert.alert(
-      'Usuń eksperyment',
-      'Czy na pewno chcesz usunąć ten eksperyment? Tej operacji nie można cofnąć.',
-      [
-        { text: 'Anuluj', style: 'cancel' },
-        {
-          text: 'Usuń',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await repo.deleteExperiment(db, id);
-              router.back();
-            } catch {
-              Alert.alert('Błąd', 'Nie udało się usunąć eksperymentu. Spróbuj ponownie.');
-            }
-          },
+    Alert.alert(pl.detail.deleteConfirmTitle, pl.detail.deleteConfirmMsg, [
+      { text: corePl.common.cancel, style: 'cancel' },
+      {
+        text: corePl.common.delete,
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await repo.deleteExperiment(db, id);
+            router.back();
+          } catch {
+            Alert.alert(corePl.common.error, pl.detail.deleteError);
+          }
         },
-      ]
-    );
+      },
+    ]);
   }, [db, id]);
 
   if (loading)
@@ -161,10 +158,11 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
         <ActivityIndicator color={styles.accentColor.color} />
       </View>
     );
+  if (error) return <LoadError onRetry={refresh} />;
   if (!experiment)
     return (
       <View style={styles.centered}>
-        <Text style={styles.missing}>Nie znaleziono eksperymentu.</Text>
+        <Text style={styles.missing}>{pl.detail.notFound}</Text>
       </View>
     );
 
@@ -183,6 +181,7 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
             <Text style={styles.sliderSideLabel}>{pl.detail.beliefStrengthBefore}</Text>
             <IntensitySlider
               value={experiment.beliefStrengthBefore}
+              a11yLabel={pl.detail.beliefStrengthBefore}
               onChange={() => {}}
               label=""
               readOnly
@@ -193,6 +192,7 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
               <Text style={styles.sliderSideLabel}>{pl.detail.beliefStrengthAfter}</Text>
               <IntensitySlider
                 value={experiment.beliefStrengthAfter}
+                a11yLabel={pl.detail.beliefStrengthAfter}
                 onChange={() => {}}
                 label=""
                 readOnly
@@ -203,7 +203,9 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
       </View>
 
       {/* Plan section */}
-      <Text style={styles.sectionHeader}>{pl.detail.planSection}</Text>
+      <Text style={styles.sectionHeader} accessibilityRole="header">
+        {pl.detail.planSection}
+      </Text>
       <DetailRow label={pl.detail.plan} value={experiment.plan || '—'} styles={styles} />
       <DetailRow
         label={pl.detail.predictedOutcome}
@@ -224,6 +226,7 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
       {/* Add result button */}
       {experiment.status === 'planned' && (
         <TouchableOpacity
+          accessibilityRole="button"
           style={styles.addResultBtn}
           onPress={() => router.push(`/(tools)/behavioral-experiment/${id}/result`)}
           activeOpacity={0.85}
@@ -235,13 +238,13 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
       {/* Result section */}
       {experiment.status === 'completed' && (
         <>
-          <Text style={styles.sectionHeader}>{pl.detail.resultSection}</Text>
+          <Text style={styles.sectionHeader} accessibilityRole="header">
+            {pl.detail.resultSection}
+          </Text>
           {experiment.executionDate && (
             <DetailRow
               label={pl.detail.executionDate}
-              value={format(parseISO(experiment.executionDate), 'd MMMM yyyy', {
-                locale: dateFnsPl,
-              })}
+              value={formatDate(experiment.executionDate, 'long')}
               styles={styles}
             />
           )}
@@ -275,10 +278,10 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
       {/* Edit / Delete */}
       <View style={styles.actionRow}>
         <TouchableOpacity
+          accessibilityRole="button"
           style={styles.editBtn}
           onPress={() => router.push(`/(tools)/behavioral-experiment/${id}/edit`)}
           activeOpacity={0.8}
-          accessibilityLabel="Edytuj eksperyment"
         >
           <View style={iconRow}>
             <Ionicons
@@ -290,7 +293,12 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
             <Text style={styles.editBtnText}>{pl.detail.edit}</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.deleteBtn} onPress={confirmDelete} activeOpacity={0.8}>
+        <TouchableOpacity
+          accessibilityRole="button"
+          style={styles.deleteBtn}
+          onPress={confirmDelete}
+          activeOpacity={0.8}
+        >
           <Text style={styles.deleteBtnText}>{pl.detail.delete}</Text>
         </TouchableOpacity>
       </View>

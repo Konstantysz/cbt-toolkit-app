@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { pl } from '../i18n/pl';
 import { useColors } from '../theme/useColors';
+import { HIT_SLOP } from '../theme';
 
 interface StepHelperProps {
   hint: string;
@@ -54,8 +56,8 @@ function useStyles() {
 
 export function StepHelper({
   hint,
-  toggleLabel = 'Wskazówka',
-  exampleLabel = 'Przykład',
+  toggleLabel = pl.common.helperToggle,
+  exampleLabel = pl.common.helperExample,
 }: StepHelperProps): React.JSX.Element {
   const styles = useStyles();
   const [open, setOpen] = useState(false);
@@ -64,14 +66,21 @@ export function StepHelper({
     <View>
       {open && (
         <View style={styles.panel}>
-          <Text style={styles.label}>{exampleLabel}</Text>
+          <Text style={styles.label} accessibilityRole="header">
+            {exampleLabel}
+          </Text>
           <Text style={styles.hint}>{hint}</Text>
         </View>
       )}
       <TouchableOpacity
+        accessibilityRole="button"
         style={[styles.toggle, open && styles.toggleActive]}
         onPress={() => setOpen((o) => !o)}
+        hitSlop={HIT_SLOP}
         activeOpacity={0.7}
+        accessibilityLabel={toggleLabel}
+        accessibilityHint={pl.a11y.stepHintHint}
+        accessibilityState={{ expanded: open }}
       >
         <Text style={styles.toggleText}>{toggleLabel}</Text>
         <Ionicons

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { isValidReminderTime } from '../notifications/time';
 import type { PaletteId } from '../theme/types';
 
 export type FontSize = 'sm' | 'md' | 'lg';
@@ -16,6 +17,7 @@ export interface SettingsData {
   pinEnabled: boolean;
   biometricsEnabled: boolean;
   pinOnboardingShown: boolean;
+  lockTimeoutMs: number;
 }
 
 const SETTINGS_DEFAULTS: SettingsData = {
@@ -29,6 +31,7 @@ const SETTINGS_DEFAULTS: SettingsData = {
   pinEnabled: false,
   biometricsEnabled: false,
   pinOnboardingShown: false,
+  lockTimeoutMs: 30_000,
 };
 
 interface SettingsActions {
@@ -42,6 +45,7 @@ interface SettingsActions {
   setPinEnabled: (value: boolean) => void;
   setBiometricsEnabled: (value: boolean) => void;
   setPinOnboardingShown: (value: boolean) => void;
+  setLockTimeoutMs: (value: number) => void;
   reset: () => void;
 }
 
@@ -52,7 +56,9 @@ export const useSettings = create<SettingsState>()(
     (set) => ({
       ...SETTINGS_DEFAULTS,
       setReminderEnabled: (value) => set({ reminderEnabled: value }),
-      setReminderTime: (value) => set({ reminderTime: value }),
+      setReminderTime: (value) => {
+        if (isValidReminderTime(value)) set({ reminderTime: value });
+      },
       setFontSize: (value) => set({ fontSize: value }),
       setReducedMotion: (value) => set({ reducedMotion: value }),
       setHighContrast: (value) => set({ highContrast: value }),
@@ -61,11 +67,13 @@ export const useSettings = create<SettingsState>()(
       setPinEnabled: (value) => set({ pinEnabled: value }),
       setBiometricsEnabled: (value) => set({ biometricsEnabled: value }),
       setPinOnboardingShown: (value) => set({ pinOnboardingShown: value }),
+      setLockTimeoutMs: (value) => set({ lockTimeoutMs: value }),
       reset: () => set({ ...SETTINGS_DEFAULTS }),
     }),
     {
       name: 'cbt-toolkit-settings',
       storage: createJSONStorage(() => AsyncStorage),
+      // pinEnabled is intentionally not persisted: it is derived from the SecureStore PIN hash at startup.
       partialize: (state) => ({
         reminderEnabled: state.reminderEnabled,
         reminderTime: state.reminderTime,
@@ -74,9 +82,9 @@ export const useSettings = create<SettingsState>()(
         highContrast: state.highContrast,
         palette: state.palette,
         darkMode: state.darkMode,
-        pinEnabled: state.pinEnabled,
         biometricsEnabled: state.biometricsEnabled,
         pinOnboardingShown: state.pinOnboardingShown,
+        lockTimeoutMs: state.lockTimeoutMs,
       }),
       merge: (persisted, current) =>
         ({

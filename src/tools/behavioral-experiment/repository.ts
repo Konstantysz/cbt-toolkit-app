@@ -1,6 +1,7 @@
 import * as SQLite from 'expo-sqlite';
 import * as Crypto from 'expo-crypto';
 import type { BehavioralExperiment, ExperimentStatus } from './types';
+import { toLocalDateKey } from '../../core/utils/date';
 
 type DbRow = {
   id: string;
@@ -198,7 +199,7 @@ export async function insertSeedExperiment(db: SQLite.SQLiteDatabase): Promise<v
       'Koleżanka się obrazi i przestanie się do mnie odzywać.',
       'Koleżanka może zareagować gniewem i zakończyć rozmowę.',
       'Przypomnę sobie, że mam prawo do odmowy. Jeśli zareaguje źle, damy sobie czas na ochłonięcie.',
-      now.split('T')[0],
+      toLocalDateKey(new Date(now)),
       'Koleżanka była zaskoczona, ale nie obraziła się. Nadal rozmawiamy normalnie.',
       20,
       25,

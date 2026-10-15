@@ -38,8 +38,8 @@ describe('PinPad', () => {
 
   it('calls onChange with last char removed on backspace', () => {
     const onChange = jest.fn();
-    const { getByLabelText } = render(<PinPad value="123" onChange={onChange} label="PIN" />);
-    fireEvent.press(getByLabelText('usuń'));
+    const { getByRole } = render(<PinPad value="123" onChange={onChange} label="PIN" />);
+    fireEvent.press(getByRole('button', { name: 'Usuń ostatnią cyfrę' }));
     expect(onChange).toHaveBeenCalledWith('12');
   });
 });

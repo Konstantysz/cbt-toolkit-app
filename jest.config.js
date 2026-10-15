@@ -1,5 +1,6 @@
 /** @type {import('jest').Config} */
 module.exports = {
+  testTimeout: 15000, // PinLockScreen/NewExperimentFlow timed out at 5s under full-suite load
   preset: 'jest-expo',
   transformIgnorePatterns: [
     'node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@sentry/react-native|native-base|react-native-svg)',
@@ -12,6 +13,7 @@ module.exports = {
     '^expo-crypto$': '<rootDir>/__mocks__/expo-crypto.js',
     '^expo-local-authentication$': '<rootDir>/__mocks__/expo-local-authentication.js',
   },
+  globalSetup: '<rootDir>/jest.global-setup.js',
   testMatch: ['**/__tests__/**/*.test.[jt]s?(x)'],
   testPathIgnorePatterns: ['/node_modules/', '<rootDir>/.worktrees/', '<rootDir>/.claude/'],
   modulePathIgnorePatterns: ['<rootDir>/.worktrees/', '<rootDir>/.claude/'],

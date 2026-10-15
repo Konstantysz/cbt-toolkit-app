@@ -20,20 +20,22 @@ import * as DocumentPicker from 'expo-document-picker';
 import { Ionicons } from '@expo/vector-icons';
 
 import { useSettings } from '../../core/settings/store';
-import { useAuthStore } from '../../core/auth/store';
+import { useAuthStore, LOCK_TIMEOUT_OPTIONS_MS } from '../../core/auth/store';
 import { useColors } from '../../core/theme/useColors';
-import { scaledFont } from '../../core/settings/fontScale';
+import { PICKER_LOCALE_PROPS } from '../../core/utils/date';
 import { requestPermissions } from '../../core/notifications/permissions';
-import { scheduleReminder, cancelReminder } from '../../core/notifications/schedule';
+import { applyReminder } from '../../core/notifications/schedule';
 import { exportData } from '../../core/data/export';
-import { importData } from '../../core/data/import';
+import { clearExportFiles, reportExportError } from '../../core/data/exportFiles';
+import { useProtectedExport } from '../../core/data/useProtectedExport';
+import { importData, ImportError } from '../../core/data/import';
 import * as ThoughtRecordRepo from '../../tools/thought-record/repository';
 import * as ExperimentRepo from '../../tools/behavioral-experiment/repository';
 import { pl } from '../../core/i18n/pl';
 import { spacing, radius, PALETTES, type PaletteId } from '../../core/theme';
 
-const GITHUB_RELEASES = 'https://github.com/your-org/cbt-toolkit/releases';
-const GITHUB_ISSUES = 'https://github.com/your-org/cbt-toolkit/issues';
+const GITHUB_RELEASES = pl.settings.links.releases;
+const GITHUB_ISSUES = pl.settings.links.issues;
 
 export default function SettingsScreen() {
   const db = useSQLiteContext();
@@ -57,6 +59,14 @@ export default function SettingsScreen() {
   } = useSettings();
 
   const pinEnabled = useSettings((s) => s.pinEnabled);
+  const lockTimeoutMs = useSettings((s) => s.lockTimeoutMs);
+  const setLockTimeoutMs = useSettings((s) => s.setLockTimeoutMs);
+  const lockTimeoutLabels: Record<number, string> = {
+    0: pl.settings.privacy.lockTimeoutImmediately,
+    30_000: pl.settings.privacy.lockTimeoutSeconds,
+    60_000: pl.settings.privacy.lockTimeoutMinute,
+    300_000: pl.settings.privacy.lockTimeoutMinutes,
+  };
   const { setPinEnabled, setBiometricsEnabled } = useSettings.getState();
   const authPhase = useAuthStore((s) => s.authPhase);
 
@@ -77,7 +87,18 @@ export default function SettingsScreen() {
     return d;
   }, [tempTime]);
 
-  const fs = (base: number) => scaledFont(base, fontSize);
+  async function commitReminder(enabled: boolean, time: string) {
+    const prev = { enabled: reminderEnabled, time: reminderTime };
+    setReminderEnabled(enabled);
+    setReminderTime(time);
+    try {
+      await applyReminder(enabled, time);
+    } catch {
+      setReminderEnabled(prev.enabled);
+      setReminderTime(prev.time);
+      Alert.alert(pl.settings.notifications.scheduleError);
+    }
+  }
 
   async function handleToggleReminder(value: boolean) {
     if (value) {
@@ -92,12 +113,8 @@ export default function SettingsScreen() {
         ]);
         return;
       }
-      await scheduleReminder(reminderTime);
-      setReminderEnabled(true);
-    } else {
-      await cancelReminder();
-      setReminderEnabled(false);
     }
+    await commitReminder(value, reminderTime);
   }
 
   function handlePickerChange(_event: unknown, date?: Date) {
@@ -108,10 +125,7 @@ export default function SettingsScreen() {
       // Android closes picker on selection — commit immediately
       setShowTimePicker(false);
       const newTime = `${h}:${m}`;
-      setReminderTime(newTime);
-      if (reminderEnabled) {
-        cancelReminder().then(() => scheduleReminder(newTime));
-      }
+      void commitReminder(reminderEnabled, newTime);
     } else {
       // iOS fires continuously while spinning — only update local state
       setTempTime(`${h}:${m}`);
@@ -120,18 +134,16 @@ export default function SettingsScreen() {
 
   async function commitTimeChange() {
     setShowTimePicker(false);
-    setReminderTime(tempTime);
-    if (reminderEnabled) {
-      await cancelReminder();
-      await scheduleReminder(tempTime);
-    }
+    await commitReminder(reminderEnabled, tempTime);
   }
 
-  async function handleExport() {
+  const exportGuard = useProtectedExport();
+
+  async function runExport() {
     try {
       await exportData(db);
-    } catch {
-      Alert.alert('Błąd', 'Nie udało się wyeksportować danych.');
+    } catch (err) {
+      reportExportError(err, pl.settings.data.exportErrorTitle, pl.settings.data.exportErrorMsg);
     }
   }
 
@@ -140,10 +152,16 @@ export default function SettingsScreen() {
       const result = await DocumentPicker.getDocumentAsync({ type: 'application/json' });
       if (result.canceled || !result.assets?.[0]) return;
       const { imported, skipped } = await importData(db, result.assets[0].uri);
-      Alert.alert('Importowano', `Dodano: ${imported}, pominięto: ${skipped}`);
+      Alert.alert(
+        pl.settings.data.importDoneTitle,
+        pl.settings.data.importResult(imported, skipped)
+      );
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : pl.settings.data.importError;
-      Alert.alert('Błąd importu', msg);
+      const msg =
+        e instanceof ImportError
+          ? pl.settings.data.importErrors[e.code]
+          : pl.settings.data.importError;
+      Alert.alert(pl.settings.data.importErrorTitle, msg);
     }
   }
 
@@ -165,7 +183,8 @@ export default function SettingsScreen() {
         onPress: async () => {
           await ThoughtRecordRepo.deleteAll(db);
           await ExperimentRepo.deleteAll(db);
-          Alert.alert('Gotowe', 'Wszystkie dane zostały usunięte.');
+          await clearExportFiles();
+          Alert.alert(pl.settings.data.deleteDoneTitle, pl.settings.data.deleteDone);
         },
       },
     ]);
@@ -174,14 +193,14 @@ export default function SettingsScreen() {
   const s = StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.bg },
     header: { paddingTop: 56, paddingHorizontal: spacing.md, paddingBottom: spacing.sm },
-    headerTitle: { fontSize: fs(22), fontWeight: '700', color: colors.text },
+    headerTitle: { fontSize: 22, fontWeight: '700', color: colors.text },
     sectionHeader: {
       paddingHorizontal: spacing.md,
       paddingTop: spacing.lg,
       paddingBottom: spacing.xs,
     },
     sectionTitle: {
-      fontSize: fs(11),
+      fontSize: 11,
       fontWeight: '600',
       color: colors.textMuted,
       textTransform: 'uppercase',
@@ -203,11 +222,11 @@ export default function SettingsScreen() {
     },
     rowBorder: { borderTopWidth: 1, borderTopColor: colors.border },
     rowLabel: { flex: 1 },
-    rowLabelText: { fontSize: fs(15), color: colors.text, fontWeight: '500' },
-    rowSubText: { fontSize: fs(12), color: colors.textMuted, marginTop: 2 },
-    rowValue: { fontSize: fs(15), color: colors.textMuted, marginRight: spacing.xs },
+    rowLabelText: { fontSize: 15, color: colors.text, fontWeight: '500' },
+    rowSubText: { fontSize: 12, color: colors.textMuted, marginTop: 2 },
+    rowValue: { fontSize: 15, color: colors.textMuted, marginRight: spacing.xs },
     chevron: { fontSize: 18, color: colors.textDim },
-    dangerText: { fontSize: fs(15), color: colors.danger, fontWeight: '500' },
+    dangerText: { fontSize: 15, color: colors.danger, fontWeight: '500' },
     fontSelector: { flexDirection: 'row', gap: spacing.xs },
     fontOption: {
       width: 36,
@@ -223,8 +242,8 @@ export default function SettingsScreen() {
     fontOptionText: { color: colors.textMuted, fontWeight: '600' },
     fontOptionTextActive: { color: colors.accent },
     appBlock: { paddingHorizontal: spacing.md, paddingVertical: 14 },
-    appName: { fontSize: fs(16), fontWeight: '700', color: colors.text },
-    appVersion: { fontSize: fs(12), color: colors.textMuted, marginTop: 2 },
+    appName: { fontSize: 16, fontWeight: '700', color: colors.text },
+    appVersion: { fontSize: 12, color: colors.textMuted, marginTop: 2 },
     paletteRow: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -258,12 +277,16 @@ export default function SettingsScreen() {
   return (
     <ScrollView style={s.container} contentContainerStyle={{ paddingBottom: 40 }}>
       <View style={s.header}>
-        <Text style={s.headerTitle}>{pl.nav.settings}</Text>
+        <Text style={s.headerTitle} accessibilityRole="header">
+          {pl.nav.settings}
+        </Text>
       </View>
 
       {/* Powiadomienia */}
       <View style={s.sectionHeader}>
-        <Text style={s.sectionTitle}>{pl.settings.notifications.title}</Text>
+        <Text style={s.sectionTitle} accessibilityRole="header">
+          {pl.settings.notifications.title}
+        </Text>
       </View>
       <View style={s.card}>
         <View style={s.row}>
@@ -272,6 +295,7 @@ export default function SettingsScreen() {
             <Text style={s.rowSubText}>{pl.settings.notifications.reminderSub}</Text>
           </View>
           <Switch
+            accessibilityLabel={pl.settings.notifications.reminder}
             value={reminderEnabled}
             onValueChange={handleToggleReminder}
             trackColor={{ false: colors.border, true: colors.accent }}
@@ -280,6 +304,7 @@ export default function SettingsScreen() {
         </View>
         {reminderEnabled && (
           <TouchableOpacity
+            accessibilityRole="button"
             style={[s.row, s.rowBorder]}
             onPress={() => {
               setTempTime(reminderTime);
@@ -290,14 +315,18 @@ export default function SettingsScreen() {
               <Text style={s.rowLabelText}>{pl.settings.notifications.time}</Text>
             </View>
             <Text style={s.rowValue}>{reminderTime}</Text>
-            <Text style={s.chevron}>›</Text>
+            <Text style={s.chevron} importantForAccessibility="no" accessibilityElementsHidden>
+              ›
+            </Text>
           </TouchableOpacity>
         )}
       </View>
 
       {/* Wygląd */}
       <View style={s.sectionHeader}>
-        <Text style={s.sectionTitle}>{pl.settings.appearance.title}</Text>
+        <Text style={s.sectionTitle} accessibilityRole="header">
+          {pl.settings.appearance.title}
+        </Text>
       </View>
       <View style={s.card}>
         <View style={s.row}>
@@ -306,6 +335,7 @@ export default function SettingsScreen() {
             <Text style={s.rowSubText}>{pl.settings.appearance.darkModeSub}</Text>
           </View>
           <Switch
+            accessibilityLabel={pl.settings.appearance.darkMode}
             value={darkMode}
             onValueChange={setDarkMode}
             trackColor={{ false: colors.border, true: colors.accent }}
@@ -325,6 +355,9 @@ export default function SettingsScreen() {
               key={id}
               style={[s.paletteRow, s.rowBorder]}
               onPress={() => setPalette(id)}
+              accessibilityRole="radio"
+              accessibilityLabel={pl.settings.appearance.palettes[id]}
+              accessibilityState={{ selected: isSelected }}
             >
               <View style={[s.paletteSwatchOuter, { backgroundColor: p.dark.surface }]}>
                 <View style={[s.paletteSwatchInner, { backgroundColor: p.dark.accent }]} />
@@ -344,7 +377,9 @@ export default function SettingsScreen() {
 
       {/* Dostępność */}
       <View style={s.sectionHeader}>
-        <Text style={s.sectionTitle}>{pl.settings.accessibility.title}</Text>
+        <Text style={s.sectionTitle} accessibilityRole="header">
+          {pl.settings.accessibility.title}
+        </Text>
       </View>
       <View style={s.card}>
         <View style={s.row}>
@@ -357,6 +392,9 @@ export default function SettingsScreen() {
                 key={key}
                 style={[s.fontOption, fontSize === key && s.fontOptionActive]}
                 onPress={() => setFontSize(key)}
+                accessibilityRole="radio"
+                accessibilityLabel={`${pl.settings.accessibility.fontSize}: ${pl.a11y.fontSize[key]}`}
+                accessibilityState={{ selected: fontSize === key }}
               >
                 <Text
                   style={[
@@ -377,6 +415,7 @@ export default function SettingsScreen() {
             <Text style={s.rowSubText}>{pl.settings.accessibility.reducedMotionSub}</Text>
           </View>
           <Switch
+            accessibilityLabel={pl.settings.accessibility.reducedMotion}
             value={reducedMotion}
             onValueChange={setReducedMotion}
             trackColor={{ false: colors.border, true: colors.accent }}
@@ -389,6 +428,7 @@ export default function SettingsScreen() {
             <Text style={s.rowSubText}>{pl.settings.accessibility.highContrastSub}</Text>
           </View>
           <Switch
+            accessibilityLabel={pl.settings.accessibility.highContrast}
             value={highContrast}
             onValueChange={setHighContrast}
             trackColor={{ false: colors.border, true: colors.accent }}
@@ -399,7 +439,9 @@ export default function SettingsScreen() {
 
       {/* Prywatność */}
       <View style={s.sectionHeader}>
-        <Text style={s.sectionTitle}>{pl.settings.privacy.title}</Text>
+        <Text style={s.sectionTitle} accessibilityRole="header">
+          {pl.settings.privacy.title}
+        </Text>
       </View>
       <View style={s.card}>
         <View style={s.row}>
@@ -407,6 +449,7 @@ export default function SettingsScreen() {
             <Text style={s.rowLabelText}>{pl.settings.privacy.pinEnabled}</Text>
           </View>
           <Switch
+            accessibilityLabel={pl.settings.privacy.pinEnabled}
             value={pinEnabled}
             onValueChange={handlePinToggle}
             disabled={authPhase === 'setup'}
@@ -416,12 +459,30 @@ export default function SettingsScreen() {
         </View>
         {pinEnabled && (
           <TouchableOpacity
+            accessibilityRole="button"
             style={[s.row, s.rowBorder]}
             onPress={() => useAuthStore.getState().requestVerify('change-pin')}
           >
             <View style={s.rowLabel}>
               <Text style={s.rowLabelText}>{pl.settings.privacy.changePin}</Text>
             </View>
+            <Text style={s.chevron} importantForAccessibility="no" accessibilityElementsHidden>
+              ›
+            </Text>
+          </TouchableOpacity>
+        )}
+        {pinEnabled && (
+          <TouchableOpacity
+            style={[s.row, s.rowBorder]}
+            onPress={() => {
+              const opts: readonly number[] = LOCK_TIMEOUT_OPTIONS_MS;
+              setLockTimeoutMs(opts[(opts.indexOf(lockTimeoutMs) + 1) % opts.length]);
+            }}
+          >
+            <View style={s.rowLabel}>
+              <Text style={s.rowLabelText}>{pl.settings.privacy.lockTimeout}</Text>
+            </View>
+            <Text style={s.rowValue}>{lockTimeoutLabels[lockTimeoutMs] ?? ''}</Text>
             <Text style={s.chevron}>›</Text>
           </TouchableOpacity>
         )}
@@ -429,24 +490,42 @@ export default function SettingsScreen() {
 
       {/* Dane */}
       <View style={s.sectionHeader}>
-        <Text style={s.sectionTitle}>{pl.settings.data.title}</Text>
+        <Text style={s.sectionTitle} accessibilityRole="header">
+          {pl.settings.data.title}
+        </Text>
       </View>
       <View style={s.card}>
-        <TouchableOpacity style={s.row} onPress={handleExport}>
+        <TouchableOpacity
+          accessibilityRole="button"
+          style={s.row}
+          onPress={() => exportGuard.guard(runExport)}
+        >
           <View style={s.rowLabel}>
             <Text style={s.rowLabelText}>{pl.settings.data.export}</Text>
             <Text style={s.rowSubText}>{pl.settings.data.exportSub}</Text>
           </View>
-          <Text style={s.chevron}>›</Text>
+          <Text style={s.chevron} importantForAccessibility="no" accessibilityElementsHidden>
+            ›
+          </Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[s.row, s.rowBorder]} onPress={handleImport}>
+        <TouchableOpacity
+          accessibilityRole="button"
+          style={[s.row, s.rowBorder]}
+          onPress={handleImport}
+        >
           <View style={s.rowLabel}>
             <Text style={s.rowLabelText}>{pl.settings.data.import}</Text>
             <Text style={s.rowSubText}>{pl.settings.data.importSub}</Text>
           </View>
-          <Text style={s.chevron}>›</Text>
+          <Text style={s.chevron} importantForAccessibility="no" accessibilityElementsHidden>
+            ›
+          </Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[s.row, s.rowBorder]} onPress={handleDeleteAll}>
+        <TouchableOpacity
+          accessibilityRole="button"
+          style={[s.row, s.rowBorder]}
+          onPress={handleDeleteAll}
+        >
           <View style={s.rowLabel}>
             <Text style={s.dangerText}>{pl.settings.data.deleteAll}</Text>
             <Text style={s.rowSubText}>{pl.settings.data.deleteAllSub}</Text>
@@ -456,17 +535,26 @@ export default function SettingsScreen() {
 
       {/* Zasoby pomocowe */}
       <View style={s.sectionHeader}>
-        <Text style={s.sectionTitle}>{pl.settings.resources.title}</Text>
+        <Text style={s.sectionTitle} accessibilityRole="header">
+          {pl.settings.resources.title}
+        </Text>
       </View>
       <View style={s.card}>
-        <TouchableOpacity style={s.row} onPress={() => Linking.openURL('tel:116123')}>
+        <TouchableOpacity
+          accessibilityRole="button"
+          style={s.row}
+          onPress={() => Linking.openURL('tel:116123')}
+        >
           <View style={s.rowLabel}>
             <Text style={s.rowLabelText}>{pl.settings.resources.adults}</Text>
             <Text style={s.rowSubText}>116 123</Text>
           </View>
-          <Text style={s.chevron}>›</Text>
+          <Text style={s.chevron} importantForAccessibility="no" accessibilityElementsHidden>
+            ›
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
+          accessibilityRole="button"
           style={[s.row, s.rowBorder]}
           onPress={() => Linking.openURL('tel:116111')}
         >
@@ -474,48 +562,64 @@ export default function SettingsScreen() {
             <Text style={s.rowLabelText}>{pl.settings.resources.children}</Text>
             <Text style={s.rowSubText}>116 111</Text>
           </View>
-          <Text style={s.chevron}>›</Text>
+          <Text style={s.chevron} importantForAccessibility="no" accessibilityElementsHidden>
+            ›
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
+          accessibilityRole="button"
           style={[s.row, s.rowBorder]}
           onPress={() => Linking.openURL('https://centrumwsparcia.pl')}
         >
           <View style={s.rowLabel}>
             <Text style={s.rowLabelText}>{pl.settings.resources.centrum}</Text>
-            <Text style={s.rowSubText}>centrumwsparcia.pl</Text>
+            <Text style={s.rowSubText}>{pl.settings.resources.centrumDomain}</Text>
           </View>
-          <Text style={s.chevron}>›</Text>
+          <Text style={s.chevron} importantForAccessibility="no" accessibilityElementsHidden>
+            ›
+          </Text>
         </TouchableOpacity>
       </View>
 
       {/* O aplikacji */}
       <View style={s.sectionHeader}>
-        <Text style={s.sectionTitle}>{pl.settings.about.title}</Text>
+        <Text style={s.sectionTitle} accessibilityRole="header">
+          {pl.settings.about.title}
+        </Text>
       </View>
       <View style={s.card}>
         <View style={s.appBlock}>
           <Text style={s.appName}>{pl.app.title}</Text>
-          <Text style={s.appVersion}>v{Constants.expoConfig?.version ?? '—'}</Text>
+          <Text style={s.appVersion}>
+            {pl.settings.about.version(Constants.expoConfig?.version ?? '—')}
+          </Text>
         </View>
         <TouchableOpacity
+          accessibilityRole="button"
           style={[s.row, s.rowBorder]}
           onPress={() => router.push('/settings/credits')}
         >
           <View style={s.rowLabel}>
             <Text style={s.rowLabelText}>{pl.settings.about.credits}</Text>
           </View>
-          <Text style={s.chevron}>›</Text>
+          <Text style={s.chevron} importantForAccessibility="no" accessibilityElementsHidden>
+            ›
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
+          accessibilityRole="button"
           style={[s.row, s.rowBorder]}
           onPress={() => router.push('/settings/bibliography')}
         >
           <View style={s.rowLabel}>
             <Text style={s.rowLabelText}>{pl.settings.about.bibliography}</Text>
           </View>
-          <Text style={s.chevron}>›</Text>
+          <Text style={s.chevron} importantForAccessibility="no" accessibilityElementsHidden>
+            ›
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
+          accessibilityRole="button"
           style={[s.row, s.rowBorder]}
           onPress={() => Linking.openURL(GITHUB_RELEASES)}
         >
@@ -523,22 +627,31 @@ export default function SettingsScreen() {
             <Text style={s.rowLabelText}>{pl.settings.about.changelog}</Text>
             <Text style={s.rowSubText}>{pl.settings.about.changelogSub}</Text>
           </View>
-          <Text style={s.chevron}>›</Text>
+          <Text style={s.chevron} importantForAccessibility="no" accessibilityElementsHidden>
+            ›
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
+          accessibilityRole="button"
           style={[s.row, s.rowBorder]}
           onPress={() => Linking.openURL(GITHUB_ISSUES)}
         >
           <View style={s.rowLabel}>
             <Text style={s.rowLabelText}>{pl.settings.about.report}</Text>
           </View>
-          <Text style={s.chevron}>›</Text>
+          <Text style={s.chevron} importantForAccessibility="no" accessibilityElementsHidden>
+            ›
+          </Text>
         </TouchableOpacity>
       </View>
 
       {/* Time picker */}
       {Platform.OS === 'ios' ? (
-        <Modal visible={showTimePicker} transparent animationType="slide">
+        <Modal
+          visible={showTimePicker}
+          transparent
+          animationType={reducedMotion ? 'none' : 'slide'}
+        >
           <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.5)' }}>
             <View
               style={{
@@ -551,14 +664,16 @@ export default function SettingsScreen() {
                 value={tempDate}
                 mode="time"
                 display="spinner"
+                {...PICKER_LOCALE_PROPS}
                 onChange={handlePickerChange}
                 textColor={colors.text}
               />
               <TouchableOpacity
+                accessibilityRole="button"
                 style={{ alignItems: 'center', paddingVertical: spacing.sm }}
                 onPress={commitTimeChange}
               >
-                <Text style={{ color: colors.accent, fontSize: fs(16), fontWeight: '600' }}>
+                <Text style={{ color: colors.accent, fontSize: 16, fontWeight: '600' }}>
                   {pl.common.done}
                 </Text>
               </TouchableOpacity>
@@ -571,10 +686,12 @@ export default function SettingsScreen() {
             value={reminderDate}
             mode="time"
             display="default"
+            {...PICKER_LOCALE_PROPS}
             onChange={handlePickerChange}
           />
         )
       )}
+      {exportGuard.modal}
     </ScrollView>
   );
 }

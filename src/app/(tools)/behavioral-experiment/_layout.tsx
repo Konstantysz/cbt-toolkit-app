@@ -3,28 +3,36 @@ import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { Stack, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { pl } from '../../../tools/behavioral-experiment/i18n/pl';
+import { pl as corePl } from '../../../core/i18n/pl';
 import { useColors } from '../../../core/theme/useColors';
+import { useStackAnimation } from '../../../core/settings/useReducedMotion';
 
 function BackToHome() {
   const colors = useColors();
+  const motion = useStackAnimation();
   const styles = useMemo(
     () =>
       StyleSheet.create({
         backBtn: { flexDirection: 'row', alignItems: 'center', gap: 2, paddingLeft: 4 },
         backLabel: { fontSize: 15, color: colors.accent },
       }),
-    [colors]
+    [colors, motion]
   );
   return (
-    <TouchableOpacity style={styles.backBtn} onPress={() => router.replace('/')}>
+    <TouchableOpacity
+      accessibilityRole="button"
+      style={styles.backBtn}
+      onPress={() => router.replace('/')}
+    >
       <Ionicons name="chevron-back" size={18} color={colors.accent} />
-      <Text style={styles.backLabel}>Narzędzia</Text>
+      <Text style={styles.backLabel}>{corePl.common.tools}</Text>
     </TouchableOpacity>
   );
 }
 
 export default function BehavioralExperimentLayout(): React.JSX.Element {
   const colors = useColors();
+  const motion = useStackAnimation();
   const stackScreenOptions = useMemo(
     () => ({
       headerStyle: { backgroundColor: colors.surface },
@@ -32,8 +40,9 @@ export default function BehavioralExperimentLayout(): React.JSX.Element {
       headerShadowVisible: false,
       headerTitleStyle: { color: colors.text, fontWeight: '600' as const },
       headerTitleAlign: 'center' as const,
+      ...motion,
     }),
-    [colors]
+    [colors, motion]
   );
   return (
     <Stack screenOptions={stackScreenOptions}>
@@ -41,9 +50,9 @@ export default function BehavioralExperimentLayout(): React.JSX.Element {
         name="index"
         options={{ title: pl.toolName, headerLeft: () => <BackToHome /> }}
       />
-      <Stack.Screen name="new" options={{ title: 'Nowy eksperyment' }} />
-      <Stack.Screen name="[id]/index" options={{ title: 'Eksperyment' }} />
-      <Stack.Screen name="[id]/result" options={{ title: 'Dodaj wynik' }} />
+      <Stack.Screen name="new" options={{ title: pl.nav.newTitle }} />
+      <Stack.Screen name="[id]/index" options={{ title: pl.nav.detailTitle }} />
+      <Stack.Screen name="[id]/result" options={{ title: pl.nav.resultTitle }} />
     </Stack>
   );
 }

@@ -1,10 +1,16 @@
-Create an Architecture Decision Record in ~/brains/cbt-toolkit-app/Engineering/Decisions/.
+Create an Architecture Decision Record. Usage: /adr <title>
 
-Auto-increment the ADR number based on existing files. Name the file ADR-NNN-<title>.md.
+Preflight:
+- If `~/brains/cbt-toolkit-app/Engineering/Decisions/` does not exist, stop and ask the user to restart with `--add-dir ~/brains/cbt-toolkit-app`.
+- If <title> is empty, ask for it.
+- Context, Decision, Consequences and Alternatives must come from the user or the current session. If any is unknown, ask. Never invent rationale.
 
-After creating the ADR, add it to ~/brains/cbt-toolkit-app/Engineering/Decisions/Decisions.md under Key Files.
+Steps:
+1. Find the highest existing ADR-NNN in the directory and use NNN+1 (zero-padded). Name the file `ADR-NNN-<title>.md` (PascalCase-hyphen, no overwrite of an existing file).
+2. Show the draft and target paths, and get explicit confirmation before writing anything.
+3. Write the file, then add it to `~/brains/cbt-toolkit-app/Engineering/Decisions/Decisions.md` under Key Files.
 
-Format:
+Content is English. Format:
 
 ```
 # ADR-NNN: <Title>
