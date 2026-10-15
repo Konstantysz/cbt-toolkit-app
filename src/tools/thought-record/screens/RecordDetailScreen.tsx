@@ -10,14 +10,15 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
-import { format, parseISO } from 'date-fns';
-import { pl as dateFnsPl } from 'date-fns/locale';
 import { useColors } from '../../../core/theme/useColors';
 import { iconRow, HIT_SLOP } from '../../../core/theme';
 import { useThoughtRecord } from '../hooks/useThoughtRecords';
+import { LoadError } from '../../../core/components/LoadError';
 import * as repo from '../repository';
 import type { Emotion } from '../types';
 import { pl } from '../i18n/pl';
+import { pl as corePl } from '../../../core/i18n/pl';
+import { formatDate } from '../../../core/i18n/date';
 import { Ionicons } from '@expo/vector-icons';
 
 interface Props {
@@ -205,8 +206,8 @@ function EmotionRow({ emotion }: { emotion: Emotion }) {
         {improved && <Text style={styles.emotionDrop}>↓ {pl.compare.decreased}</Text>}
       </View>
       <View style={styles.intensityBars}>
-        <IntensityBar label="przed" value={before} />
-        {after !== undefined && <IntensityBar label="po" value={after} accent />}
+        <IntensityBar label={pl.detail.before} value={before} />
+        {after !== undefined && <IntensityBar label={pl.detail.after} value={after} accent />}
       </View>
     </View>
   );
@@ -214,30 +215,26 @@ function EmotionRow({ emotion }: { emotion: Emotion }) {
 
 export function RecordDetailScreen({ id }: Props): React.JSX.Element {
   const db = useSQLiteContext();
-  const { record, loading } = useThoughtRecord(db, id);
+  const { record, loading, error, refresh } = useThoughtRecord(db, id);
   const colors = useColors();
   const styles = useStyles();
 
   const confirmDelete = useCallback(() => {
-    Alert.alert(
-      'Usuń wpis',
-      'Czy na pewno chcesz usunąć ten zapis? Tej operacji nie można cofnąć.',
-      [
-        { text: 'Anuluj', style: 'cancel' },
-        {
-          text: 'Usuń',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await repo.deleteRecord(db, id);
-              router.back();
-            } catch {
-              Alert.alert('Błąd', 'Nie udało się usunąć wpisu. Spróbuj ponownie.');
-            }
-          },
+    Alert.alert(pl.detail.deleteConfirmTitle, pl.detail.deleteConfirmMsg, [
+      { text: corePl.common.cancel, style: 'cancel' },
+      {
+        text: corePl.common.delete,
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await repo.deleteRecord(db, id);
+            router.back();
+          } catch {
+            Alert.alert(corePl.common.error, pl.detail.deleteError);
+          }
         },
-      ]
-    );
+      },
+    ]);
   }, [db, id]);
 
   if (loading) {
@@ -248,25 +245,27 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
     );
   }
 
+  if (error) return <LoadError onRetry={refresh} />;
+
   if (!record) {
     return (
       <View style={styles.centered}>
-        <Text style={styles.errorText}>Nie znaleziono wpisu.</Text>
+        <Text style={styles.errorText}>{pl.detail.notFound}</Text>
       </View>
     );
   }
 
   const formattedDate = record.situationDate
-    ? format(parseISO(record.situationDate), 'd MMMM yyyy', { locale: dateFnsPl })
-    : format(parseISO(record.createdAt), 'd MMMM yyyy · HH:mm', { locale: dateFnsPl });
+    ? formatDate(record.situationDate, 'long')
+    : formatDate(record.createdAt, 'longTime');
 
   const sections = [
-    { step: '01', title: 'Sytuacja', text: record.situation },
-    { step: '03', title: 'Myśli automatyczne', text: record.automaticThoughts },
-    { step: '04', title: 'Argumenty za', text: record.evidenceFor },
-    { step: '05', title: 'Argumenty przeciw', text: record.evidenceAgainst },
-    { step: '06', title: 'Myśl alternatywna', text: record.alternativeThought },
-    { step: '07', title: 'Podsumowanie', text: record.outcome ?? '' },
+    { step: '01', title: pl.step1.title, text: record.situation },
+    { step: '03', title: pl.step3.title, text: record.automaticThoughts },
+    { step: '04', title: pl.step4.title, text: record.evidenceFor },
+    { step: '05', title: pl.step5.title, text: record.evidenceAgainst },
+    { step: '06', title: pl.step6.title, text: record.alternativeThought },
+    { step: '07', title: pl.step7.title, text: record.outcome ?? '' },
   ];
 
   return (
@@ -277,20 +276,20 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
             <Text style={styles.headerDate}>{formattedDate}</Text>
             {record.isComplete ? (
               <View style={[styles.badge, styles.badgeComplete]}>
-                <Text style={styles.badgeTextComplete}>Kompletny</Text>
+                <Text style={styles.badgeTextComplete}>{pl.status.complete}</Text>
               </View>
             ) : (
               <View style={[styles.badge, styles.badgeInProgress]}>
-                <Text style={styles.badgeTextInProgress}>W toku</Text>
+                <Text style={styles.badgeTextInProgress}>{pl.status.inProgress}</Text>
               </View>
             )}
           </View>
           <View style={styles.metaActions}>
             <TouchableOpacity
+              accessibilityRole="button"
               style={styles.actionBtn}
               hitSlop={HIT_SLOP}
               onPress={() => router.push(`/(tools)/thought-record/${id}/compare`)}
-              accessibilityLabel="Porównaj zapisy"
             >
               <View style={iconRow}>
                 <Ionicons
@@ -303,10 +302,10 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
               </View>
             </TouchableOpacity>
             <TouchableOpacity
+              accessibilityRole="button"
               style={styles.actionBtn}
               hitSlop={HIT_SLOP}
               onPress={() => router.push(`/(tools)/thought-record/${id}/form`)}
-              accessibilityLabel="Formularz papierowy"
             >
               <View style={iconRow}>
                 <Ionicons
@@ -323,8 +322,10 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
 
         {/* Emotions (step 02) */}
         <View style={styles.section}>
-          <Text style={styles.stepNum}>Krok 02</Text>
-          <Text style={styles.stepTitle}>Emocje</Text>
+          <Text style={styles.stepNum}>{pl.detail.stepLabel('02')}</Text>
+          <Text style={styles.stepTitle} accessibilityRole="header">
+            {pl.step2.title}
+          </Text>
           {record.emotions.length === 0 ? (
             <Text style={styles.emptyField}>—</Text>
           ) : (
@@ -337,8 +338,10 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
         {sections.map((sec, i) => (
           <React.Fragment key={sec.step}>
             <View style={styles.section}>
-              <Text style={styles.stepNum}>Krok {sec.step}</Text>
-              <Text style={styles.stepTitle}>{sec.title}</Text>
+              <Text style={styles.stepNum}>{pl.detail.stepLabel(sec.step)}</Text>
+              <Text style={styles.stepTitle} accessibilityRole="header">
+                {sec.title}
+              </Text>
               <Text style={sec.text ? styles.bodyText : styles.bodyTextEmpty}>
                 {sec.text || '—'}
               </Text>
@@ -349,18 +352,23 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
 
         <View style={styles.actionRow}>
           <TouchableOpacity
+            accessibilityRole="button"
             style={styles.editBtn}
             onPress={() => router.push(`/(tools)/thought-record/${id}/edit`)}
             activeOpacity={0.8}
-            accessibilityLabel="Edytuj wpis"
           >
             <View style={iconRow}>
               <Ionicons name="create-outline" size={14} color={colors.accent} accessible={false} />
               <Text style={styles.editBtnText}>{pl.edit.title}</Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.deleteBtn} onPress={confirmDelete} activeOpacity={0.8}>
-            <Text style={styles.deleteBtnText}>Usuń wpis</Text>
+          <TouchableOpacity
+            accessibilityRole="button"
+            style={styles.deleteBtn}
+            onPress={confirmDelete}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.deleteBtnText}>{pl.detail.deleteBtn}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

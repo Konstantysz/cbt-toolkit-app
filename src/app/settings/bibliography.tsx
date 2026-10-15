@@ -3,6 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-nati
 import { useRouter } from 'expo-router';
 import { useColors } from '../../core/theme/useColors';
 import { spacing, radius } from '../../core/theme';
+import { pl } from '../../core/i18n/pl';
 
 const REFERENCES = [
   {
@@ -75,10 +76,16 @@ export default function BibliographyScreen() {
   return (
     <ScrollView style={s.container} contentContainerStyle={{ paddingBottom: 40 }}>
       <View style={s.header}>
-        <TouchableOpacity onPress={() => router.back()}>
-          <Text style={s.backText}>‹ Wstecz</Text>
+        <TouchableOpacity
+          accessibilityRole="button"
+          accessibilityLabel={pl.common.back}
+          onPress={() => router.back()}
+        >
+          <Text style={s.backText}>{pl.common.backWithChevron}</Text>
         </TouchableOpacity>
-        <Text style={s.headerTitle}>Źródła i bibliografia</Text>
+        <Text style={s.headerTitle} accessibilityRole="header">
+          {pl.settings.about.bibliography}
+        </Text>
       </View>
       <View style={s.card}>
         {REFERENCES.map((ref, i) => (

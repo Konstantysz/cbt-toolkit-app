@@ -107,3 +107,21 @@ describe('useAuthStore — checkLockOnForeground', () => {
     expect(useAuthStore.getState().backgroundedAt).toBeNull();
   });
 });
+
+describe('useAuthStore — lock timeout and clock safety', () => {
+  beforeEach(() => {
+    useAuthStore.setState({ authPhase: 'unlocked', backgroundedAt: null, pendingAction: null });
+  });
+
+  it('locks immediately when timeout is 0', () => {
+    useAuthStore.getState().setBackgroundedAt(Date.now());
+    useAuthStore.getState().checkLockOnForeground(true, 0);
+    expect(useAuthStore.getState().authPhase).toBe('locked');
+  });
+
+  it('locks when the clock moved backwards', () => {
+    useAuthStore.getState().setBackgroundedAt(Date.now() + 60_000);
+    useAuthStore.getState().checkLockOnForeground(true, 300_000);
+    expect(useAuthStore.getState().authPhase).toBe('locked');
+  });
+});

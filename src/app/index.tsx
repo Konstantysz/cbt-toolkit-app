@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getEnabledTools } from '../tools/registry';
 import { spacing, radius } from '../core/theme';
 import { useColors } from '../core/theme/useColors';
+import { pl } from '../core/i18n/pl';
 import type { ToolDefinition } from '../core/types/tool';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -110,12 +111,16 @@ export default function HomeScreen(): React.JSX.Element {
       <StatusBar barStyle="light-content" backgroundColor={colors.bg} />
 
       <View style={styles.header}>
-        <Text style={styles.appTitle}>CBT Toolkit</Text>
-        <Text style={styles.appSubtitle}>Narzędzia terapii poznawczo-behawioralnej</Text>
+        <Text style={styles.appTitle} accessibilityRole="header">
+          {pl.app.name}
+        </Text>
+        <Text style={styles.appSubtitle}>{pl.home.subtitle}</Text>
       </View>
 
       <View style={styles.sectionHeader}>
-        <Text style={styles.sectionLabel}>NARZĘDZIA</Text>
+        <Text style={styles.sectionLabel} accessibilityRole="header">
+          {pl.home.sectionLabel}
+        </Text>
         <View style={styles.sectionLine} />
       </View>
 
@@ -124,6 +129,7 @@ export default function HomeScreen(): React.JSX.Element {
       >
         {tools.map((tool: ToolDefinition) => (
           <TouchableOpacity
+            accessibilityRole="button"
             key={tool.id}
             style={styles.card}
             activeOpacity={0.75}

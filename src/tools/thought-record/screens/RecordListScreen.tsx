@@ -1,18 +1,17 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router, useFocusEffect } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
-import { format, parseISO } from 'date-fns';
-import { pl as dateFnsPl } from 'date-fns/locale';
 import { useColors } from '../../../core/theme/useColors';
 import { SearchBar } from '../../../core/components/SearchBar';
+import { formatDate } from '../../../core/i18n/date';
+import { matchesQuery } from '../../../core/i18n/search';
 import { useThoughtRecords } from '../hooks/useThoughtRecords';
 import { insertSeedRecord } from '../repository';
+import { LoadError } from '../../../core/components/LoadError';
+import { seedOnce } from '../../../core/db/seedOnce';
 import { pl } from '../i18n/pl';
 import type { ThoughtRecord } from '../types';
-
-const ONBOARDING_KEY = 'thought-record:onboarding-seeded';
 
 function useStyles() {
   const colors = useColors();
@@ -112,7 +111,7 @@ function useStyles() {
 
 export function RecordListScreen(): React.JSX.Element {
   const db = useSQLiteContext();
-  const { records, loading, refresh } = useThoughtRecords(db);
+  const { records, loading, error, refresh } = useThoughtRecords(db);
   const styles = useStyles();
   const [query, setQuery] = useState('');
 
@@ -124,58 +123,45 @@ export function RecordListScreen(): React.JSX.Element {
 
   // Onboarding seed
   useEffect(() => {
-    if (records.length > 0) return;
-    (async () => {
-      try {
-        const val = await AsyncStorage.getItem(ONBOARDING_KEY);
-        if (val !== null) return;
-        await insertSeedRecord(db);
-        await AsyncStorage.setItem(ONBOARDING_KEY, '1');
-        refresh();
-      } catch {
-        // seed failure is non-critical — user can still add records manually
-      }
-    })();
-  }, [records.length, db, refresh]);
+    if (loading || error || records.length > 0) return;
+    seedOnce(db, 'thought-record', insertSeedRecord)
+      .then((seeded) => {
+        if (seeded) refresh();
+      })
+      .catch(() => {}); // seed failure is non-critical
+  }, [loading, error, records.length, db, refresh]);
 
-  // Search filter — OR logic, case-insensitive
+  // Search filter — OR logic, case- and diacritic-insensitive
   const filtered = useMemo(() => {
     if (!query) return records;
-    const q = query.toLowerCase();
     return records.filter(
-      (r) =>
-        r.situation.toLowerCase().includes(q) ||
-        r.emotions.some((e) => e.name.toLowerCase().includes(q))
+      (r) => matchesQuery(r.situation, query) || r.emotions.some((e) => matchesQuery(e.name, query))
     );
   }, [records, query]);
-
-  const formatDate = useCallback(
-    (iso: string) => format(parseISO(iso), 'd MMM yyyy · HH:mm', { locale: dateFnsPl }),
-    []
-  );
 
   const renderItem = useCallback(
     ({ item }: { item: ThoughtRecord }) => {
       const emotionNames = item.emotions.map((e) => e.name);
       return (
         <TouchableOpacity
+          accessibilityRole="button"
           style={styles.card}
           onPress={() => router.push(`/(tools)/thought-record/${item.id}`)}
           activeOpacity={0.8}
         >
           <View style={styles.cardTop}>
-            <Text style={styles.date}>{formatDate(item.createdAt)}</Text>
+            <Text style={styles.date}>{formatDate(item.createdAt, 'shortTime')}</Text>
             {item.isExample ? (
               <View style={[styles.badge, styles.badgeExample]}>
                 <Text style={styles.badgeTextInProgress}>{pl.onboarding.badge}</Text>
               </View>
             ) : item.isComplete ? (
               <View style={[styles.badge, styles.badgeComplete]}>
-                <Text style={styles.badgeTextComplete}>Kompletny</Text>
+                <Text style={styles.badgeTextComplete}>{pl.status.complete}</Text>
               </View>
             ) : (
               <View style={[styles.badge, styles.badgeInProgress]}>
-                <Text style={styles.badgeTextInProgress}>W toku</Text>
+                <Text style={styles.badgeTextInProgress}>{pl.status.inProgress}</Text>
               </View>
             )}
           </View>
@@ -184,7 +170,7 @@ export function RecordListScreen(): React.JSX.Element {
               {item.situation}
             </Text>
           ) : (
-            <Text style={[styles.situation, styles.situationEmpty]}>Brak opisu sytuacji</Text>
+            <Text style={[styles.situation, styles.situationEmpty]}>{pl.list.noSituation}</Text>
           )}
           {emotionNames.length > 0 && (
             <View style={styles.tags}>
@@ -205,10 +191,11 @@ export function RecordListScreen(): React.JSX.Element {
         </TouchableOpacity>
       );
     },
-    [formatDate, styles]
+    [styles]
   );
 
   if (loading) return <View style={styles.container} />;
+  if (error) return <LoadError onRetry={refresh} />;
 
   const showEmpty = filtered.length === 0;
   const showNoResults = showEmpty && query.length > 0;
@@ -224,8 +211,8 @@ export function RecordListScreen(): React.JSX.Element {
             <Text style={styles.emptyText}>{pl.search.noResults(query)}</Text>
           ) : (
             <>
-              <Text style={styles.emptyText}>Brak wpisów</Text>
-              <Text style={styles.emptySub}>Dotknij + aby dodać pierwszy zapis myśli.</Text>
+              <Text style={styles.emptyText}>{pl.list.empty}</Text>
+              <Text style={styles.emptySub}>{pl.list.emptySub}</Text>
             </>
           )}
         </View>
@@ -239,6 +226,7 @@ export function RecordListScreen(): React.JSX.Element {
       )}
 
       <TouchableOpacity
+        accessibilityRole="button"
         style={styles.fab}
         onPress={() => router.push('/(tools)/thought-record/new')}
         activeOpacity={0.85}

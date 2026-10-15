@@ -101,12 +101,20 @@ export function PinSetupScreen({ onComplete }: PinSetupScreenProps) {
         <View style={s.biometricsBox}>
           <Text style={s.biometricsTitle}>{pl.auth.setup.biometricsTitle}</Text>
           <View style={s.row}>
-            <TouchableOpacity style={[s.button, s.buttonSecondary]} onPress={() => finish(false)}>
+            <TouchableOpacity
+              accessibilityRole="button"
+              style={[s.button, s.buttonSecondary]}
+              onPress={() => finish(false)}
+            >
               <Text style={[s.buttonText, s.buttonSecondaryText]}>
                 {pl.auth.setup.biometricsSkip}
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity style={s.button} onPress={() => finish(true)}>
+            <TouchableOpacity
+              accessibilityRole="button"
+              style={s.button}
+              onPress={() => finish(true)}
+            >
               <Text style={s.buttonText}>{pl.auth.setup.biometricsEnable}</Text>
             </TouchableOpacity>
           </View>

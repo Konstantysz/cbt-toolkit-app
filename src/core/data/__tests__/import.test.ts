@@ -132,10 +132,12 @@ describe('importData', () => {
     await expect(importData(mockDb, 'file:///bad.json')).rejects.toThrow();
   });
 
-  it('throws with human-readable Polish message on validation failure', async () => {
+  it('throws an ImportError with a code on validation failure', async () => {
     const invalidFile = { version: 99, thoughtRecords: [], behavioralExperiments: [] };
     (FileSystem.readAsStringAsync as jest.Mock).mockResolvedValueOnce(JSON.stringify(invalidFile));
-    await expect(importData(mockDb, 'file:///bad.json')).rejects.toThrow('Nieznana wersja pliku');
+    await expect(importData(mockDb, 'file:///bad.json')).rejects.toMatchObject({
+      code: 'unknownVersion',
+    });
   });
 
   it('imports abc entries when present', async () => {
