@@ -1,0 +1,1 @@
+C:/Users/koste/brains/cbt-toolkit-app/GLOSSARY.md
