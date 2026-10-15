@@ -10,6 +10,7 @@ import {
 import { useSQLiteContext } from 'expo-sqlite';
 import { useColors } from '../../../core/theme/useColors';
 import { useThoughtRecord } from '../hooks/useThoughtRecords';
+import { LoadError } from '../../../core/components/LoadError';
 import { pl } from '../i18n/pl';
 import type { Emotion } from '../../../core/types';
 
@@ -93,7 +94,7 @@ function useStyles() {
 
 export function CompareScreen({ id }: CompareScreenProps): React.JSX.Element {
   const db = useSQLiteContext();
-  const { record, loading } = useThoughtRecord(db, id);
+  const { record, loading, error, refresh } = useThoughtRecord(db, id);
   const [page, setPage] = useState(0);
   const styles = useStyles();
   const colors = useColors();
@@ -105,6 +106,8 @@ export function CompareScreen({ id }: CompareScreenProps): React.JSX.Element {
       </View>
     );
   }
+  if (error) return <LoadError onRetry={refresh} />;
+
   if (!record) {
     return (
       <View style={styles.centered}>

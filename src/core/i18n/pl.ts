@@ -14,6 +14,8 @@ export const pl = {
     search: 'Szukaj',
     noEntries: 'Brak wpisów',
     confirmDelete: 'Czy na pewno chcesz usunąć?',
+    loadError: 'Nie udało się wczytać danych.',
+    retry: 'Spróbuj ponownie',
   },
   settings: {
     notifications: {

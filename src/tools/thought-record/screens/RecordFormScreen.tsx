@@ -19,6 +19,7 @@ import {
 } from '../../../core/data/exportFiles';
 import { useProtectedExport } from '../../../core/data/useProtectedExport';
 import { useThoughtRecord } from '../hooks/useThoughtRecords';
+import { LoadError } from '../../../core/components/LoadError';
 import { pl } from '../i18n/pl';
 import type { Emotion } from '../types';
 
@@ -93,7 +94,7 @@ function useStyles() {
 
 export function RecordFormScreen({ id }: Props): React.JSX.Element {
   const db = useSQLiteContext();
-  const { record, loading } = useThoughtRecord(db, id);
+  const { record, loading, error, refresh } = useThoughtRecord(db, id);
   const formRef = useRef<View>(null);
   const [isExporting, setIsExporting] = useState(false);
   const colors = useColors();
@@ -147,6 +148,8 @@ export function RecordFormScreen({ id }: Props): React.JSX.Element {
       </View>
     );
   }
+
+  if (error) return <LoadError onRetry={refresh} />;
 
   if (!record) {
     return (
