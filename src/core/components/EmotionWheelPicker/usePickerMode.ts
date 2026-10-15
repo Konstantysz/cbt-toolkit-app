@@ -16,12 +16,14 @@ export function usePickerMode(): UsePickerModeResult {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    AsyncStorage.getItem(STORAGE_KEY).then((saved) => {
-      if (saved === 'wheel' || saved === 'chips') {
-        setModeState(saved);
-      }
-      setIsLoading(false);
-    });
+    AsyncStorage.getItem(STORAGE_KEY)
+      .then((saved) => {
+        if (saved === 'wheel' || saved === 'chips') {
+          setModeState(saved);
+        }
+      })
+      .catch(() => {}) // unreadable value: keep the default mode
+      .finally(() => setIsLoading(false));
   }, []);
 
   function setMode(next: PickerMode) {

@@ -15,6 +15,7 @@ import { pl as dateFnsPl } from 'date-fns/locale';
 import { useColors } from '../../../core/theme/useColors';
 import { iconRow } from '../../../core/theme';
 import { useThoughtRecord } from '../hooks/useThoughtRecords';
+import { LoadError } from '../../../core/components/LoadError';
 import * as repo from '../repository';
 import type { Emotion } from '../types';
 import { pl } from '../i18n/pl';
@@ -214,7 +215,7 @@ function EmotionRow({ emotion }: { emotion: Emotion }) {
 
 export function RecordDetailScreen({ id }: Props): React.JSX.Element {
   const db = useSQLiteContext();
-  const { record, loading } = useThoughtRecord(db, id);
+  const { record, loading, error, refresh } = useThoughtRecord(db, id);
   const colors = useColors();
   const styles = useStyles();
 
@@ -247,6 +248,8 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
       </View>
     );
   }
+
+  if (error) return <LoadError onRetry={refresh} />;
 
   if (!record) {
     return (

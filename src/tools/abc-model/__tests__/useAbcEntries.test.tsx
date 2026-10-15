@@ -26,12 +26,17 @@ const fakeEntry: AbcEntry = {
 beforeEach(() => jest.clearAllMocks());
 
 describe('useAbcEntries', () => {
-  it('loads entries on mount', async () => {
+  it('does not fetch on mount; loads entries on refresh', async () => {
     (repo.getEntries as jest.Mock).mockResolvedValue([fakeEntry]);
 
     const { result } = renderHook(() => useAbcEntries(mockDb));
 
     await act(async () => {});
+    expect(repo.getEntries).not.toHaveBeenCalled();
+
+    await act(async () => {
+      await result.current.refresh();
+    });
 
     expect(result.current.entries).toEqual([fakeEntry]);
     expect(result.current.loading).toBe(false);
