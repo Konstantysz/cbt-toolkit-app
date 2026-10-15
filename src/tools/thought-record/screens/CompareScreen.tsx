@@ -181,7 +181,9 @@ function CompactEmotionBars({ emotions }: { emotions: Emotion[] }) {
         <View key={em.name} style={styles.compactEmRow}>
           <Text style={styles.compactEmName}>
             {em.name}
-            {em.intensityAfter !== undefined && em.intensityAfter < em.intensityBefore ? ' ↓' : ''}
+            {em.intensityAfter !== undefined && em.intensityAfter < em.intensityBefore
+              ? ` ↓ ${pl.compare.decreased}`
+              : ''}
           </Text>
           <View style={styles.compactBars}>
             <View style={styles.compactBarRow}>

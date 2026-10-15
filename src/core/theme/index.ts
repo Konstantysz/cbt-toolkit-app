@@ -67,3 +67,6 @@ export const typography = {
   xl: 22,
   xxl: 28,
 } as const;
+
+/** Extends small controls (~24-28 px) to a >= 44 px touch area. */
+export const HIT_SLOP = { top: 10, bottom: 10, left: 8, right: 8 } as const;

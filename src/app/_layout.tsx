@@ -13,9 +13,12 @@ import { scheduleReminder, cancelReminder } from '../core/notifications/schedule
 import { useAuthGuard } from '../core/auth/useAuthGuard';
 import { useAuthStore } from '../core/auth/store';
 import { clearPin } from '../core/auth/pin';
+import { applyFontScale } from '../core/settings/applyFontScale';
 import { PinOnboardingScreen } from '../core/auth/screens/PinOnboardingScreen';
 import { PinSetupScreen } from '../core/auth/screens/PinSetupScreen';
 import { PinLockScreen } from '../core/auth/screens/PinLockScreen';
+
+applyFontScale();
 
 async function onInit(db: import('expo-sqlite').SQLiteDatabase) {
   await initCoreTables(db);
@@ -54,7 +57,7 @@ function AppContent() {
       headerShown: false,
       tabBarStyle: { backgroundColor: colors.surface, borderTopColor: colors.border },
       tabBarActiveTintColor: colors.accent,
-      tabBarInactiveTintColor: colors.textDim,
+      tabBarInactiveTintColor: colors.textMuted,
     }),
     [colors]
   );

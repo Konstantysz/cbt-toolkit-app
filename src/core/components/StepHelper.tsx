@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useColors } from '../theme/useColors';
+import { HIT_SLOP } from '../theme';
 
 interface StepHelperProps {
   hint: string;
@@ -71,6 +72,7 @@ export function StepHelper({
       <TouchableOpacity
         style={[styles.toggle, open && styles.toggleActive]}
         onPress={() => setOpen((o) => !o)}
+        hitSlop={HIT_SLOP}
         activeOpacity={0.7}
       >
         <Text style={styles.toggleText}>{toggleLabel}</Text>

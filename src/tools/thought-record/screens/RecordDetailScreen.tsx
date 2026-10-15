@@ -13,7 +13,7 @@ import { useSQLiteContext } from 'expo-sqlite';
 import { format, parseISO } from 'date-fns';
 import { pl as dateFnsPl } from 'date-fns/locale';
 import { useColors } from '../../../core/theme/useColors';
-import { iconRow } from '../../../core/theme';
+import { iconRow, HIT_SLOP } from '../../../core/theme';
 import { useThoughtRecord } from '../hooks/useThoughtRecords';
 import * as repo from '../repository';
 import type { Emotion } from '../types';
@@ -202,7 +202,7 @@ function EmotionRow({ emotion }: { emotion: Emotion }) {
     <View style={styles.emotionRow}>
       <View style={styles.emotionNameRow}>
         <Text style={styles.emotionName}>{emotion.name}</Text>
-        {improved && <Text style={styles.emotionDrop}>↓</Text>}
+        {improved && <Text style={styles.emotionDrop}>↓ {pl.compare.decreased}</Text>}
       </View>
       <View style={styles.intensityBars}>
         <IntensityBar label="przed" value={before} />
@@ -288,6 +288,7 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
           <View style={styles.metaActions}>
             <TouchableOpacity
               style={styles.actionBtn}
+              hitSlop={HIT_SLOP}
               onPress={() => router.push(`/(tools)/thought-record/${id}/compare`)}
               accessibilityLabel="Porównaj zapisy"
             >
@@ -303,6 +304,7 @@ export function RecordDetailScreen({ id }: Props): React.JSX.Element {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.actionBtn}
+              hitSlop={HIT_SLOP}
               onPress={() => router.push(`/(tools)/thought-record/${id}/form`)}
               accessibilityLabel="Formularz papierowy"
             >

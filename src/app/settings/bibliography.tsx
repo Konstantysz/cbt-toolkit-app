@@ -2,8 +2,6 @@ import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useColors } from '../../core/theme/useColors';
-import { useSettings } from '../../core/settings/store';
-import { scaledFont } from '../../core/settings/fontScale';
 import { spacing, radius } from '../../core/theme';
 
 const REFERENCES = [
@@ -42,8 +40,6 @@ const REFERENCES = [
 export default function BibliographyScreen() {
   const router = useRouter();
   const colors = useColors();
-  const { fontSize } = useSettings();
-  const fs = (base: number) => scaledFont(base, fontSize);
 
   const s = StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.bg },
@@ -54,8 +50,8 @@ export default function BibliographyScreen() {
       paddingHorizontal: spacing.md,
       paddingBottom: spacing.md,
     },
-    backText: { fontSize: fs(16), color: colors.accent, marginRight: spacing.sm },
-    headerTitle: { fontSize: fs(20), fontWeight: '700', color: colors.text },
+    backText: { fontSize: 16, color: colors.accent, marginRight: spacing.sm },
+    headerTitle: { fontSize: 20, fontWeight: '700', color: colors.text },
     card: {
       margin: spacing.md,
       backgroundColor: colors.surface,
@@ -71,9 +67,9 @@ export default function BibliographyScreen() {
       borderBottomColor: colors.border,
     },
     refLast: { marginBottom: 0, paddingBottom: 0, borderBottomWidth: 0 },
-    refAuthor: { fontSize: fs(14), color: colors.text, fontWeight: '600' },
-    refTitle: { fontSize: fs(14), color: colors.accent, fontStyle: 'italic', marginTop: 2 },
-    refMeta: { fontSize: fs(12), color: colors.textMuted, marginTop: 2 },
+    refAuthor: { fontSize: 14, color: colors.text, fontWeight: '600' },
+    refTitle: { fontSize: 14, color: colors.accent, fontStyle: 'italic', marginTop: 2 },
+    refMeta: { fontSize: 12, color: colors.textMuted, marginTop: 2 },
   });
 
   return (

@@ -2,7 +2,7 @@ import React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useColors } from '../../theme/useColors';
-import { spacing } from '../../theme';
+import { spacing, HIT_SLOP } from '../../theme';
 import { feelingsWheel } from '../../data/feelingsWheel';
 import { ChipView } from './ChipView';
 import { WheelView } from './WheelView';
@@ -49,7 +49,12 @@ export function EmotionWheelPicker({ selected, onChange }: Props) {
   return (
     <View>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.toggleBtn} onPress={toggleMode} activeOpacity={0.7}>
+        <TouchableOpacity
+          style={styles.toggleBtn}
+          onPress={toggleMode}
+          activeOpacity={0.7}
+          hitSlop={HIT_SLOP}
+        >
           <Ionicons
             name={mode === 'chips' ? 'radio-button-on' : 'apps'}
             size={14}
