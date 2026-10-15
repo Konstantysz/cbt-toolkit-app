@@ -1,7 +1,7 @@
-import { cacheDirectory, writeAsStringAsync } from 'expo-file-system/legacy';
-import * as Sharing from 'expo-sharing';
+import { writeAsStringAsync } from 'expo-file-system/legacy';
 import type * as SQLite from 'expo-sqlite';
 import { useSettings } from '../settings/store';
+import { ensureExportDir, shareExportFile } from './exportFiles';
 
 export async function exportData(db: SQLite.SQLiteDatabase): Promise<void> {
   const thoughtRecords = await db.getAllAsync(`
@@ -37,7 +37,7 @@ export async function exportData(db: SQLite.SQLiteDatabase): Promise<void> {
     abcEntries,
   };
 
-  const filePath = `${cacheDirectory}cbt-export-${Date.now()}.json`;
+  const filePath = `${await ensureExportDir()}cbt-export-${Date.now()}.json`;
   await writeAsStringAsync(filePath, JSON.stringify(exportObj, null, 2));
-  await Sharing.shareAsync(filePath, { mimeType: 'application/json' });
+  await shareExportFile(filePath, { mimeType: 'application/json' });
 }

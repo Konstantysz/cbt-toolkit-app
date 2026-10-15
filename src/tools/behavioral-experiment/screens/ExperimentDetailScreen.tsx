@@ -16,6 +16,7 @@ import { useColors } from '../../../core/theme/useColors';
 import { iconRow } from '../../../core/theme';
 import { IntensitySlider } from '../../../core/components/IntensitySlider';
 import { useBehavioralExperiment } from '../hooks/useBehavioralExperiments';
+import { LoadError } from '../../../core/components/LoadError';
 import { pl } from '../i18n/pl';
 import * as repo from '../repository';
 import { Ionicons } from '@expo/vector-icons';
@@ -130,7 +131,7 @@ function useStyles() {
 
 export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
   const db = useSQLiteContext();
-  const { experiment, loading } = useBehavioralExperiment(db, id);
+  const { experiment, loading, error, refresh } = useBehavioralExperiment(db, id);
   const styles = useStyles();
 
   const confirmDelete = useCallback(() => {
@@ -161,6 +162,7 @@ export function ExperimentDetailScreen({ id }: Props): React.JSX.Element {
         <ActivityIndicator color={styles.accentColor.color} />
       </View>
     );
+  if (error) return <LoadError onRetry={refresh} />;
   if (!experiment)
     return (
       <View style={styles.centered}>

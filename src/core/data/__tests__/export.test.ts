@@ -2,8 +2,12 @@ jest.mock('expo-sqlite');
 jest.mock('expo-file-system/legacy', () => ({
   cacheDirectory: 'file:///cache/',
   writeAsStringAsync: jest.fn().mockResolvedValue(undefined),
+  makeDirectoryAsync: jest.fn().mockResolvedValue(undefined),
+  deleteAsync: jest.fn().mockResolvedValue(undefined),
+  moveAsync: jest.fn().mockResolvedValue(undefined),
 }));
 jest.mock('expo-sharing', () => ({
+  isAvailableAsync: jest.fn().mockResolvedValue(true),
   shareAsync: jest.fn().mockResolvedValue(undefined),
 }));
 jest.mock('@react-native-async-storage/async-storage', () => ({
@@ -11,10 +15,12 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
   setItem: jest.fn().mockResolvedValue(undefined),
 }));
 
+import * as FileSystem from 'expo-file-system/legacy';
 import { writeAsStringAsync } from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import * as SQLite from 'expo-sqlite';
 import { exportData } from '../export';
+import { ShareUnavailableError } from '../exportFiles';
 
 const mockDb = {
   getAllAsync: jest.fn(),
@@ -64,5 +70,31 @@ describe('exportData', () => {
     });
 
     expect(Sharing.shareAsync).toHaveBeenCalledWith(filePath, expect.any(Object));
+  });
+
+  it('deletes the exported file after sharing', async () => {
+    await exportData(mockDb);
+
+    const [filePath] = (writeAsStringAsync as jest.Mock).mock.calls[0] as [string];
+    expect(FileSystem.deleteAsync).toHaveBeenCalledWith(filePath, { idempotent: true });
+  });
+
+  it('deletes the exported file when sharing fails', async () => {
+    (Sharing.shareAsync as jest.Mock).mockRejectedValueOnce(new Error('cancelled'));
+
+    await expect(exportData(mockDb)).rejects.toThrow('cancelled');
+
+    const [filePath] = (writeAsStringAsync as jest.Mock).mock.calls[0] as [string];
+    expect(FileSystem.deleteAsync).toHaveBeenCalledWith(filePath, { idempotent: true });
+  });
+
+  it('throws ShareUnavailableError without sharing and still removes the file', async () => {
+    (Sharing.isAvailableAsync as jest.Mock).mockResolvedValueOnce(false);
+
+    await expect(exportData(mockDb)).rejects.toBeInstanceOf(ShareUnavailableError);
+
+    const [filePath] = (writeAsStringAsync as jest.Mock).mock.calls[0] as [string];
+    expect(Sharing.shareAsync).not.toHaveBeenCalled();
+    expect(FileSystem.deleteAsync).toHaveBeenCalledWith(filePath, { idempotent: true });
   });
 });

@@ -10,21 +10,18 @@ jest.mock('expo-router', () => ({
 jest.mock('../../../src/tools/thought-record/hooks/useThoughtRecords', () => ({
   useThoughtRecords: jest.fn(),
 }));
-jest.mock('@react-native-async-storage/async-storage', () => ({
-  getItem: jest.fn(() => Promise.resolve(null)),
-  setItem: jest.fn(() => Promise.resolve()),
-}));
 jest.mock('../../../src/tools/thought-record/repository', () => ({
   insertSeedRecord: jest.fn(() => Promise.resolve()),
 }));
+jest.mock('../../../src/core/db/seedOnce', () => ({
+  seedOnce: jest.fn(() => Promise.resolve(false)),
+}));
 
 import { useThoughtRecords } from '../../../src/tools/thought-record/hooks/useThoughtRecords';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as repo from '../../../src/tools/thought-record/repository';
+import { seedOnce } from '../../../src/core/db/seedOnce';
 
 const mockUseThoughtRecords = useThoughtRecords as jest.Mock;
-const mockGetItem = AsyncStorage.getItem as jest.Mock;
-const mockInsertSeed = repo.insertSeedRecord as jest.Mock;
+const mockSeedOnce = seedOnce as jest.Mock;
 
 const records = [
   {
@@ -44,7 +41,6 @@ const records = [
 describe('RecordListScreen — search', () => {
   beforeEach(() => {
     mockUseThoughtRecords.mockReturnValue({ records, loading: false, refresh: jest.fn() });
-    mockGetItem.mockResolvedValue('1'); // already seeded — skip onboarding
   });
 
   it('renders all records when query is empty', () => {
@@ -85,33 +81,20 @@ describe('RecordListScreen — onboarding seed', () => {
     jest.clearAllMocks();
   });
 
-  it('inserts seed record when list is empty and flag is not set', async () => {
+  it('seeds once when the loaded list is empty', async () => {
     mockUseThoughtRecords.mockReturnValue({ records: [], loading: false, refresh: jest.fn() });
-    mockGetItem.mockResolvedValue(null); // not yet seeded
 
     render(<RecordListScreen />);
 
-    await waitFor(() => expect(mockInsertSeed).toHaveBeenCalled());
-    expect(AsyncStorage.setItem).toHaveBeenCalledWith('thought-record:onboarding-seeded', '1');
+    await waitFor(() => expect(mockSeedOnce).toHaveBeenCalled());
   });
 
-  it('skips seed insertion when flag is already set', async () => {
-    mockUseThoughtRecords.mockReturnValue({ records: [], loading: false, refresh: jest.fn() });
-    mockGetItem.mockResolvedValue('1'); // already seeded
-
-    render(<RecordListScreen />);
-
-    await waitFor(() => expect(mockGetItem).toHaveBeenCalled());
-    expect(mockInsertSeed).not.toHaveBeenCalled();
-  });
-
-  it('skips seed insertion when records already exist', async () => {
+  it('skips seeding when records already exist', async () => {
     mockUseThoughtRecords.mockReturnValue({ records, loading: false, refresh: jest.fn() });
-    mockGetItem.mockResolvedValue(null);
 
     render(<RecordListScreen />);
 
     await new Promise(r => setTimeout(r, 50));
-    expect(mockInsertSeed).not.toHaveBeenCalled();
+    expect(mockSeedOnce).not.toHaveBeenCalled();
   });
 });
