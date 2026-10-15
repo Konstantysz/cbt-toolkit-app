@@ -32,6 +32,25 @@ jobs:
         run: npm run lint
       - name: Format check
         run: npm run format:check
+      - name: Import cycles
+        run: npm run check:cycles
+
+  audit:
+    name: Dependency Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      # Report-only for now: pre-existing advisories in the Expo transitive tree
+      # would fail a blocking gate. Drop continue-on-error once they are resolved.
+      - name: npm audit (production deps)
+        run: npm audit --omit=dev --audit-level=high
+        continue-on-error: true
 
   typecheck:
     name: Typecheck

@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { isValidReminderTime } from '../notifications/time';
-import type { PaletteId } from '../theme/index';
+import type { PaletteId } from '../theme/types';
 
 export type FontSize = 'sm' | 'md' | 'lg';
 

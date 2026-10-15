@@ -1,9 +1,9 @@
 import React from 'react';
 import { act, render, fireEvent } from '@testing-library/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { EmotionWheelPicker } from '../../../src/core/components/EmotionWheelPicker';
-import { feelingsWheel } from '../../../src/core/data/feelingsWheel';
-import type { Emotion } from '../../../src/tools/thought-record/types';
+import { EmotionWheelPicker } from '..';
+import { feelingsWheel } from '../../../data/feelingsWheel';
+import type { Emotion } from '../../../../tools/thought-record/types';
 
 beforeEach(() => {
   jest.clearAllMocks();

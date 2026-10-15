@@ -1,4 +1,4 @@
-import type { ColorSet } from '../index';
+import type { ColorSet } from '../types';
 
 const dark: ColorSet = {
   bg: '#0C0B09',
