@@ -20,7 +20,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import { Ionicons } from '@expo/vector-icons';
 
 import { useSettings } from '../../core/settings/store';
-import { useAuthStore } from '../../core/auth/store';
+import { useAuthStore, LOCK_TIMEOUT_OPTIONS_MS } from '../../core/auth/store';
 import { useColors } from '../../core/theme/useColors';
 import { scaledFont } from '../../core/settings/fontScale';
 import { requestPermissions } from '../../core/notifications/permissions';
@@ -57,6 +57,14 @@ export default function SettingsScreen() {
   } = useSettings();
 
   const pinEnabled = useSettings((s) => s.pinEnabled);
+  const lockTimeoutMs = useSettings((s) => s.lockTimeoutMs);
+  const setLockTimeoutMs = useSettings((s) => s.setLockTimeoutMs);
+  const lockTimeoutLabels: Record<number, string> = {
+    0: pl.settings.privacy.lockTimeoutImmediately,
+    30_000: pl.settings.privacy.lockTimeoutSeconds,
+    60_000: pl.settings.privacy.lockTimeoutMinute,
+    300_000: pl.settings.privacy.lockTimeoutMinutes,
+  };
   const { setPinEnabled, setBiometricsEnabled } = useSettings.getState();
   const authPhase = useAuthStore((s) => s.authPhase);
 
@@ -422,6 +430,21 @@ export default function SettingsScreen() {
             <View style={s.rowLabel}>
               <Text style={s.rowLabelText}>{pl.settings.privacy.changePin}</Text>
             </View>
+            <Text style={s.chevron}>›</Text>
+          </TouchableOpacity>
+        )}
+        {pinEnabled && (
+          <TouchableOpacity
+            style={[s.row, s.rowBorder]}
+            onPress={() => {
+              const opts: readonly number[] = LOCK_TIMEOUT_OPTIONS_MS;
+              setLockTimeoutMs(opts[(opts.indexOf(lockTimeoutMs) + 1) % opts.length]);
+            }}
+          >
+            <View style={s.rowLabel}>
+              <Text style={s.rowLabelText}>{pl.settings.privacy.lockTimeout}</Text>
+            </View>
+            <Text style={s.rowValue}>{lockTimeoutLabels[lockTimeoutMs] ?? ''}</Text>
             <Text style={s.chevron}>›</Text>
           </TouchableOpacity>
         )}
