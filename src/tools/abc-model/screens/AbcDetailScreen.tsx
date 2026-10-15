@@ -16,6 +16,7 @@ import { useColors } from '../../../core/theme/useColors';
 import { iconRow } from '../../../core/theme';
 import { AbcGraph } from '../components/AbcGraph';
 import { useAbcEntry } from '../hooks/useAbcEntries';
+import { LoadError } from '../../../core/components/LoadError';
 import * as repo from '../repository';
 import { pl } from '../i18n/pl';
 import { Ionicons } from '@expo/vector-icons';
@@ -102,7 +103,7 @@ function useStyles() {
 
 export function AbcDetailScreen({ id }: Props): React.JSX.Element {
   const db = useSQLiteContext();
-  const { entry, loading } = useAbcEntry(db, id);
+  const { entry, loading, error, refresh } = useAbcEntry(db, id);
   const styles = useStyles();
 
   const confirmDelete = useCallback(() => {
@@ -130,6 +131,8 @@ export function AbcDetailScreen({ id }: Props): React.JSX.Element {
       </View>
     );
   }
+
+  if (error) return <LoadError onRetry={refresh} />;
 
   if (!entry) {
     return (

@@ -19,6 +19,7 @@ import { useColors } from '../../../core/theme/useColors';
 import { StepProgress } from '../../../core/components/StepProgress';
 import { StepHelper } from '../../../core/components/StepHelper';
 import { IntensitySlider } from '../../../core/components/IntensitySlider';
+import { PICKER_LOCALE_PROPS, toLocalDateKey } from '../../../core/utils/date';
 import { pl } from '../i18n/pl';
 import * as repo from '../repository';
 
@@ -51,7 +52,7 @@ const PLAN_STEPS = 5;
 const RESULT_STEPS = 3;
 
 function todayIso() {
-  return new Date().toISOString().split('T')[0];
+  return toLocalDateKey();
 }
 
 function useStyles() {
@@ -431,9 +432,10 @@ function renderResultStep(
             mode="date"
             display="default"
             maximumDate={new Date()}
+            {...PICKER_LOCALE_PROPS}
             onChange={(_evt, selected) => {
               update('showDatePicker', false);
-              if (selected) update('executionDate', selected.toISOString().split('T')[0]);
+              if (selected) update('executionDate', toLocalDateKey(selected));
             }}
           />
         )}

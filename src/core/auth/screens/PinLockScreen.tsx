@@ -6,6 +6,7 @@ import { useColors } from '../../theme/useColors';
 import { useSettings } from '../../settings/store';
 import { verifyPin, clearPin } from '../pin';
 import { resetDatabase } from '../../db/database';
+import { clearExportFiles } from '../../data/exportFiles';
 import { PinPad } from '../components/PinPad';
 import { pl } from '../../i18n/pl';
 import { spacing } from '../../theme';
@@ -76,6 +77,7 @@ export function PinLockScreen({ onUnlock }: PinLockScreenProps) {
         onPress: async () => {
           try {
             await resetDatabase(db);
+            await clearExportFiles();
             await clearPin();
             resetSettings();
             onUnlock();

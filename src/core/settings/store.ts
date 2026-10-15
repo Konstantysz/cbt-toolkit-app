@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { isValidReminderTime } from '../notifications/time';
 import type { PaletteId } from '../theme/index';
 
 export type FontSize = 'sm' | 'md' | 'lg';
@@ -55,7 +56,9 @@ export const useSettings = create<SettingsState>()(
     (set) => ({
       ...SETTINGS_DEFAULTS,
       setReminderEnabled: (value) => set({ reminderEnabled: value }),
-      setReminderTime: (value) => set({ reminderTime: value }),
+      setReminderTime: (value) => {
+        if (isValidReminderTime(value)) set({ reminderTime: value });
+      },
       setFontSize: (value) => set({ fontSize: value }),
       setReducedMotion: (value) => set({ reducedMotion: value }),
       setHighContrast: (value) => set({ highContrast: value }),

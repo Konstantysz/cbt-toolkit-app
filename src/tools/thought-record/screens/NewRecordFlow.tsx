@@ -18,6 +18,7 @@ import { format, parseISO } from 'date-fns';
 import { pl as dateFnsPl } from 'date-fns/locale';
 import { useColors } from '../../../core/theme/useColors';
 import { iconRow } from '../../../core/theme';
+import { PICKER_LOCALE_PROPS, toLocalDateKey } from '../../../core/utils/date';
 import { StepProgress } from '../../../core/components/StepProgress';
 import { TextStep } from '../components/TextStep';
 import { EmotionWheelPicker } from '../../../core/components/EmotionWheelPicker';
@@ -43,7 +44,7 @@ interface FlowState {
 }
 
 function todayIso() {
-  return new Date().toISOString().split('T')[0];
+  return toLocalDateKey();
 }
 
 function useStepStyles() {
@@ -163,9 +164,10 @@ function Step1Situation({
           value={date}
           mode="date"
           maximumDate={new Date()}
+          {...PICKER_LOCALE_PROPS}
           onChange={(_, selected) => {
             setShowPicker(false);
-            if (selected) update('situationDate', selected.toISOString().split('T')[0]);
+            if (selected) update('situationDate', toLocalDateKey(selected));
           }}
         />
       )}
