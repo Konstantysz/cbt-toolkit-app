@@ -13,6 +13,7 @@ import { scheduleReminder, cancelReminder } from '../core/notifications/schedule
 import { useAuthGuard } from '../core/auth/useAuthGuard';
 import { useAuthStore } from '../core/auth/store';
 import { clearPin } from '../core/auth/pin';
+import { clearExportFiles } from '../core/data/exportFiles';
 import { PinOnboardingScreen } from '../core/auth/screens/PinOnboardingScreen';
 import { PinSetupScreen } from '../core/auth/screens/PinSetupScreen';
 import { PinLockScreen } from '../core/auth/screens/PinLockScreen';
@@ -43,6 +44,11 @@ function AppContent() {
   const reminderEnabled = useSettings((s) => s.reminderEnabled);
   const reminderTime = useSettings((s) => s.reminderTime);
   const { authPhase, goToSetup, goToUnlocked } = useAuthGuard();
+
+  // Sweep export files left behind by a previous session (e.g. killed mid-share).
+  useEffect(() => {
+    void clearExportFiles();
+  }, []);
 
   useEffect(() => {
     if (!reminderEnabled) return;
