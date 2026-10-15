@@ -1,5 +1,6 @@
 /** @type {import('jest').Config} */
 module.exports = {
+  testTimeout: 15000, // PinLockScreen/NewExperimentFlow timed out at 5s under full-suite load
   preset: 'jest-expo',
   transformIgnorePatterns: [
     'node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@sentry/react-native|native-base|react-native-svg|uuid)',
